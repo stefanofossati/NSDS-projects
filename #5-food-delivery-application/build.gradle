@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+}
+
+group 'NSDSprojects'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients
+    implementation 'org.apache.kafka:kafka-clients:2.4.1'
+}
+
+test {
+    useJUnitPlatform()
+}
