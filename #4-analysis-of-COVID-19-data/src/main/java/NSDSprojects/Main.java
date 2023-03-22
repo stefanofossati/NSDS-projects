@@ -1,5 +1,7 @@
 package NSDSprojects;
 
+import NSDSprojects.preprocessors.AbstractPreprocessor;
+import NSDSprojects.preprocessors.EcdcPreprocessor;
 import org.apache.spark.sql.SparkSession;
 
 public class Main {
@@ -14,5 +16,10 @@ public class Main {
                 .appName("Covid19DataAnalysis")
                 .getOrCreate();
         spark.sparkContext().setLogLevel("ERROR");
+
+        AbstractPreprocessor preprocessor = new EcdcPreprocessor(spark, inputDatasetPath);
+        preprocessor.loadAndPreprocess();
+
+
     }
 }
