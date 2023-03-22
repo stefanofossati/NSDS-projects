@@ -2,6 +2,8 @@ package NSDSprojects;
 
 import NSDSprojects.preprocessors.AbstractPreprocessor;
 import NSDSprojects.preprocessors.EcdcPreprocessor;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
 public class Main {
@@ -9,6 +11,7 @@ public class Main {
         final String master = args.length > 0 ? args[0] : "local[4]";
         final String inputDatasetPath = args.length > 1 ? args[1] : "./files/ecdc_data.csv";
         final boolean logOnConsole = args.length > 2 ? args[2].equals("true") : false;
+        final boolean useCache = args.length > 3 ? Boolean.parseBoolean(args[3]) : true;
 
         final SparkSession spark = SparkSession
                 .builder()
@@ -18,8 +21,13 @@ public class Main {
         spark.sparkContext().setLogLevel("ERROR");
 
         AbstractPreprocessor preprocessor = new EcdcPreprocessor(spark, inputDatasetPath);
-        preprocessor.loadAndPreprocess();
+        Dataset<Row> dataset = preprocessor.loadAndPreprocess();
 
+        Dataset<Row> query1Results = QueryExecutor.sevenDaysMovingAverage(dataset);
 
+        if(useCache)
+            query1Results.cache();
+
+        query1Results.show(100);
     }
 }

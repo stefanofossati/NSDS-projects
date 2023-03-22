@@ -51,8 +51,6 @@ public class EcdcPreprocessor extends AbstractPreprocessor{
         // convert string to date format for the first column
         dataset = dataset.withColumn("date", to_date(col("date"), "dd/MM/yyyy"));
 
-        dataset.show();
-
         return dataset;
     }
 }
