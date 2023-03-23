@@ -36,5 +36,18 @@ public class Main {
             query2Results.cache();
 
         query2Results.show(20);
+
+        query1Results.unpersist();
+
+        Dataset<Row> query3Results = QueryExecutor.top10CountriesHighestPercIncrease(query2Results);
+
+        if(useCache)
+            query3Results.cache();
+
+        query3Results.show(20);
+
+        query2Results.unpersist();
+
+        spark.close();
     }
 }

@@ -33,4 +33,16 @@ public class QueryExecutor {
                                 .divide(col("movAvg"))
                 );
     }
+
+    public static Dataset<Row> top10CountriesHighestPercIncrease(Dataset<Row> dataset){
+
+        WindowSpec window = Window
+                .partitionBy("date")
+                .orderBy(desc("percIncreaseMovAvg"));
+
+        return dataset
+                .withColumn("rank", row_number().over(window))
+                .where(col("rank").$less$eq(10))
+                .orderBy("date", "rank");
+    }
 }
