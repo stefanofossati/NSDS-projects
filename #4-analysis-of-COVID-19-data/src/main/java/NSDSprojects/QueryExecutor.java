@@ -5,8 +5,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.expressions.Window;
 import org.apache.spark.sql.expressions.WindowSpec;
 
-import static org.apache.spark.sql.functions.avg;
-import static org.apache.spark.sql.functions.col;
+import static org.apache.spark.sql.functions.*;
 
 public class QueryExecutor {
 
@@ -18,5 +17,20 @@ public class QueryExecutor {
                 .rowsBetween(-6, Window.currentRow());
 
         return dataset.withColumn("movAvg", avg(col("cases")).over(window));
+    }
+
+    public static Dataset<Row> percentageIncreaseDayBeforeMovingAverage(Dataset<Row> dataset){
+
+        WindowSpec window = Window
+                .partitionBy("country")
+                .orderBy("date");
+
+        return dataset
+                .withColumn("percIncreaseMovAvg",
+                        col("movAvg")
+                                .minus(lag("movAvg", 1, 0).over(window))
+                                .multiply(100.0)
+                                .divide(col("movAvg"))
+                );
     }
 }

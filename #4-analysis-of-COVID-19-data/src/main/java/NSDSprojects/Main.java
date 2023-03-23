@@ -28,6 +28,13 @@ public class Main {
         if(useCache)
             query1Results.cache();
 
-        query1Results.show(100);
+        query1Results.show(20);
+
+        Dataset<Row> query2Results = QueryExecutor.percentageIncreaseDayBeforeMovingAverage(query1Results);
+
+        if(useCache)
+            query2Results.cache();
+
+        query2Results.show(20);
     }
 }
