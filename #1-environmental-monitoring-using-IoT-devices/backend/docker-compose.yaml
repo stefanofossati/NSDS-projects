@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  nodered:
+    image: nodered/node-red:latest
+    environment:
+      - TZ=Europe/Amsterdam
+    ports:
+      - "1880:1880"
+    volumes:
+      - type: bind
+        source: ./nodered
+        target: /data
+  mongodb:
+    image: mongodb/mongodb-community-server:6.0-ubi8
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=adminpass
+    volumes:
+      - mongodb:/data/db
+
+
+volumes:
+  mongodb:

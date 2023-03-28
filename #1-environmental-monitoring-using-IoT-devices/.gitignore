@@ -1,0 +1,7 @@
+#ignore this folder
+backend/nodered/*
+
+#exept these files
+!backend/nodered/flows.json
+!backend/nodered/flows_cred.json
+!backend/nodered/package.json

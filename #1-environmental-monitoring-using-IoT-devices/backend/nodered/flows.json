@@ -1,0 +1,333 @@
+[
+    {
+        "id": "e0d233bea8e17753",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "4f2ce9e33f61eafc",
+        "type": "mongodb4-client",
+        "name": "MongoDB noderedTest",
+        "protocol": "mongodb",
+        "hostname": "",
+        "port": "",
+        "dbName": "test",
+        "authSource": "",
+        "authMechanism": "DEFAULT",
+        "tls": false,
+        "tlsCAFile": "",
+        "tlsInsecure": false,
+        "uri": "mongodb://noderedTest:test@mongodb:27017/?authMechanism=SCRAM-SHA-256&authSource=test",
+        "advanced": "",
+        "uriTabActive": "tab-uri-advanced"
+    },
+    {
+        "id": "e0054114c2c88607",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "192.168.43.74",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "b5c2c23be0b41b02",
+        "type": "mqtt in",
+        "z": "e0d233bea8e17753",
+        "name": "",
+        "topic": "iot/native/launchpad/json",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "e0054114c2c88607",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 220,
+        "y": 240,
+        "wires": [
+            [
+                "7ffed98376d6c2c1"
+            ]
+        ]
+    },
+    {
+        "id": "7ffed98376d6c2c1",
+        "type": "function",
+        "z": "e0d233bea8e17753",
+        "name": "Convert to db object",
+        "func": "var obj = {\n    myName: msg.payload.myName,\n    seq: msg.payload.seq,\n    overThreshold: msg.payload.overThreshold,\n    timestemp: new Date(msg.payload.timestemp),\n    temp: msg.payload.temp\n}\n\nmsg.payload = obj;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 240,
+        "wires": [
+            [
+                "5fc6786328a33f82"
+            ]
+        ]
+    },
+    {
+        "id": "5fc6786328a33f82",
+        "type": "mongodb4",
+        "z": "e0d233bea8e17753",
+        "clientNode": "4f2ce9e33f61eafc",
+        "mode": "collection",
+        "collection": "test",
+        "operation": "insertOne",
+        "output": "toArray",
+        "handleDocId": false,
+        "name": "",
+        "x": 680,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "19babfd11b9773e3",
+        "type": "e-mail",
+        "z": "e0d233bea8e17753",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "secure": true,
+        "tls": true,
+        "name": "",
+        "dname": "",
+        "x": 670,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "fe1e0860b7eed442",
+        "type": "function",
+        "z": "e0d233bea8e17753",
+        "name": "function 1",
+        "func": "var data = { \n    timestemp: {\n        $gt: new Date(\"2023-03-27T15:20:50\"),\n        $lt: new Date(\"2023-03-27T15:21:05\")\n    }  \n};\n\nmsg.payload = [data];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "81ca41c27b91bc2f",
+        "type": "inject",
+        "z": "e0d233bea8e17753",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "5",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 380,
+        "wires": [
+            [
+                "fe1e0860b7eed442",
+                "a697c28b69e4fa00"
+            ]
+        ]
+    },
+    {
+        "id": "e663d2e35285168c",
+        "type": "mongodb4",
+        "z": "e0d233bea8e17753",
+        "clientNode": "4f2ce9e33f61eafc",
+        "mode": "collection",
+        "collection": "test",
+        "operation": "find",
+        "output": "toArray",
+        "handleDocId": false,
+        "name": "",
+        "x": 650,
+        "y": 440,
+        "wires": [
+            [
+                "69626c4d306c1aeb"
+            ]
+        ]
+    },
+    {
+        "id": "daba21feb266f058",
+        "type": "debug",
+        "z": "e0d233bea8e17753",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1020,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "cd747e9e8a0a02f6",
+        "type": "function",
+        "z": "e0d233bea8e17753",
+        "name": "Create filter",
+        "func": "const NotifyEvery = {\n    Hour: 'Hour',\n    Day: 'Day',\n    Week: 'Week',  // da vedere se inserire\n    Month: 'Month'\n};\n\nconst every = NotifyEvery.Month;\n\nconst date = new Date();\n\nvar filter;\nfunction SetPeriodic(){\n    switch(every){\n        case NotifyEvery.Hour:\n            if(date.getMinutes() == 0){\n                filter = {\n                    timestemp: {\n                        $gt: new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours() - 1),\n                        $lt: new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours())\n                    }\n                };\n            }\n            break;\n        case NotifyEvery.Day:\n            if(date.getHours() == 0){\n                filter = {\n                    timestemp: {\n                        $gt: new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1),\n                        $lt: new Date(date.getFullYear(), date.getMonth(), date.getDate())\n                    }\n                }; \n            }\n            break;\n        /*case NotifyEvery.Week:\n            if (date.getHours() = 0) {\n                filter = {\n                    timestemp: {\n                        $gt: new Date(date.getFullYear(), date),\n                        $lt: new Date()\n                    }\n                };\n            }\n            break;*/\n        case NotifyEvery.Month:\n            if (date.getDate() == 0) {\n                filter = {\n                    timestemp: {\n                        $gt: new Date(date.getFullYear(), date.getMonth() - 1),\n                        $lt: new Date(date.getFullYear(), date.getMonth())\n                    }\n                };\n            }\n            break;\n    }\n        \n}\n\nmsg.payload = filter;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 210,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "69626c4d306c1aeb",
+        "type": "function",
+        "z": "e0d233bea8e17753",
+        "name": "Find highest temperature",
+        "func": "class bestTemp {\n    highestTemp;\n    timestemp;\n\n    constructor(timestemp,highestTemp) {\n        this.highestTemp=highestTemp;\n        this.timestemp=timestemp;\n    }\n    setTimestemp(newTimestemp) {\n        this.timestemp=newTimestemp;\n    };\n    setHighestTemp(newHighestTemp) {\n        this.highestTemp=newHighestTemp;\n    };\n\n    returnObject(){\n        return {\n            highestTemp : this.highestTemp,\n            timestemp : this.timestemp\n        }\n    }\n\n};\n\nfunction CalculateTheHighestTemp(){\n    var highestData = new bestTemp(msg.payload[0].timestemp, msg.payload[0].temp[0]);\n\n\n    for (let index = 0; index < msg.payload.length; index++) {\n        let element = msg.payload[index];\n        GetHighestTemp(msg.payload[index].temp, msg.payload[index].timestemp);\n    }\n\n    function GetHighestTemp(array, timestemp) {\n        for (let index = 0; index < array.length; index++) {\n            let element = array[index];\n            if (element > highestData.highestTemp) {\n                highestData.setHighestTemp(element);\n                highestData.setTimestemp(timestemp);\n            }\n        }\n    }\n\n    return highestData.returnObject();\n}\n\n\n\nmsg.payload = CalculateTheHighestTemp();\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 440,
+        "wires": [
+            [
+                "daba21feb266f058"
+            ]
+        ]
+    },
+    {
+        "id": "6f7e62e00fe0ff05",
+        "type": "inject",
+        "z": "e0d233bea8e17753",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "01 00 * * *",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 170,
+        "y": 560,
+        "wires": [
+            [
+                "a697c28b69e4fa00"
+            ]
+        ]
+    },
+    {
+        "id": "a697c28b69e4fa00",
+        "type": "function",
+        "z": "e0d233bea8e17753",
+        "name": "function 2",
+        "func": "const date = new Date();\n\nvar dateFilter;\n\nif (date.getDate() == 0 || true) {\n    dateFilter = {\n        timestemp: {\n            $gt: new Date(date.getFullYear(), date.getMonth() - 1),\n            $lt: new Date(date.getFullYear(), date.getMonth())\n        }\n    };\n    msg.payload = dateFilter\n    return msg ;\n\n}\n\n\n\n// quando devo fare diversi tipi di messaggio, li salvo in diversi db così il summary lo faccio tutto assieme\n\n\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 560,
+        "wires": [
+            [
+                "cfa4b50c5ff946ba"
+            ]
+        ]
+    },
+    {
+        "id": "cfa4b50c5ff946ba",
+        "type": "debug",
+        "z": "e0d233bea8e17753",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "502ff1f8d393b078",
+        "type": "join",
+        "z": "e0d233bea8e17753",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": true,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 670,
+        "y": 640,
+        "wires": [
+            []
+        ]
+    }
+]
