@@ -4,14 +4,16 @@ import NSDSprojects.preprocessors.AbstractPreprocessor;
 import NSDSprojects.preprocessors.EcdcPreprocessor;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 
 public class Main {
     public static void main(String[] args) {
         final String master = args.length > 0 ? args[0] : "local[4]";
         final String inputDatasetPath = args.length > 1 ? args[1] : "./files/ecdc_data.csv";
-        final boolean logOnConsole = args.length > 2 ? args[2].equals("true") : false;
+        final boolean logOnConsole = args.length > 2 ? args[2].equals("true") : true;
         final boolean useCache = args.length > 3 ? Boolean.parseBoolean(args[3]) : true;
+        final String outputPath = "./files/output/";
 
         final SparkSession spark = SparkSession
                 .builder()
@@ -28,14 +30,18 @@ public class Main {
         if(useCache)
             query1Results.cache();
 
-        query1Results.show(20);
+        if(logOnConsole)
+            query1Results.show(20);
+
+        query1Results.coalesce(1).write().mode(SaveMode.Overwrite).option("header", "true").csv(outputPath + "query1Results");
 
         Dataset<Row> query2Results = QueryExecutor.percentageIncreaseDayBeforeMovingAverage(query1Results);
 
         if(useCache)
             query2Results.cache();
 
-        query2Results.show(20);
+        if(logOnConsole)
+            query2Results.show(20);
 
         query1Results.unpersist();
 
@@ -44,7 +50,8 @@ public class Main {
         if(useCache)
             query3Results.cache();
 
-        query3Results.show(20);
+        if(logOnConsole)
+            query3Results.show(20);
 
         query2Results.unpersist();
 

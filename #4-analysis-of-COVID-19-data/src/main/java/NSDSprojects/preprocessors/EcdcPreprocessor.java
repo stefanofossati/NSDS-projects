@@ -46,7 +46,7 @@ public class EcdcPreprocessor extends AbstractPreprocessor{
                 .csv(getDatasetPath());
 
         // select only interesting columns
-        dataset = dataset.select("date", "cases", "country", "continent");
+        dataset = dataset.select("date", "cases", "country");
 
         // convert string to date format for the first column
         dataset = dataset.withColumn("date", to_date(col("date"), "dd/MM/yyyy"));
