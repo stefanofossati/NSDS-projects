@@ -10,9 +10,10 @@ import org.apache.spark.sql.SparkSession;
 public class Main {
     public static void main(String[] args) {
         final String master = args.length > 0 ? args[0] : "local[4]";
-        final String inputDatasetPath = args.length > 1 ? args[1] : "./files/ecdc_data.csv";
+        final String inputDatasetPath = args.length > 1 ? args[1] : "./files/input/ecdc_data.csv";
         final boolean logOnConsole = args.length > 2 ? args[2].equals("true") : true;
         final boolean useCache = args.length > 3 ? Boolean.parseBoolean(args[3]) : true;
+        final boolean writeToFile = args.length > 4 ? Boolean.parseBoolean(args[4]) : false;
         final String outputPath = "./files/output/";
 
         final SparkSession spark = SparkSession
@@ -33,8 +34,6 @@ public class Main {
         if(logOnConsole)
             query1Results.show(20);
 
-        query1Results.coalesce(1).write().mode(SaveMode.Overwrite).option("header", "true").csv(outputPath + "query1Results");
-
         Dataset<Row> query2Results = QueryExecutor.percentageIncreaseDayBeforeMovingAverage(query1Results);
 
         if(useCache)
@@ -54,6 +53,9 @@ public class Main {
             query3Results.show(20);
 
         query2Results.unpersist();
+
+        if(writeToFile)
+            query3Results.coalesce(1).write().mode(SaveMode.Overwrite).option("header", "true").csv(outputPath);
 
         spark.close();
     }
