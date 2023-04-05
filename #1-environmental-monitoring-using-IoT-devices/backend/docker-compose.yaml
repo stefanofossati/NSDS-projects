@@ -12,15 +12,12 @@ services:
         source: ./nodered
         target: /data
   mongodb:
-    image: mongodb/mongodb-community-server:6.0-ubi8
+    image: mongo:latest
     ports:
       - 27017:27017
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=adminpass
+      - MONGO_INITDB_DATABASE=admin-db
     volumes:
-      - mongodb:/data/db
-
-
-volumes:
-  mongodb:
+      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
