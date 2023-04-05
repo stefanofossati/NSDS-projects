@@ -14,13 +14,13 @@
         "protocol": "mongodb",
         "hostname": "",
         "port": "",
-        "dbName": "test",
+        "dbName": "test-db",
         "authSource": "",
         "authMechanism": "DEFAULT",
         "tls": false,
         "tlsCAFile": "",
         "tlsInsecure": false,
-        "uri": "mongodb://noderedTest:test@mongodb:27017/?authMechanism=SCRAM-SHA-256&authSource=test",
+        "uri": "mongodb://noderedTest:test@mongodb:27017/?authMechanism=SCRAM-SHA-256&authSource=test-db",
         "advanced": "",
         "uriTabActive": "tab-uri-advanced"
     },
@@ -28,7 +28,7 @@
         "id": "e0054114c2c88607",
         "type": "mqtt-broker",
         "name": "",
-        "broker": "192.168.43.74",
+        "broker": "192.168.8.132",
         "port": "1883",
         "clientid": "",
         "autoConnect": true,
@@ -56,7 +56,7 @@
         "type": "mqtt in",
         "z": "e0d233bea8e17753",
         "name": "",
-        "topic": "iot/native/launchpad/json",
+        "topic": "iot/native/temp",
         "qos": "2",
         "datatype": "auto-detect",
         "broker": "e0054114c2c88607",
@@ -64,7 +64,7 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 220,
+        "x": 190,
         "y": 240,
         "wires": [
             [
@@ -77,7 +77,7 @@
         "type": "function",
         "z": "e0d233bea8e17753",
         "name": "Convert to db object",
-        "func": "var obj = {\n    myName: msg.payload.myName,\n    seq: msg.payload.seq,\n    overThreshold: msg.payload.overThreshold,\n    timestemp: new Date(msg.payload.timestemp),\n    temp: msg.payload.temp\n}\n\nmsg.payload = obj;\nreturn msg;",
+        "func": "var obj = {\n    myName: msg.payload.myName,\n    seq: msg.payload.seq,\n    timestemp: new Date(msg.payload.timestemp),\n    temp: msg.payload.temp\n}\n\nmsg.payload = obj;\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -97,7 +97,7 @@
         "z": "e0d233bea8e17753",
         "clientNode": "4f2ce9e33f61eafc",
         "mode": "collection",
-        "collection": "test",
+        "collection": "temp",
         "operation": "insertOne",
         "output": "toArray",
         "handleDocId": false,
@@ -328,6 +328,63 @@
         "y": 640,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "20da5d151dfd63e5",
+        "type": "mqtt in",
+        "z": "e0d233bea8e17753",
+        "name": "",
+        "topic": "iot/native/humidity",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "e0054114c2c88607",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 200,
+        "y": 140,
+        "wires": [
+            [
+                "7a21c70d8fd110c9"
+            ]
+        ]
+    },
+    {
+        "id": "4b8ce7f200a401a9",
+        "type": "mongodb4",
+        "z": "e0d233bea8e17753",
+        "clientNode": "4f2ce9e33f61eafc",
+        "mode": "collection",
+        "collection": "humidity",
+        "operation": "insertOne",
+        "output": "toArray",
+        "handleDocId": false,
+        "name": "",
+        "x": 640,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7a21c70d8fd110c9",
+        "type": "function",
+        "z": "e0d233bea8e17753",
+        "name": "function 3",
+        "func": "var obj = {\n    myName: msg.payload.myName,\n    seq: msg.payload.seq,\n    timestemp: new Date(msg.payload.timestemp),\n    humidity: msg.payload.humidity\n}\n\nmsg.payload = obj;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 140,
+        "wires": [
+            [
+                "4b8ce7f200a401a9"
+            ]
         ]
     }
 ]
