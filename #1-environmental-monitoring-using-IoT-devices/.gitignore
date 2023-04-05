@@ -5,3 +5,4 @@ backend/nodered/*
 !backend/nodered/flows.json
 !backend/nodered/flows_cred.json
 !backend/nodered/package.json
+!backend/nodered/package-lock.json
