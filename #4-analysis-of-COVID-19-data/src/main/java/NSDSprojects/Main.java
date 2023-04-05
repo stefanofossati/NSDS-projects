@@ -13,8 +13,8 @@ public class Main {
         final String inputDatasetPath = args.length > 1 ? args[1] : "./files/input/ecdc_data.csv";
         final boolean logOnConsole = args.length > 2 ? args[2].equals("true") : true;
         final boolean useCache = args.length > 3 ? Boolean.parseBoolean(args[3]) : true;
-        final boolean writeToFile = args.length > 4 ? Boolean.parseBoolean(args[4]) : false;
-        final String outputPath = "./files/output/";
+        final boolean writeToFile = args.length > 4 ? Boolean.parseBoolean(args[4]) : true;
+        final String outputPath = args.length > 5 ? args[5] : "./files/output/";
 
         final SparkSession spark = SparkSession
                 .builder()
