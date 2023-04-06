@@ -200,7 +200,7 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1020,
+        "x": 1140,
         "y": 440,
         "wires": []
     },
@@ -225,14 +225,14 @@
         "id": "69626c4d306c1aeb",
         "type": "function",
         "z": "e0d233bea8e17753",
-        "name": "Find highest temperature",
-        "func": "class bestTemp {\n    highestTemp;\n    timestemp;\n\n    constructor(timestemp,highestTemp) {\n        this.highestTemp=highestTemp;\n        this.timestemp=timestemp;\n    }\n    setTimestemp(newTimestemp) {\n        this.timestemp=newTimestemp;\n    };\n    setHighestTemp(newHighestTemp) {\n        this.highestTemp=newHighestTemp;\n    };\n\n    returnObject(){\n        return {\n            highestTemp : this.highestTemp,\n            timestemp : this.timestemp\n        }\n    }\n\n};\n\nfunction CalculateTheHighestTemp(){\n    var highestData = new bestTemp(msg.payload[0].timestemp, msg.payload[0].temp[0]);\n\n\n    for (let index = 0; index < msg.payload.length; index++) {\n        let element = msg.payload[index];\n        GetHighestTemp(msg.payload[index].temp, msg.payload[index].timestemp);\n    }\n\n    function GetHighestTemp(array, timestemp) {\n        for (let index = 0; index < array.length; index++) {\n            let element = array[index];\n            if (element > highestData.highestTemp) {\n                highestData.setHighestTemp(element);\n                highestData.setTimestemp(timestemp);\n            }\n        }\n    }\n\n    return highestData.returnObject();\n}\n\n\n\nmsg.payload = CalculateTheHighestTemp();\nreturn msg;\n",
+        "name": "Find highest and lowest temperature",
+        "func": "class Temp{\n    temp;\n    timestemp;\n\n    constructor(temp, timestemp){\n        this.temp = temp;\n        this.timestemp = timestemp;\n    }\n\n    setTimestemp(newTimestemp) {\n        this.timestemp = newTimestemp;\n    };\n    setTemp(newTemp) {\n        this.Temp = newTemp;\n    };\n}\n\nclass Temperatures {\n    highestTemp;\n    lowestTemp;\n\n    constructor(firstTemp, timestemp) {\n        this.highestTemp = new Temp(firstTemp, timestemp);\n        this.lowestTemp = new Temp(firstTemp, timestemp);\n    }\n\n    returnObject(){\n        return {\n            highestTemp : this.highestTemp,\n            lowestTemp : this.lowestTemp\n        }\n    }\n\n};\n\nfunction CalculateTemperatures(array){\n    var tempDate;\n\n    for(let date = 1; date <= 31; date++){\n        let filteredArray = array.filter(function tempsOfDay(object, dateNum) {\n            if (object.timestemp > new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), dateNum) && object.timestemp > new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), dataNum + 1)) {\n                return object;\n            }\n        });\n\n        let avarageTemp = CalculateAvarage(filteredArray);\n        let timestemp = new Date(array[0].timestemp.getFullYear(), array[0].timestemp.getMonth(), date)\n\n        if(date == 1){\n            tempDate = new Temperatures(avarageTemp, timestemp);\n        }else{\n            if (avarageTemp > tempDate.highestTemp.temp) {\n                tempDate.highestTemp.setTemp(avarageTemp);\n                tempDate.highestTemp.setTimestemp(timestemp);\n            }\n            if (avarageTemp < tempDate.lowestTemp.temp) {\n                tempDate.highestTemp.setTemp(avarageTemp);\n                tempDate.highestTemp.setTimestemp(timestemp);\n            }\n        }\n        \n\n    }\n\n    function CalculateAvarage(array){\n        let count = 0;\n        let sumTemp = 0;\n        for(let index = 0; index < array.lenght; index++){\n            for(let i=0; i<array[index].temp.lenght; i++, count++){\n                sumTemp += array[index].temp[i];\n            }\n        }\n\n        return sumTemp/count;\n    }\n\n    return tempDate.returnObject();\n}\n\n\n\n\n\nmsg.payload = CalculateTemperatures(msg.payload);\nreturn msg;\n",
         "outputs": 1,
-        "noerr": 0,
+        "noerr": 11,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 830,
+        "x": 870,
         "y": 440,
         "wires": [
             [
