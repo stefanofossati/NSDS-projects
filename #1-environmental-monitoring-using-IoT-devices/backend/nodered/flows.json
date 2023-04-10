@@ -28,7 +28,7 @@
         "id": "e0054114c2c88607",
         "type": "mqtt-broker",
         "name": "",
-        "broker": "192.168.8.132",
+        "broker": "192.168.178.70",
         "port": "1883",
         "clientid": "",
         "autoConnect": true,
@@ -118,56 +118,9 @@
         "tls": true,
         "name": "",
         "dname": "",
-        "x": 670,
-        "y": 360,
+        "x": 1530,
+        "y": 560,
         "wires": []
-    },
-    {
-        "id": "fe1e0860b7eed442",
-        "type": "function",
-        "z": "e0d233bea8e17753",
-        "name": "function 1",
-        "func": "var data = { \n    timestemp: {\n        $gt: new Date(\"2023-03-27T15:20:50\"),\n        $lt: new Date(\"2023-03-27T15:21:05\")\n    }  \n};\n\nmsg.payload = [data];\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 360,
-        "y": 380,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "81ca41c27b91bc2f",
-        "type": "inject",
-        "z": "e0d233bea8e17753",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "5",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 170,
-        "y": 380,
-        "wires": [
-            [
-                "fe1e0860b7eed442",
-                "a697c28b69e4fa00"
-            ]
-        ]
     },
     {
         "id": "e663d2e35285168c",
@@ -175,13 +128,13 @@
         "z": "e0d233bea8e17753",
         "clientNode": "4f2ce9e33f61eafc",
         "mode": "collection",
-        "collection": "test",
+        "collection": "temp",
         "operation": "find",
         "output": "toArray",
         "handleDocId": false,
         "name": "",
         "x": 650,
-        "y": 440,
+        "y": 480,
         "wires": [
             [
                 "69626c4d306c1aeb"
@@ -200,8 +153,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1140,
-        "y": 440,
+        "x": 1320,
+        "y": 560,
         "wires": []
     },
     {
@@ -215,8 +168,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 210,
-        "y": 680,
+        "x": 130,
+        "y": 1020,
         "wires": [
             []
         ]
@@ -226,17 +179,17 @@
         "type": "function",
         "z": "e0d233bea8e17753",
         "name": "Find highest and lowest temperature",
-        "func": "class Temp{\n    temp;\n    timestemp;\n\n    constructor(temp, timestemp){\n        this.temp = temp;\n        this.timestemp = timestemp;\n    }\n\n    setTimestemp(newTimestemp) {\n        this.timestemp = newTimestemp;\n    };\n    setTemp(newTemp) {\n        this.Temp = newTemp;\n    };\n}\n\nclass Temperatures {\n    highestTemp;\n    lowestTemp;\n\n    constructor(firstTemp, timestemp) {\n        this.highestTemp = new Temp(firstTemp, timestemp);\n        this.lowestTemp = new Temp(firstTemp, timestemp);\n    }\n\n    returnObject(){\n        return {\n            highestTemp : this.highestTemp,\n            lowestTemp : this.lowestTemp\n        }\n    }\n\n};\n\nfunction CalculateTemperatures(array){\n    var tempDate;\n\n    for(let date = 1; date <= 31; date++){\n        let filteredArray = array.filter(function tempsOfDay(object, dateNum) {\n            if (object.timestemp > new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), dateNum) && object.timestemp > new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), dataNum + 1)) {\n                return object;\n            }\n        });\n\n        let avarageTemp = CalculateAvarage(filteredArray);\n        let timestemp = new Date(array[0].timestemp.getFullYear(), array[0].timestemp.getMonth(), date)\n\n        if(date == 1){\n            tempDate = new Temperatures(avarageTemp, timestemp);\n        }else{\n            if (avarageTemp > tempDate.highestTemp.temp) {\n                tempDate.highestTemp.setTemp(avarageTemp);\n                tempDate.highestTemp.setTimestemp(timestemp);\n            }\n            if (avarageTemp < tempDate.lowestTemp.temp) {\n                tempDate.highestTemp.setTemp(avarageTemp);\n                tempDate.highestTemp.setTimestemp(timestemp);\n            }\n        }\n        \n\n    }\n\n    function CalculateAvarage(array){\n        let count = 0;\n        let sumTemp = 0;\n        for(let index = 0; index < array.lenght; index++){\n            for(let i=0; i<array[index].temp.lenght; i++, count++){\n                sumTemp += array[index].temp[i];\n            }\n        }\n\n        return sumTemp/count;\n    }\n\n    return tempDate.returnObject();\n}\n\n\n\n\n\nmsg.payload = CalculateTemperatures(msg.payload);\nreturn msg;\n",
+        "func": "class Value {\n    value;\n    timestemp;\n\n    constructor(value, timestemp) {\n        this.value = value;\n        this.timestemp = timestemp;\n    }\n\n    setTimestemp(newTimestemp) {\n        this.timestemp = newTimestemp;\n    };\n    setValue(newValue) {\n        this.value = newValue;\n    };\n}\n\nclass HighAndLowValues {\n    highestValue;\n    lowestValue;\n\n    constructor(firstValue, timestemp) {\n        this.highestValue = new Value(firstValue, timestemp);\n        this.lowestValue = new Value(firstValue, timestemp);\n    }\n};\n\nclass Temperatures extends HighAndLowValues {\n    returnObject() {\n        return {\n            highestTemp: this.highestValue,\n            lowestTemp: this.lowestValue\n        };\n    }\n\n}\n\nfunction CalculateAvarageTemp(array) {\n    let count = 0;\n    let sumTemp = 0;\n    for (let index = 0; index < array.length; index++) {\n        for (let i = 0; i < array[index].temp.length; i++) {\n            sumTemp = sumTemp + array[index].temp[i];\n            count++;\n        }\n    }\n\n    return sumTemp / count;\n}\n\nfunction CalculateTemperatures(array){\n    var tempData;\n    \n    if (array === undefined || array.length == 0){   // if the DB returns an empty array\n        return {messageTemp : 'no temperature reveled in this month'};\n    }else{\n        for (let date = 1; date <= 31; date++) {\n            // filtered array is the array with all the temperatures in a day\n            let filteredArray = array.filter(function tempsOfDay(object) {\n                //if (typeof object !== 'undefined') {   \n                    if (object.timestemp > new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), date)\n                        && object.timestemp < new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), date + 1)) {\n                        return object;\n                    }\n                //}\n\n            });\n\n            if (filteredArray !== undefined && filteredArray.length != 0) {  //The day of the month could have dates with no data\n                let avarageTemp = CalculateAvarageTemp(filteredArray); \n                let timestemp = new Date(array[0].timestemp.getFullYear(), array[0].timestemp.getMonth(), date)\n\n                if (typeof tempData === 'undefined') {\n                    tempData = new Temperatures(avarageTemp, timestemp);\n                } else {\n                    if (avarageTemp > tempData.highestValue.value) {\n                        tempData.highestValue.setValue(avarageTemp);\n                        tempData.highestValue.setTimestemp(timestemp);\n                    }\n                    if (avarageTemp < tempData.lowestValue.value) {\n                        tempData.highestValue.setValue(avarageTemp);\n                        tempData.highestValue.setTimestemp(timestemp);\n                    }\n                }\n            }\n\n        }\n    }\n    return tempData.returnObject();\n    \n    \n}\n\n\n\n\n\nmsg.payload = CalculateTemperatures(msg.payload);\nreturn msg;\n",
         "outputs": 1,
-        "noerr": 11,
+        "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 870,
-        "y": 440,
+        "x": 890,
+        "y": 480,
         "wires": [
             [
-                "daba21feb266f058"
+                "502ff1f8d393b078"
             ]
         ]
     },
@@ -261,7 +214,7 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 170,
+        "x": 150,
         "y": 560,
         "wires": [
             [
@@ -273,36 +226,21 @@
         "id": "a697c28b69e4fa00",
         "type": "function",
         "z": "e0d233bea8e17753",
-        "name": "function 2",
-        "func": "const date = new Date();\n\nvar dateFilter;\n\nif (date.getDate() == 0 || true) {\n    dateFilter = {\n        timestemp: {\n            $gt: new Date(date.getFullYear(), date.getMonth() - 1),\n            $lt: new Date(date.getFullYear(), date.getMonth())\n        }\n    };\n    msg.payload = dateFilter\n    return msg ;\n\n}\n\n\n\n// quando devo fare diversi tipi di messaggio, li salvo in diversi db così il summary lo faccio tutto assieme\n\n\n\n",
+        "name": "query if is the first day of the month",
+        "func": "const date = new Date();\n\nvar dateFilter;\n\nif (date.getDate() == 1) {\n    dateFilter = {\n        timestemp: {\n            $gt: new Date(date.getFullYear(), date.getMonth() - 1),\n            $lt: new Date(date.getFullYear(), date.getMonth())\n        }\n    };\n    msg.payload = dateFilter\n    return msg ;\n\n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
+        "x": 380,
         "y": 560,
         "wires": [
             [
-                "cfa4b50c5ff946ba"
+                "e663d2e35285168c",
+                "2be2244bb4fc1d0a"
             ]
         ]
-    },
-    {
-        "id": "cfa4b50c5ff946ba",
-        "type": "debug",
-        "z": "e0d233bea8e17753",
-        "name": "debug 2",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 640,
-        "y": 500,
-        "wires": []
     },
     {
         "id": "502ff1f8d393b078",
@@ -310,7 +248,7 @@
         "z": "e0d233bea8e17753",
         "name": "",
         "mode": "custom",
-        "build": "object",
+        "build": "merged",
         "property": "payload",
         "propertyType": "msg",
         "key": "topic",
@@ -324,10 +262,12 @@
         "reduceInit": "",
         "reduceInitType": "",
         "reduceFixup": "",
-        "x": 670,
-        "y": 640,
+        "x": 1190,
+        "y": 560,
         "wires": [
-            []
+            [
+                "daba21feb266f058"
+            ]
         ]
     },
     {
@@ -385,6 +325,129 @@
             [
                 "4b8ce7f200a401a9"
             ]
+        ]
+    },
+    {
+        "id": "3d145a8a30315a15",
+        "type": "function",
+        "z": "e0d233bea8e17753",
+        "name": "Find highest and lowest humidity value",
+        "func": "class Value {\n    value;\n    timestemp;\n\n    constructor(value, timestemp) {\n        this.value = value;\n        this.timestemp = timestemp;\n    }\n\n    setTimestemp(newTimestemp) {\n        this.timestemp = newTimestemp;\n    };\n    setValue(newValue) {\n        this.value = newValue;\n    };\n}\n\nclass HighAndLowValues {\n    highestValue;\n    lowestValue;\n\n    constructor(firstValue, timestemp) {\n        this.highestValue = new Value(firstValue, timestemp);\n        this.lowestValue = new Value(firstValue, timestemp);\n    }\n};\n\nclass Humidities extends HighAndLowValues {\n    returnObject() {\n        return {\n            highestHumidity: this.highestValue,\n            lowestHumidity: this.lowestValue\n        };\n    }\n\n}\n\nfunction CalculateAvarageHumidity(array) {\n    let count = 0;\n    let sumHumidity = 0;\n    for (let index = 0; index < array.length; index++) {\n        for (let i = 0; i < array[index].humidity.length; i++) {\n            sumHumidity += + array[index].humidity[i];\n            count++;\n        }\n    }\n\n    return sumHumidity / count;\n}\n\nfunction CalculateTemperatures(array) {\n    var tempData;\n\n    if (array === undefined || array.length == 0) {   // if the DB returns an empty array\n        return { messageTemp: 'no humidity reveled in this month' };\n    } else {\n        for (let date = 1; date <= 31; date++) {\n            // filtered array is the array with all the temperatures in a day\n            let filteredArray = array.filter(function tempsOfDay(object) {\n                //if (typeof object !== 'undefined') {   \n                if (object.timestemp > new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), date)\n                    && object.timestemp < new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), date + 1)) {\n                    return object;\n                }\n                //}\n\n            });\n\n            if (filteredArray !== undefined && filteredArray.length != 0) {  //The day of the month could have dates with no data\n                let avarageHumidity = CalculateAvarageHumidity(filteredArray);\n                let timestemp = new Date(array[0].timestemp.getFullYear(), array[0].timestemp.getMonth(), date)\n\n                if (typeof tempData === 'undefined') {\n                    tempData = new Humidities(avarageHumidity, timestemp);\n                } else {\n                    if (avarageHumidity > tempData.highestValue.value) {\n                        tempData.highestValue.setValue(avarageHumidity);\n                        tempData.highestValue.setTimestemp(timestemp);\n                    }\n                    if (avarageHumidity < tempData.lowestValue.value) {\n                        tempData.highestValue.setValue(avarageHumidity);\n                        tempData.highestValue.setTimestemp(timestemp);\n                    }\n                }\n            }\n\n        }\n    }\n    return tempData.returnObject();\n\n\n}\n\n\n\n\n\nmsg.payload = CalculateTemperatures(msg.payload);\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 890,
+        "y": 640,
+        "wires": [
+            [
+                "502ff1f8d393b078"
+            ]
+        ]
+    },
+    {
+        "id": "3b9b18f318d93488",
+        "type": "debug",
+        "z": "e0d233bea8e17753",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 840,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "2be2244bb4fc1d0a",
+        "type": "mongodb4",
+        "z": "e0d233bea8e17753",
+        "clientNode": "4f2ce9e33f61eafc",
+        "mode": "collection",
+        "collection": "humidity",
+        "operation": "find",
+        "output": "toArray",
+        "handleDocId": false,
+        "name": "",
+        "x": 650,
+        "y": 640,
+        "wires": [
+            [
+                "3d145a8a30315a15"
+            ]
+        ]
+    },
+    {
+        "id": "d72fd9e67a43a5da",
+        "type": "function",
+        "z": "e0d233bea8e17753",
+        "name": "query of last three days",
+        "func": "const date = new Date();\n\nvar dateFilter;\n\nif (true) {\n    dateFilter = {\n        timestemp: {\n            $gt: new Date(date.getFullYear(), date.getMonth(), date.getDate()-3),\n            $lt: new Date(date.getFullYear(), date.getMonth(), date.getDate()+1)\n        }\n    };\n    msg.payload = dateFilter\n    return msg;\n\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 740,
+        "wires": [
+            [
+                "3b9b18f318d93488",
+                "e663d2e35285168c",
+                "2be2244bb4fc1d0a"
+            ]
+        ]
+    },
+    {
+        "id": "e3beeac47e5e4bcc",
+        "type": "mqtt in",
+        "z": "e0d233bea8e17753",
+        "name": "",
+        "topic": "iot/native/input",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "e0054114c2c88607",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 740,
+        "wires": [
+            [
+                "d72fd9e67a43a5da"
+            ]
+        ]
+    },
+    {
+        "id": "81ca41c27b91bc2f",
+        "type": "inject",
+        "z": "e0d233bea8e17753",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "5",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 940,
+        "wires": [
+            []
         ]
     }
 ]
