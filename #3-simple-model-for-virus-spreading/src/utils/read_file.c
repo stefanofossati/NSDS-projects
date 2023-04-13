@@ -2,7 +2,11 @@
 
 #include "read_file.h"
 
-
+/**
+ * This function reads form the config file and returns a struct with all the parameters
+ * @param file_name
+ * @return
+ */
 file_parameters_t get_parameters_form_file(char *file_name){
     FILE *file = fopen(file_name, "r");
 

@@ -1,11 +1,20 @@
 #include "linked_list.h"
 #include <stdlib.h>
 
+/**
+ * Initialization of a linked list
+ * @param list
+ */
 void linked_list_init(linked_list_t *list) {
     list->head = NULL;
     list->tail = NULL;
 }
 
+/**
+ * Add a element to the end of a linked list
+ * @param list
+ * @param person
+ */
 void linked_list_add(linked_list_t *list, person_t *person) {
     node_t *node = malloc(sizeof(node_t));
     node->person = person;
@@ -20,6 +29,11 @@ void linked_list_add(linked_list_t *list, person_t *person) {
     }
 }
 
+/**
+ * Removes an element form a linked_list
+ * @param list
+ * @param person
+ */
 void linked_list_remove(linked_list_t *list, person_t *person) {
     node_t *current = list->head;
     node_t *previous = NULL;
@@ -45,6 +59,10 @@ void linked_list_remove(linked_list_t *list, person_t *person) {
     }
 }
 
+/**
+ * Deletes a linked_list
+ * @param list
+ */
 void linked_list_free(linked_list_t *list) {
     node_t *current = list->head;
     node_t *next = NULL;
