@@ -5,9 +5,10 @@
 #include "utils/read_file.h"
 
 
-void main() {
+int main(int argc, char **argv) {
     file_parameters_t  param = get_parameters_form_file("config.txt");
 
     printf("param = %d", param.N);
 
+    return 0;
 }

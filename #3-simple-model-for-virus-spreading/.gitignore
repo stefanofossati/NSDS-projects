@@ -53,6 +53,8 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+### Project output
+output
 
 ### IDEs
 
