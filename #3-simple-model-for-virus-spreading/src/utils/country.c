@@ -16,6 +16,6 @@ int person_in_country(person_t *person, int W, int L, int w, int l) {
         }
     }
 
-    return country_x + country_y; // this is wrong
+    return country_x + country_y; //TODO this is wrong
 
 }

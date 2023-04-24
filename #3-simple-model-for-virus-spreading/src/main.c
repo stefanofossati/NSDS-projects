@@ -9,10 +9,10 @@
 #define LEADER 0
 
 int main(int argc, char **argv) {
+    printf("start initializaion\n");
     file_parameters_t  param = get_parameters_form_file("config.txt");
 
     MPI_Init(NULL, NULL);
-
 
     int my_rank, world_size;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
@@ -31,15 +31,15 @@ int main(int argc, char **argv) {
     }
 
     //Maybe check in the number of individuals is divisible by the number of processes
-    init_config_t init_config = set_init_config((int)param.N/world_size, (int)param.I/world_size, param.W, param.L, param.w, param.l);
+    //init_config_t init_config = set_init_config((int)param.N/world_size, (int)param.I/world_size, param.W, param.L, param.w, param.l);
     MPI_Datatype mpi_init_config = create_mpi_init_config();
 
 
     /* Broadcast the configuration to all processes */
-    MPI_Bcast(&init_config, 1, mpi_init_config, 0, MPI_COMM_WORLD);
+    //MPI_Bcast(&init_config, 1, mpi_init_config, 0, MPI_COMM_WORLD);
 
-    printf("my rank % d, init_config: N = %d, I = %d, W = %d, L = %d, w = %d, l = %d\n", my_rank, init_config.total_people, init_config.infected_people, init_config.W, init_config.L, init_config.w, init_config.l);
+    //printf("my rank % d, init_config: N = %d, I = %d, W = %d, L = %d, w = %d, l = %d\n", my_rank, init_config.total_people, init_config.infected_people, init_config.W, init_config.L, init_config.w, init_config.l);
 
-
-    return 0;
+    MPI_Type_free(&mpi_init_config);
+    MPI_Finalize();
 }

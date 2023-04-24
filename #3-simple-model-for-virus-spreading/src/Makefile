@@ -2,6 +2,7 @@ CC = mpicc
 CFLAGS = -Wall #-Wall = shows the error and warning messages
 LDLIBS = -lm #math library
 OUTPUT_DIR = output
+.SUFFIXES: exec
 
 exec = main
 objects = main.o read_file.o person.o mpi_datatypes.o init_config.o
@@ -15,21 +16,22 @@ init_config.o: utils/init_config.c utils/init_config.h
 read_file.o: utils/read_file.c utils/read_file.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $(OUTPUT_DIR)/$@
 
-mpi_datatypes.o: utils/mpi_datatypes.c utils/mpi_datatypes.h
+mpi_datatypes.o: utils/mpi_datatypes.c utils/mpi_datatypes.h utils/init_config.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $(OUTPUT_DIR)/$@
 
 person.o: utils/person.c utils/person.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $(OUTPUT_DIR)/$@
 
-main.o: main.c utils/read_file.h utils/person.h utils/mpi_datatypes.h utils/init_config.h
+main.o: main.c utils/read_file.h  utils/mpi_datatypes.h utils/init_config.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $(OUTPUT_DIR)/$@
 
-run: $(exec)
+build: $(exec)
 
 all:
 	mkdir -p $(OUTPUT_DIR)
 
-
+run:
+	cd $(OUTPUT_DIR) && mpirun -np 4 ./main
 
 clean:
 	rm -rf $(OUTPUT_DIR)
