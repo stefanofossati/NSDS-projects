@@ -10,7 +10,7 @@ MPI_Datatype create_mpi_init_config(){
     /*
      * MPI_INIT (6 elements)
      */
-    int num_blocks = 1;
+    int num_blocks = 6;
     int block_lengths[] = {1, 1, 1, 1, 1, 1};
 
     MPI_Aint displacements[] = {
@@ -24,9 +24,14 @@ MPI_Datatype create_mpi_init_config(){
 
     MPI_Datatype block_types[] = {
             MPI_INT,
+            MPI_INT,
+            MPI_INT,
+            MPI_INT,
+            MPI_INT,
+            MPI_INT
     };
 
-    MPI_Type_create_struct(num_blocks, block_lengths, displacements, block_types, &init_config);
+    MPI_Type_create_struct(num_blocks, block_lengths, displacements, block_types, &mpi_init_config);
     MPI_Type_commit(&mpi_init_config);
 
     return mpi_init_config;
