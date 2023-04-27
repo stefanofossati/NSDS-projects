@@ -10,7 +10,7 @@
 #include "utils/person.h"
 
 #define LEADER 0
-#define TOTAL_TIME 10000
+#define TOTAL_TIME 10
 
 /* Function prototypes */
 
@@ -81,6 +81,39 @@ int main(int argc, char **argv) {
         update_position_list(&init_config, non_infected_list);
         update_position_list(&init_config, infected_list);
 
+        int number_amount;
+
+        if(my_rank == LEADER){
+            int i = 1;
+            while(i<world_size){
+                MPI_Status status;
+
+                MPI_Probe(i, 0, MPI_COMM_WORLD, &status);
+
+                // When probe returns, the status object has the size and other
+                // attributes of the incoming message. Get the message size
+                MPI_Get_count(&status, MPI_INT, &number_amount);
+
+
+                // Allocate a buffer to hold the incoming numbers
+                int* number_buf = (int*)malloc(sizeof(int) * number_amount);
+
+                // Now receive the message with the allocated buffer
+                MPI_Recv(number_buf, number_amount, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                printf("Leader dynamically received %d numbers from %d.\n", number_amount, i);
+                free(number_buf);
+                i++;
+            }
+        }else{
+            const int MAX_NUMBERS = 100;
+            int numbers[MAX_NUMBERS];
+            // Pick a random amount of integers to send to process one
+            number_amount = (rand() / (float)RAND_MAX) * MAX_NUMBERS;
+
+            // Send the random amount of integers to process one
+            MPI_Send(numbers, number_amount, MPI_INT, 0, 0, MPI_COMM_WORLD);
+            printf("%d sent %d numbers to to leader\n", my_rank, number_amount);
+        }
 
         current_time += init_config.t;
     }
