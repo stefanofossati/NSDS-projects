@@ -4,13 +4,16 @@
 
 #include "utils/read_file.h"
 #include "utils/init_config.h"
+#include "utils/linked_list.h"
 #include "utils/mpi_datatypes.h"
 
 #define LEADER 0
 
+/* Function prototypes */
+
+void update_position(init_config_t *init_config, linked_list_t *people_list);
+
 int main(int argc, char **argv) {
-    printf("start initializaion\n");
-    file_parameters_t  param = get_parameters_form_file("../config.txt");
 
     MPI_Init(NULL, NULL);
 
@@ -23,6 +26,9 @@ int main(int argc, char **argv) {
 
     init_config_t init_config;
     if(my_rank == LEADER){
+        printf("start initializaion\n");
+        file_parameters_t  param = get_parameters_form_file("../config.txt");
+
         if(!check_parameters(&param)){
             printf("Error in parameters");
             MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
@@ -38,7 +44,7 @@ int main(int argc, char **argv) {
     /* Broadcast the configuration to all processes */
     MPI_Bcast(&init_config, 1, mpi_init_config, 0, MPI_COMM_WORLD);
 
-    printf("my rank % d, init_config: N = %d, I = %d, W = %d, L = %d, w = %d, l = %d\n", my_rank, init_config.total_people, init_config.infected_people, init_config.W, init_config.L, init_config.w, init_config.l);
+    printf("My rank % d, init_config: N = %d, I = %d, W = %d, L = %d, w = %d, l = %d\n", my_rank, init_config.total_people, init_config.infected_people, init_config.W, init_config.L, init_config.w, init_config.l);
 
     MPI_Type_free(&mpi_init_config);
     MPI_Finalize();

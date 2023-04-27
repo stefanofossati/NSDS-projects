@@ -10,7 +10,7 @@
  * @param max_y
  * @return
  */
-person_t *create_person( status_t status, float max_x, float max_y) {
+person_t *create_person(status_t status, float max_x, float max_y) {
     person_t *person = malloc(sizeof(person_t));
     person->status = status;
     switch (status) {
