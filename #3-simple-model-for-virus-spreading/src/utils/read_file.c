@@ -8,7 +8,7 @@
  * @param file_name
  * @return
  */
-file_parameters_t get_parameters_form_file(char *file_name){
+file_parameters_t get_parameters_from_file(char *file_name){
     FILE *file = fopen(file_name, "r");
 
     if(file == NULL){
@@ -30,7 +30,7 @@ file_parameters_t get_parameters_form_file(char *file_name){
 }
 
 bool check_parameters(file_parameters_t *parameters){
-    // The parameters must be graeter than 0
+    // The parameters must be greater than 0
     if(parameters->N <= 0){
         printf("N must be greater than 0");
         return false;

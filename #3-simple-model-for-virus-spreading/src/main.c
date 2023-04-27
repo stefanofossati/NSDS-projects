@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 #include <time.h>
+#include <string.h>
 
 #include "utils/read_file.h"
 #include "utils/init_config.h"
@@ -10,11 +11,11 @@
 #include "utils/person.h"
 
 #define LEADER 0
-#define TOTAL_TIME 10
+#define TOTAL_TIME 100000000
 
 /* Function prototypes */
 
-
+person_t *merge_people_arrays(person_t *infected_people, person_t *received_infected_people, int infected_people_size, int received_infected_people_size);
 
 int main(int argc, char **argv) {
 
@@ -41,7 +42,7 @@ int main(int argc, char **argv) {
     init_config_t init_config;
     if(my_rank == LEADER){
         printf("start initializaion\n");
-        param = get_parameters_form_file("../config.txt");
+        param = get_parameters_from_file("../config.txt");
 
         if(!check_parameters(&param)){
             printf("Error in parameters");
@@ -87,9 +88,11 @@ int main(int argc, char **argv) {
         person_t *infected_array = linked_list_to_array(infected_list);
 
         int number_amount;
+        int infected_num;
 
         if(my_rank == LEADER){
             int i = 1;
+            infected_num = get_linked_list_length(infected_list);
             while(i<world_size){
                 MPI_Status status;
 
@@ -99,23 +102,33 @@ int main(int argc, char **argv) {
                 // attributes of the incoming message. Get the message size
                 MPI_Get_count(&status, MPI_PERSON, &number_amount);
 
-
                 // Allocate a buffer to hold the incoming people
                 person_t *people_buf = (person_t *)malloc(number_amount * sizeof(person_t));
 
                 // Now receive the message with the allocated buffer
                 MPI_Recv(people_buf, number_amount, MPI_PERSON, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+                // Merge the received people with the infected array
+                infected_array = merge_people_arrays(infected_array, people_buf, infected_num, number_amount);
+                infected_num += number_amount;
+
                 printf("Leader dynamically received %d infected people from %d at time %d.\n", number_amount, i, current_time);
                 free(people_buf);
                 i++;
             }
-        }else{
+
+            printf("Leader has %d infected people at time %d.\n", infected_num, current_time);
+        } else{
             number_amount = get_linked_list_length(infected_list);
             // Send the infected people array to the leader
             MPI_Send(infected_array, number_amount, MPI_PERSON, 0, 0, MPI_COMM_WORLD);
             // printf("%d sent %d infected people to to leader\n", my_rank, number_amount);
         }
 
+        // Send the merged array of infected people to all processes
+        // MPI_Bcast(infected_array, infected_num, MPI_PERSON, 0, MPI_COMM_WORLD);
+
+        free(infected_array);
         current_time += init_config.t;
     }
     // printf("POST: my rank: %d, position a: x=%f, y=%f\n", my_rank, non_infected_list->head->person->position.x, non_infected_list->head->person->position.y);
@@ -126,4 +139,14 @@ int main(int argc, char **argv) {
     MPI_Type_free(&MPI_POSITION);
     MPI_Type_free(&MPI_PERSON);
     MPI_Finalize();
+}
+
+person_t *merge_people_arrays(person_t *infected_people, person_t *received_infected_people, int infected_people_size, int received_infected_people_size){
+    person_t *merged_people = (person_t *)malloc((infected_people_size + received_infected_people_size) * sizeof(person_t));
+    
+    memcpy(merged_people, infected_people, infected_people_size * sizeof(person_t));
+    memcpy(merged_people + infected_people_size, received_infected_people, received_infected_people_size * sizeof(person_t));
+
+    free(infected_people);
+    return merged_people;
 }
