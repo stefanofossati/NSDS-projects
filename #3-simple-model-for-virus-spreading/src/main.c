@@ -33,7 +33,9 @@ int main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
     // Create MPI_Datatypes
-    MPI_Datatype mpi_init_config = create_mpi_init_config();
+    MPI_Datatype MPI_INIT_CONFIG = create_mpi_init_config();
+    MPI_Datatype MPI_POSITION = create_mpi_position();
+    MPI_Datatype MPI_PERSON = create_mpi_person(MPI_POSITION);
 
     file_parameters_t param;
     init_config_t init_config;
@@ -55,7 +57,7 @@ int main(int argc, char **argv) {
         }
 
     /* Broadcast the configuration to all processes */
-    MPI_Bcast(&init_config, 1, mpi_init_config, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&init_config, 1, MPI_INIT_CONFIG, 0, MPI_COMM_WORLD);
 
     if(my_rank == LEADER) {
         init_config = set_init_config((int) param.N / world_size + param.N % world_size,
@@ -81,6 +83,9 @@ int main(int argc, char **argv) {
         update_position_list(&init_config, non_infected_list);
         update_position_list(&init_config, infected_list);
 
+        // Convert the linked list to an array
+        person_t *infected_array = linked_list_to_array(infected_list);
+
         int number_amount;
 
         if(my_rank == LEADER){
@@ -92,35 +97,33 @@ int main(int argc, char **argv) {
 
                 // When probe returns, the status object has the size and other
                 // attributes of the incoming message. Get the message size
-                MPI_Get_count(&status, MPI_INT, &number_amount);
+                MPI_Get_count(&status, MPI_PERSON, &number_amount);
 
 
-                // Allocate a buffer to hold the incoming numbers
-                int* number_buf = (int*)malloc(sizeof(int) * number_amount);
+                // Allocate a buffer to hold the incoming people
+                person_t *people_buf = (person_t *)malloc(number_amount * sizeof(person_t));
 
                 // Now receive the message with the allocated buffer
-                MPI_Recv(number_buf, number_amount, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-                printf("Leader dynamically received %d numbers from %d.\n", number_amount, i);
-                free(number_buf);
+                MPI_Recv(people_buf, number_amount, MPI_PERSON, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                printf("Leader dynamically received %d infected people from %d at time %d.\n", number_amount, i, current_time);
+                free(people_buf);
                 i++;
             }
         }else{
-            const int MAX_NUMBERS = 100;
-            int numbers[MAX_NUMBERS];
-            // Pick a random amount of integers to send to process one
-            number_amount = (rand() / (float)RAND_MAX) * MAX_NUMBERS;
-
-            // Send the random amount of integers to process one
-            MPI_Send(numbers, number_amount, MPI_INT, 0, 0, MPI_COMM_WORLD);
-            printf("%d sent %d numbers to to leader\n", my_rank, number_amount);
+            number_amount = get_linked_list_length(infected_list);
+            // Send the infected people array to the leader
+            MPI_Send(infected_array, number_amount, MPI_PERSON, 0, 0, MPI_COMM_WORLD);
+            // printf("%d sent %d infected people to to leader\n", my_rank, number_amount);
         }
 
         current_time += init_config.t;
     }
-    printf("POST: my rank: %d, position a: x=%f, y=%f\n", my_rank, non_infected_list->head->person->position.x, non_infected_list->head->person->position.y);
-    printf("POST: my rank: %d, position b: x=%f, y=%f\n", my_rank, non_infected_list->head->next->person->position.x, non_infected_list->head->next->person->position.y);
+    // printf("POST: my rank: %d, position a: x=%f, y=%f\n", my_rank, non_infected_list->head->person->position.x, non_infected_list->head->person->position.y);
+    // printf("POST: my rank: %d, position b: x=%f, y=%f\n", my_rank, non_infected_list->head->next->person->position.x, non_infected_list->head->next->person->position.y);
 
 
-    MPI_Type_free(&mpi_init_config);
+    MPI_Type_free(&MPI_INIT_CONFIG);
+    MPI_Type_free(&MPI_POSITION);
+    MPI_Type_free(&MPI_PERSON);
     MPI_Finalize();
 }

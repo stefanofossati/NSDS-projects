@@ -5,4 +5,8 @@
 
 MPI_Datatype create_mpi_init_config();
 
+MPI_Datatype create_mpi_position();
+
+MPI_Datatype create_mpi_person(MPI_Datatype MPI_POSITION);
+
 #endif //MPI_DATATYPES_H

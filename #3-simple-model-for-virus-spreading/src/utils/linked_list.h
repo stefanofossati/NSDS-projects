@@ -30,6 +30,7 @@ int get_linked_list_length(linked_list_t *list);
  */
 
 linked_list_t *create_people_linked_list(int num_people, status_t status, float max_x, float max_y);
+person_t *linked_list_to_array(linked_list_t *list);
 void update_position_list(init_config_t *init_config, linked_list_t *people_list);
 
 #endif //LINKEDLIST_H

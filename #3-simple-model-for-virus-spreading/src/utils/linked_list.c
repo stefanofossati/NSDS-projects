@@ -109,6 +109,22 @@ linked_list_t *create_people_linked_list(int num_people, status_t status, float 
     return people_list;
 }
 
+person_t *linked_list_to_array(linked_list_t *list){
+    int length = get_linked_list_length(list);
+    person_t *people_array = malloc(sizeof(person_t) * length);
+
+    node_t *current = list->head;
+    int i = 0;
+
+    while (current != NULL) {
+        people_array[i] = *current->person;
+        current = current->next;
+        i++;
+    }
+
+    return people_array;
+}
+
 void update_position_list(init_config_t *init_config, linked_list_t *people_list){
     node_t *current = people_list->head;
     int theta;
