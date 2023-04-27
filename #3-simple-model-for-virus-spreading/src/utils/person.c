@@ -59,3 +59,4 @@ void update_person_position(person_t *person, float velocity, int delta_time, in
     person->position.x = new_pos_x;
     person->position.y = new_pos_y;
 }
+

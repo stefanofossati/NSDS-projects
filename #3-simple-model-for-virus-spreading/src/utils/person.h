@@ -23,4 +23,5 @@ person_t *create_person( status_t status, float max_x, float max_y);
 
 void update_person_position(person_t *person, float velocity, int delta_time, int theta, float max_x, float max_y);
 
+
 #endif //PERSON_H
