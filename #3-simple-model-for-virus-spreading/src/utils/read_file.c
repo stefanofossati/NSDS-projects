@@ -26,6 +26,8 @@ file_parameters_t get_parameters_from_file(char *file_name){
     fscanf(file, "d = %d\n", &parameters->d);
     fscanf(file, "t = %d\n", &parameters->t);
 
+    fclose(file);
+
     return *parameters;
 }
 

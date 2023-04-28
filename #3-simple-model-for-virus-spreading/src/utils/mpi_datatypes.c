@@ -12,7 +12,7 @@ MPI_Datatype create_mpi_init_config(){
      * MPI_INIT (9 elements)
      */
     int num_blocks = 9;
-    int block_lengths[] = {1, 1, 1, 1, 1, 1, 1, 1,1};
+    int block_lengths[] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
     MPI_Aint displacements[] = {
             (size_t) & (init_config.total_people) - (size_t) & init_config,
