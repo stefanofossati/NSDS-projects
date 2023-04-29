@@ -100,3 +100,5 @@ void reset_non_infected_timer(person_t *person){
     }
 }
 
+
+

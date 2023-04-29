@@ -8,7 +8,7 @@
  * @return
  */
 linked_list_t *create_linked_list() {
-    linked_list_t *list = malloc(sizeof(linked_list_t));
+    linked_list_t *list = calloc(1,sizeof(linked_list_t));
     list->head = NULL;
     list->tail = NULL;
 
@@ -20,9 +20,21 @@ linked_list_t *create_linked_list() {
  * @param list
  * @param person
  */
-void linked_list_add(linked_list_t *list, person_t *person) {
-    node_t *node = malloc(sizeof(node_t));
+void linked_list_add_person(linked_list_t *list, person_t *person) {
+    node_t *node = calloc(1,sizeof(node_t));
     node->person = person;
+    node->next = NULL;
+
+    if (list->head == NULL) {
+        list->head = node;
+        list->tail = node;
+    } else {
+        list->tail->next = node;
+        list->tail = node;
+    }
+}
+
+void linked_list_add_node(linked_list_t *list, node_t *node) {
     node->next = NULL;
 
     if (list->head == NULL) {
@@ -39,7 +51,7 @@ void linked_list_add(linked_list_t *list, person_t *person) {
  * @param list
  * @param person
  */
-person_t *linked_list_remove(linked_list_t *list, person_t *person) {
+person_t *linked_list_remove_person(linked_list_t *list, person_t *person) {
     node_t *current = list->head;
     node_t *previous = NULL;
 
@@ -105,7 +117,7 @@ linked_list_t *create_people_linked_list(int num_people, status_t status, float 
 
     for(int i=0; i<num_people; i++){
         person_t *person = create_person(status, max_x, max_y);
-        linked_list_add(people_list, person);
+        linked_list_add_person(people_list, person);
     }
 
     return people_list;
@@ -113,7 +125,7 @@ linked_list_t *create_people_linked_list(int num_people, status_t status, float 
 
 person_t *linked_list_to_array(linked_list_t *list){
     int length = get_linked_list_length(list);
-    person_t *people_array = malloc(sizeof(person_t) * length);
+    person_t *people_array = calloc(  length, sizeof(person_t));
 
     node_t *current = list->head;
     int i = 0;
@@ -135,6 +147,28 @@ void update_position_list(init_config_t *init_config, linked_list_t *people_list
         theta = rand() % 360;
         update_person_position(current->person, init_config->v, init_config->t, theta, init_config->L, init_config->W);
         current = current->next;
+    }
+}
+
+void move_people_in_list(linked_list_t *from_list, linked_list_t *to_list, status_t check){
+    node_t *current_node = from_list->head;
+    node_t *next_node = from_list->head->next;
+    node_t *previous_node = NULL;
+
+    while(current_node != NULL){
+        next_node = current_node->next;
+        if(current_node->person->status == check){
+            current_node->next =NULL;
+            if(previous_node == NULL){
+                from_list->head = next_node;
+            }else{
+                previous_node->next = next_node;
+            }
+            linked_list_add_node(to_list, current_node);
+        }else{
+            previous_node = current_node;
+        }
+        current_node = next_node;
     }
 }
 

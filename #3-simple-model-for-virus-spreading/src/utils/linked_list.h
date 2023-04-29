@@ -16,9 +16,10 @@ typedef struct linked_list {
 
 linked_list_t *create_linked_list();
 
-void linked_list_add(linked_list_t *list, person_t *person);
+void linked_list_add_person(linked_list_t *list, person_t *person);
 
-person_t *linked_list_remove(linked_list_t *list, person_t *person);
+void linked_list_add_node(linked_list_t *list, node_t *node);
+person_t *linked_list_remove_person(linked_list_t *list, person_t *person);
 
 void linked_list_free(linked_list_t *list);
 
@@ -32,5 +33,6 @@ int get_linked_list_length(linked_list_t *list);
 linked_list_t *create_people_linked_list(int num_people, status_t status, float max_x, float max_y);
 person_t *linked_list_to_array(linked_list_t *list);
 void update_position_list(init_config_t *init_config, linked_list_t *people_list);
+void move_people_in_list(linked_list_t *from_list, linked_list_t *to_list, status_t check);
 
 #endif //LINKEDLIST_H

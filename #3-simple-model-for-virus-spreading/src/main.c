@@ -11,7 +11,7 @@
 #include "utils/person.h"
 
 #define LEADER 0
-#define TOTAL_TIME 10000
+#define TOTAL_TIME 100000
 
 /* Function prototypes */
 
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
         // Convert the linked list to an array
         person_t *infected_array = linked_list_to_array(infected_list);
 
-        person_t *received_infected_array = (person_t *)malloc(sizeof(person_t) * init_config.total_people);
+        person_t *received_infected_array = (person_t *)calloc(init_config.total_people,sizeof(person_t));
 
         int number_amount;
         int infected_num;
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
                 MPI_Get_count(&status, MPI_PERSON, &number_amount);
 
                 // Allocate a buffer to hold the incoming people
-                person_t *people_buf = (person_t *)malloc(number_amount * sizeof(person_t));
+                person_t *people_buf = (person_t *)calloc(number_amount, sizeof(person_t));
 
                 // Now receive the message with the allocated buffer
                 MPI_Recv(people_buf, number_amount, MPI_PERSON, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -161,31 +161,34 @@ int main(int argc, char **argv) {
         printf("I'm process %d and I am alive after broadcast.\n", my_rank);
 
         // TO VERIFY WHETHER THEY ARE LEGITIMATE    
-        free(infected_array);  // I can free bacause I don't need infected_array
+        free(infected_array);  // I can free because I don't need infected_array
 
-        // Update people status
+        // Update non infected people list status
         node_t *current_non_infected_node = non_infected_list->head;
 
         while(current_non_infected_node != NULL){
             // update status immune people
             if(current_non_infected_node->person->status == IMMUNE){
-                current_non_infected_node->person->status_timer -= init_config.t;
-                change_status(current_non_infected_node->person);
+                current_non_infected_node->person->status_timer -= init_config.t;  // decrement timer of immune people
+                change_status(current_non_infected_node->person);  //check if the status has to be changed
             }else if(current_non_infected_node->person->status == NON_INFECTED){
                 // update status non infected people
-                for(int k=0; k<infected_num; k++){
+                for(int k=0; k<infected_num; k++){  // check that the non infected people are near an almost one infected person
                     if(infected_is_near(current_non_infected_node->person, &received_infected_array[k], init_config.d)){
-                        current_non_infected_node->person->status_timer -= init_config.t;
-                        change_status(current_non_infected_node->person);
+                        current_non_infected_node->person->status_timer -= init_config.t; // decrement timer of non infected people
+                        change_status(current_non_infected_node->person);   //check if the status has to be changed
+                        break;  // ones an infected person is near the non infected, I can break the loop
                     }else{
-                        reset_non_infected_timer(current_non_infected_node->person);
+                        reset_non_infected_timer(current_non_infected_node->person); // reset timer of non infected people
                     }
                 }
             }
-            current_non_infected_node = current_non_infected_node->next;
+            current_non_infected_node = current_non_infected_node->next; // go to the next non infected person
         }
 
+        //change infected people list status
         node_t *current_infected_node = infected_list->head;
+        // check if the infected people have to change status
         while(current_infected_node!=NULL){
             if(current_infected_node->person->status == INFECTED){
                 current_infected_node->person->status_timer -= init_config.t;
@@ -195,27 +198,11 @@ int main(int argc, char **argv) {
         }
 
 
-        // Move infected people to infected_list
-        current_non_infected_node = non_infected_list->head;
-        while(current_non_infected_node != NULL){
-            node_t *next_node = current_non_infected_node->next;
-            if(current_non_infected_node->person->status == INFECTED){
-                person_t *new_person_status = linked_list_remove(non_infected_list, current_non_infected_node->person);  // stiamo già scorrendo, probabilmente è ottimizzabile
-                linked_list_add(infected_list, new_person_status);
-            }
-            current_non_infected_node = next_node;
-        }
+        // Move infected people from non_infected list to infected_list
+        move_people_in_list(non_infected_list, infected_list, INFECTED);
 
-        //Move immune people to non_infected_list
-        current_infected_node = infected_list->head;
-        while(current_infected_node != NULL){
-            node_t *next_node = current_infected_node->next;
-            if(current_infected_node->person->status == IMMUNE){
-                person_t *new_person_status = linked_list_remove(infected_list, current_infected_node->person); // stiamo già scorrendo, probabilmente è ottimizzabile
-                linked_list_add(non_infected_list, new_person_status);
-            }
-            current_infected_node = next_node;
-        }
+        //Move immune people from infected_list to non_infected_list
+        move_people_in_list(infected_list, non_infected_list, IMMUNE);
 
         printf("The processes must be updated.\n");
         for(int j=0; j< world_size; j++){
@@ -239,7 +226,7 @@ int main(int argc, char **argv) {
 }
 
 person_t *merge_people_arrays(person_t *infected_people, person_t *received_infected_people, int infected_people_size, int received_infected_people_size){
-    person_t *merged_people = (person_t *)malloc((infected_people_size + received_infected_people_size) * sizeof(person_t));
+    person_t *merged_people = (person_t *)calloc((infected_people_size + received_infected_people_size), sizeof(person_t));
     
     if(merged_people == NULL){
         printf("Error allocating memory for merged people array\n");
