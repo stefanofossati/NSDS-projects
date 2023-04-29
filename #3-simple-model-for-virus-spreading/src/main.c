@@ -11,7 +11,7 @@
 #include "utils/person.h"
 
 #define LEADER 0
-#define TOTAL_TIME 10
+#define TOTAL_TIME 10000
 
 /* Function prototypes */
 
@@ -161,11 +161,74 @@ int main(int argc, char **argv) {
         printf("I'm process %d and I am alive after broadcast.\n", my_rank);
 
         // TO VERIFY WHETHER THEY ARE LEGITIMATE    
-        free(infected_array);
+        free(infected_array);  // I can free bacause I don't need infected_array
+
+        // Update people status
+        node_t *current_non_infected_node = non_infected_list->head;
+
+        while(current_non_infected_node != NULL){
+            // update status immune people
+            if(current_non_infected_node->person->status == IMMUNE){
+                current_non_infected_node->person->status_timer -= init_config.t;
+                change_status(current_non_infected_node->person);
+            }else if(current_non_infected_node->person->status == NON_INFECTED){
+                // update status non infected people
+                for(int k=0; k<infected_num; k++){
+                    if(infected_is_near(current_non_infected_node->person, &received_infected_array[k], init_config.d)){
+                        current_non_infected_node->person->status_timer -= init_config.t;
+                        change_status(current_non_infected_node->person);
+                    }else{
+                        reset_non_infected_timer(current_non_infected_node->person);
+                    }
+                }
+            }
+            current_non_infected_node = current_non_infected_node->next;
+        }
+
+        node_t *current_infected_node = infected_list->head;
+        while(current_infected_node!=NULL){
+            if(current_infected_node->person->status == INFECTED){
+                current_infected_node->person->status_timer -= init_config.t;
+                change_status(current_infected_node->person);
+            }
+            current_infected_node = current_infected_node->next;
+        }
+
+
+        // Move infected people to infected_list
+        current_non_infected_node = non_infected_list->head;
+        while(current_non_infected_node != NULL){
+            node_t *next_node = current_non_infected_node->next;
+            if(current_non_infected_node->person->status == INFECTED){
+                person_t *new_person_status = linked_list_remove(non_infected_list, current_non_infected_node->person);
+                linked_list_add(infected_list, new_person_status);
+            }
+            current_non_infected_node = next_node;
+        }
+
+        //Move immune people to non_infected_list
+        current_infected_node = infected_list->head;
+        while(current_infected_node != NULL){
+            node_t *next_node = current_infected_node->next;
+            if(current_infected_node->person->status == IMMUNE){
+                person_t *new_person_status = linked_list_remove(infected_list, current_infected_node->person);
+                linked_list_add(non_infected_list, new_person_status);
+            }
+            current_infected_node = next_node;
+        }
+
+        printf("The processes must be updated.\n");
+        for(int j=0; j< world_size; j++){
+            printf("Process %d, infected_array: %d\n", my_rank, get_linked_list_length(infected_list) );
+        }
+
         free(received_infected_array);
 
         current_time += init_config.t;
+
+        MPI_Barrier(MPI_COMM_WORLD);
     }
+
     // printf("POST: my rank: %d, position a: x=%f, y=%f\n", my_rank, non_infected_list->head->person->position.x, non_infected_list->head->person->position.y);
     // printf("POST: my rank: %d, position b: x=%f, y=%f\n", my_rank, non_infected_list->head->next->person->position.x, non_infected_list->head->next->person->position.y);
 

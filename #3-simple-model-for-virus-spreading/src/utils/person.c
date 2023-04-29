@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include "person.h"
 
@@ -58,5 +59,44 @@ void update_person_position(person_t *person, float velocity, int delta_time, in
 
     person->position.x = new_pos_x;
     person->position.y = new_pos_y;
+}
+
+bool infected_is_near(person_t *person1, person_t *person2, float distance_param) {
+    float x1 = person1->position.x;
+    float y1 = person1->position.y;
+    float x2 = person2->position.x;
+    float y2 = person2->position.y;
+
+    float distance_x = x1 - x2;
+    float distance_y = y1 - y2;
+
+    float distance = sqrt(pow(distance_x, 2) + pow(distance_y, 2));
+
+    if(distance_param>= distance){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+void change_status(person_t *person){
+    if(person->status_timer <= 0){
+        if(person->status == INFECTED) {
+            person->status = IMMUNE;
+            person->status_timer = 28 * 3 * 24 * 60 * 60; // 28 days represent 1 month
+        }else if(person->status == IMMUNE){
+            person->status = NON_INFECTED;
+            person->status_timer = 10*60; // 10 minutes
+        }else{
+            person->status = INFECTED;
+            person->status_timer = 10*24*60*60; // 10 days
+        }
+    }
+}
+
+void reset_non_infected_timer(person_t *person){
+    if(person->status == NON_INFECTED){
+        person->status_timer = 10*60; // 10 minutes
+    }
 }
 
