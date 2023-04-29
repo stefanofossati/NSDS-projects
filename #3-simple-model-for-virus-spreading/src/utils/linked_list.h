@@ -19,7 +19,7 @@ linked_list_t *create_linked_list();
 void linked_list_add_person(linked_list_t *list, person_t *person);
 
 void linked_list_add_node(linked_list_t *list, node_t *node);
-person_t *linked_list_remove_person(linked_list_t *list, person_t *person);
+void linked_list_remove_person(linked_list_t *list, person_t *person);
 
 void linked_list_free(linked_list_t *list);
 

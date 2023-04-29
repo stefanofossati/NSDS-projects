@@ -1,18 +1,20 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <mpi.h>
 
 #include "read_file.h"
+#include "log.h"
 
 /**
  * This function reads form the config file and returns a struct with all the parameters
  * @param file_name
  * @return
  */
-file_parameters_t get_parameters_from_file(char *file_name){
+file_parameters_t get_parameters_from_file(char *file_name, int priority_log){
     FILE *file = fopen(file_name, "r");
 
     if(file == NULL){
-        printf("Error in opening file");
+        log_message(ERROR, "Error in opening file", priority_log);
         //MPI ABORT
     }
 

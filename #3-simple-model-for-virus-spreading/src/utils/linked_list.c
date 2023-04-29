@@ -51,7 +51,7 @@ void linked_list_add_node(linked_list_t *list, node_t *node) {
  * @param list
  * @param person
  */
-person_t *linked_list_remove_person(linked_list_t *list, person_t *person) {
+void linked_list_remove_person(linked_list_t *list, person_t *person) {
     node_t *current = list->head;
     node_t *previous = NULL;
 
@@ -68,14 +68,11 @@ person_t *linked_list_remove_person(linked_list_t *list, person_t *person) {
             }
 
             free(current);
-
-            return current->person;
         }
 
         previous = current;
         current = current->next;
     }
-    return NULL;
 }
 
 /**
