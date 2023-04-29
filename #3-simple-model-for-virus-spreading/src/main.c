@@ -200,7 +200,7 @@ int main(int argc, char **argv) {
         while(current_non_infected_node != NULL){
             node_t *next_node = current_non_infected_node->next;
             if(current_non_infected_node->person->status == INFECTED){
-                person_t *new_person_status = linked_list_remove(non_infected_list, current_non_infected_node->person);
+                person_t *new_person_status = linked_list_remove(non_infected_list, current_non_infected_node->person);  // stiamo già scorrendo, probabilmente è ottimizzabile
                 linked_list_add(infected_list, new_person_status);
             }
             current_non_infected_node = next_node;
@@ -211,7 +211,7 @@ int main(int argc, char **argv) {
         while(current_infected_node != NULL){
             node_t *next_node = current_infected_node->next;
             if(current_infected_node->person->status == IMMUNE){
-                person_t *new_person_status = linked_list_remove(infected_list, current_infected_node->person);
+                person_t *new_person_status = linked_list_remove(infected_list, current_infected_node->person); // stiamo già scorrendo, probabilmente è ottimizzabile
                 linked_list_add(non_infected_list, new_person_status);
             }
             current_infected_node = next_node;
