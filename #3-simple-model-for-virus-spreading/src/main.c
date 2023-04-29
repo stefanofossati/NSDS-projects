@@ -73,6 +73,7 @@ int main(int argc, char **argv) {
     linked_list_t *non_infected_list = create_people_linked_list(init_config.total_people - init_config.infected_people, NON_INFECTED, init_config.W, init_config.L);
     linked_list_t *infected_list = create_people_linked_list(init_config.infected_people, INFECTED, init_config.W, init_config.L);
 
+
     //printf("my rank: %d, non-infected list length: %d, infected list length: %d\n", my_rank, get_linked_list_length(non_infected_list), get_linked_list_length(infected_list));
 
     //printf("my rank: %d, position a: x=%f, y=%f\n", my_rank, non_infected_list->head->person->position.x, non_infected_list->head->person->position.y);
@@ -132,7 +133,8 @@ int main(int argc, char **argv) {
 
             printf("Leader has %d infected people at time %d.\n", infected_num, current_time);
 
-            // printf("Position first infected: x=%f, y=%f\n", received_infected_array[0].position.x, received_infected_array[0].position.y);
+
+            printf("Position first infected: x=%f, y=%f\n", received_infected_array[0].position.x, received_infected_array[0].position.y);
             // printf("Position second infected: x=%f, y=%f\n", received_infected_array[1].position.x, received_infected_array[1].position.y);
             // printf("Position third infected: x=%f, y=%f\n", received_infected_array[2].position.x, received_infected_array[2].position.y);
             // printf("Position fourth infected: x=%f, y=%f\n", received_infected_array[3].position.x, received_infected_array[3].position.y);

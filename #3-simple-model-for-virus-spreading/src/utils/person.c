@@ -22,7 +22,7 @@ person_t *create_person(status_t status, float max_x, float max_y) {
             person->status_timer = 10*24*60*60; // 10 days
             break;
         case IMMUNE:
-            person->status_timer = 28*3*24*60*60; // 28 days represent 1 month
+            person->status_timer = 28*24*60*60; // 28 days represent 1 month
             break;
 
     }
