@@ -3,6 +3,7 @@
 #include "mpi_datatypes.h"
 #include "init_config.h"
 #include "person.h"
+#include "country.h"
 
 MPI_Datatype create_mpi_init_config(){
     MPI_Datatype mpi_init_config;
@@ -91,4 +92,29 @@ MPI_Datatype create_mpi_person(MPI_Datatype MPI_POSITION){
         MPI_Type_commit(&mpi_person);
 
         return mpi_person;
+}
+
+MPI_Datatype create_mpi_country_number(){
+        MPI_Datatype mpi_country_number;
+        country_number_t country_number;
+
+        int num_blocks = 3;
+        int block_lengths[] = {1, 1, 1};
+
+        MPI_Aint displacements[] = {
+                (size_t) & (country_number.non_infected_person) - (size_t) & country_number,
+                (size_t) & (country_number.infected_person) - (size_t) & country_number,
+                (size_t) & (country_number.immune_person) - (size_t) & country_number,
+        };
+
+        MPI_Datatype block_types[] = {
+                MPI_INT,
+                MPI_INT,
+                MPI_INT
+        };
+
+        MPI_Type_create_struct(num_blocks, block_lengths, displacements, block_types, &mpi_country_number);
+        MPI_Type_commit(&mpi_country_number);
+
+        return mpi_country_number;
 }
