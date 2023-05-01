@@ -86,3 +86,14 @@ bool check_parameters(file_parameters_t *parameters){
 
     return true;
 }
+
+void write_on_file(char *filename, country_number_t countries[], int total_length){
+    FILE *file = fopen(filename, "w");
+    fprintf(file, "country id, number of non infected people, number of infected people, number of immune people\n")
+    for(int i=0; i<total_length; i++){
+
+        fprintf(file, "%d, %d, %d, %d \n",i, countries[i].non_infected_person, countries[i].infected_person, countries[i].immune_person);
+
+    }
+    fclose(file);
+}

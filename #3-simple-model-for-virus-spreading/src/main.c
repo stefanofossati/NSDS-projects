@@ -240,14 +240,19 @@ int main(int argc, char **argv) {
                     merge_country_arrays(country_file_array, received_countries, init_config.W/init_config.w * init_config.L/init_config.l);
                 }
 
-                //write_on_file
+                void write_on_file("results.csv", country_file_array, init_config.W/init_config.w * init_config.L/init_config.l);
+
+                free(country_file_array);
             }else{
                 //send the country array to the leader
                 county_number_t *country_array_to_send = convert_to_array(countries, init_config.W/init_config.w, init_config.L/init_config.l);
 
                 MPI_Send(country_array, init_config.W/init_config.w * init_config.L/init_config.l, MPI_COUNTRY_NUMBER, LEADER, 0, MPI_COMM_WORLD);
+
+                free(country_array_to_send);
             }
 
+            free(countries);
             MPI_Barrier(MPI_COMM_WORLD);
         }*/
 
