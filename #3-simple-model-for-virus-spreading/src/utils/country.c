@@ -1,6 +1,6 @@
 #include "person.h"
 
-void person_in_country(person_t *person, int W, int L, int w, int l, country_number_t countries[][]) {
+void person_in_country(person_t *person, int W, int L, int w, int l, country_number_t** countries) {
     int country_y;
     int country_x;
 
@@ -28,7 +28,7 @@ void person_in_country(person_t *person, int W, int L, int w, int l, country_num
     }
 }
 
-country_number_t *convert_to_array(country_number_t countries[][], int width, int length){
+country_number_t *convert_to_array(country_number_t** countries, int width, int length){
     country_number_t countries_array[width*length];
     //[1][2][3][4]
     //[5][6][7][8]
