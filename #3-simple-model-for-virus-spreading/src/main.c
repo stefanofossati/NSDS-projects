@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
         // Convert the linked list to an array
         person_t *infected_array = linked_list_to_array(infected_list);
 
-        person_t *received_infected_array = (person_t *)calloc(init_config.total_people,sizeof(person_t));
+        person_t *received_infected_array;
 
         int number_amount;
         int infected_num;
@@ -102,6 +102,7 @@ int main(int argc, char **argv) {
 
         if(my_rank == LEADER){
             int i = 1;
+            received_infected_array = (person_t *)calloc(init_config.total_people, sizeof(person_t));
             infected_num = get_linked_list_length(infected_list);
             received_infected_array = merge_people_arrays(received_infected_array, infected_array, 0, infected_num);
 
@@ -136,8 +137,8 @@ int main(int argc, char **argv) {
 
             printf("Leader has %d infected people at time %d.\n", infected_num, current_time);
 
-
-            printf("Position first infected: x=%f, y=%f\n", received_infected_array[0].position.x, received_infected_array[0].position.y);
+            // DEBUG ONLY
+            // printf("Position first infected: x=%f, y=%f\n", received_infected_array[0].position.x, received_infected_array[0].position.y);
             // printf("Position second infected: x=%f, y=%f\n", received_infected_array[1].position.x, received_infected_array[1].position.y);
             // printf("Position third infected: x=%f, y=%f\n", received_infected_array[2].position.x, received_infected_array[2].position.y);
             // printf("Position fourth infected: x=%f, y=%f\n", received_infected_array[3].position.x, received_infected_array[3].position.y);
@@ -160,6 +161,11 @@ int main(int argc, char **argv) {
         // Send the number of infected people to all processes
         MPI_Bcast(&infected_num, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
+        if(my_rank != LEADER){
+            // Allocate a buffer to hold the incoming people
+            received_infected_array = (person_t *)calloc(infected_num, sizeof(person_t));
+        }
+
         // Send the merged array of infected people to all processes
         MPI_Bcast(received_infected_array, infected_num, MPI_PERSON, 0, MPI_COMM_WORLD);
 
@@ -177,15 +183,18 @@ int main(int argc, char **argv) {
                 change_status(current_non_infected_node->person);  //check if the status has to be changed
             }else if(current_non_infected_node->person->status == NON_INFECTED){
                 // update status non infected people
+                bool is_being_infected = false;
                 for(int k=0; k<infected_num; k++){  // check that the non infected people are near an almost one infected person
                     if(infected_is_near(current_non_infected_node->person, &received_infected_array[k], init_config.d)){
+                        is_being_infected = true;
                         current_non_infected_node->person->status_timer -= init_config.t; // decrement timer of non infected people
                         change_status(current_non_infected_node->person);   //check if the status has to be changed
-                        break;  // ones an infected person is near the non infected, I can break the loop
-                    }else{
-                        reset_non_infected_timer(current_non_infected_node->person); // reset timer of non infected people
+                        break;  // once an infected person is near the non infected, I can break the loop
                     }
                 }
+                if(!is_being_infected){
+                    reset_non_infected_timer(current_non_infected_node->person); // reset timer of non infected people
+                }   
             }
             current_non_infected_node = current_non_infected_node->next; // go to the next non infected person
         }
@@ -201,16 +210,24 @@ int main(int argc, char **argv) {
             current_infected_node = current_infected_node->next;
         }
 
+        // DEBUG ONLY 
+        // printf("I'm process %d and I am alive after updating status.\n", my_rank);
 
         // Move infected people from non_infected list to infected_list
         move_people_in_list(non_infected_list, infected_list, INFECTED);
 
+        // DEBUG ONLY
+        // printf("I'm process %d and I am alive after moving non_infected to infected list.\n", my_rank);
+
         //Move immune people from infected_list to non_infected_list
         move_people_in_list(infected_list, non_infected_list, IMMUNE);
 
+        // DEBUG ONLY
+        // printf("I'm process %d and I am alive after moving immune to non_infected list.\n", my_rank);
+
         printf("The processes must be updated.\n");
         for(int j=0; j< world_size; j++){
-            printf("Process %d, infected_array: %d\n", my_rank, get_linked_list_length(infected_list) );
+            printf("Process %d, infected_list: %d\n", my_rank, get_linked_list_length(infected_list));
         }
 
         free(received_infected_array);

@@ -149,6 +149,9 @@ void update_position_list(init_config_t *init_config, linked_list_t *people_list
 
 void move_people_in_list(linked_list_t *from_list, linked_list_t *to_list, status_t check){
     node_t *current_node = from_list->head;
+    if(current_node == NULL){
+        return;
+    }
     node_t *next_node = from_list->head->next;
     node_t *previous_node = NULL;
 
