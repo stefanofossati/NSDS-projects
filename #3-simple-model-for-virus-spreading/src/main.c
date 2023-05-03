@@ -233,20 +233,25 @@ int main(int argc, char **argv) {
 
         free(received_infected_array);
 
-        
         if(day_time >= 24*60*60){  // probabilmente bisogna pensare di avere un init_config_t divisibile per un giorno;
             day_time = 0;
             country_number_t countries[init_config.W/init_config.w][init_config.L/init_config.l];
 
-            for(node_t *node_person = non_infected_list-> head; node_person != NULL; node_person = node_person->next){
-                person_in_country(node_person->person, init_config.W, init_config.L, init_config.w, init_config.l ,countries);
+            // DEBUG ONLY
+            printf("I'm process %d and I am alive before computing people in countries.\n", my_rank);
+
+            for(node_t *node_person = non_infected_list->head; node_person != NULL; node_person = node_person->next){
+                person_in_country(node_person->person, init_config.W, init_config.L, init_config.w, init_config.l, countries);
             }
 
-            for(node_t *node_person = infected_list-> head; node_person != NULL; node_person = node_person->next){
-                person_in_country(node_person->person, init_config.W, init_config.L, init_config.w, init_config.l ,countries);
+            for(node_t *node_person = infected_list->head; node_person != NULL; node_person = node_person->next){
+                person_in_country(node_person->person, init_config.W, init_config.L, init_config.w, init_config.l, countries);
             }
 
-            if(my_rank = LEADER) {
+            // DEBUG ONLY
+            printf("I'm process %d and I am alive after computing people in countries.\n", my_rank);
+
+            if(my_rank == LEADER) {
                 int i = 1;
                 country_number_t *country_file_array = calloc(init_config.W/init_config.w * init_config.L/init_config.l, sizeof(country_number_t));
                 country_file_array = convert_to_array(countries, country_file_array, init_config.W/init_config.w, init_config.L/init_config.l);

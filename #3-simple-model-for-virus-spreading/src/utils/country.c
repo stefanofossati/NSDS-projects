@@ -1,16 +1,18 @@
 #include "person.h"
 #include "country.h"
 
-void person_in_country(person_t *person, int W, int L, int w, int l, country_number_t** countries) {
+void person_in_country(person_t *person, int W, int L, int w, int l, country_number_t countries[][L/l]) {
     int country_y;
     int country_x;
 
-    for(int i = 0, j = 0; i<W; i=i+w, j++){
+    for(int i = -(W/2), j = 0; i<W/2; i=i+w, j++){
         if(person->position.x >= i && person->position.x < i+w){
-            for(int k, h = 0; h<L; h=h+l, k++) {
+            for(int h = -(L/2), k = 0; h<L/2; h=h+l, k++) {
                 if (person->position.y >= h && person->position.y < h + l) {
                     country_x = j;
                     country_y = k;
+                    // DEBUG ONLY
+                    // printf("Person in country %d, %d\n", country_x, country_y);
                     switch (person->status) {
                         case NON_INFECTED:
                             countries[country_x][country_y].non_infected_person++;
