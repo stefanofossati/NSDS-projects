@@ -12,7 +12,7 @@
 #include "utils/country.h"
 
 #define LEADER 0
-#define TOTAL_TIME 6000
+#define TOTAL_TIME 30000000
 #define PRIORITY_LOG_LEVEL 1
 
 /* Function prototypes */
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
         }else {
             log_message(INFO_1, "Parameters are correct\n", PRIORITY_LOG_LEVEL);
         }
-        printf("parameters are: N = %d, I = %d, W = %d, L = %d, w = %d, l = %d, v = %d, d = %d, t = %d\n", param.N, param.I, param.W, param.L, param.w, param.l, param.v, param.d, param.t);
+        printf("parameters are: N = %d, I = %d, W = %d, L = %d, w = %d, l = %d, v = %f, d = %d, t = %d\n", param.N, param.I, param.W, param.L, param.w, param.l, param.v, param.d, param.t);
         //Maybe check in the number of individuals is divisible by the number of processes
 
         init_config = set_init_config((int)param.N/world_size, (int)param.I/world_size, param.W, param.L, param.w, param.l, param.v, param.d, param.t);
@@ -225,10 +225,11 @@ int main(int argc, char **argv) {
         // DEBUG ONLY
         // printf("I'm process %d and I am alive after moving immune to non_infected list.\n", my_rank);
 
+        /* DEBUG ONLY
         printf("The processes must be updated.\n");
         for(int j=0; j< world_size; j++){
             printf("Process %d, infected_list: %d\n", my_rank, get_linked_list_length(infected_list));
-        }
+        } */
 
         free(received_infected_array);
 

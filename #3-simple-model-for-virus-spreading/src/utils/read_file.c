@@ -24,7 +24,7 @@ file_parameters_t get_parameters_from_file(char *file_name, int priority_log){
     fscanf(file, "I = %d\n", &parameters->I);
     fscanf(file, "W = %d, L = %d\n", &parameters->W, &parameters->L);
     fscanf(file, "w = %d, l = %d\n", &parameters->w, &parameters->l);
-    fscanf(file, "v = %d\n", &parameters->v);
+    fscanf(file, "v = %f\n", &parameters->v);
     fscanf(file, "d = %d\n", &parameters->d);
     fscanf(file, "t = %d\n", &parameters->t);
 
@@ -51,7 +51,7 @@ bool check_parameters(file_parameters_t *parameters){
         printf("w and l must be greater than 0");
         return false;
     }
-    if(parameters->v <= 0){
+    if(parameters->v <= 0.0){
         printf("v must be greater than 0");
         return false;
     }

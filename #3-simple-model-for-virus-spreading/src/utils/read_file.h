@@ -13,7 +13,7 @@ typedef struct file_parameters{
     int L;
     int w;
     int l;
-    int v; //velocity
+    float v; //velocity
     int d; //distance infected
     int t; // time granularity
 }file_parameters_t;
