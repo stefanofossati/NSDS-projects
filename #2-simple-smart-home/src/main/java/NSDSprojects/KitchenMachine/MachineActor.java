@@ -1,5 +1,6 @@
 package NSDSprojects.KitchenMachine;
 
+import NSDSprojects.CustomException;
 import NSDSprojects.Messages.GenericMessages.CrashMessage;
 import NSDSprojects.Messages.GenericMessages.TickMessage;
 import NSDSprojects.Messages.InHouseEntertainment.TurnTVMessage;
@@ -68,8 +69,8 @@ public class MachineActor extends AbstractActor {
         msg.getReplyTo().tell(msg, self());
     }
 
-    void onCrash(CrashMessage msg) throws Exception{
-        throw new Exception("Sensor died :c");
+    void onCrash(CrashMessage msg) throws CustomException{
+        throw new CustomException();
     }
 
     static Props props () {

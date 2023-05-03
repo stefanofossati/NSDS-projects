@@ -1,5 +1,6 @@
 package NSDSprojects.InHouseEntertainment;
 
+import NSDSprojects.CustomException;
 import NSDSprojects.Messages.GenericMessages.*;
 import NSDSprojects.Messages.InHouseEntertainment.TurnTVMessage;
 import akka.actor.*;
@@ -32,8 +33,13 @@ public class InHouseEntertainmentActor extends AbstractActor {
             new OneForOneStrategy(
                     10,
                     Duration.ofMinutes(1),
-                    DeciderBuilder.match(Exception.class, e -> SupervisorStrategy.resume())
+                    DeciderBuilder.match(CustomException.class, e -> SupervisorStrategy.resume())
                             .build());
+
+    @Override
+    public SupervisorStrategy supervisorStrategy(){
+        return strategy;
+    }
 
     public Receive createReceive() {
         return receiveBuilder()

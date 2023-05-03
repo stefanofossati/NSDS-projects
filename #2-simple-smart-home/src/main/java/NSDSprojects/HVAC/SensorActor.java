@@ -1,5 +1,6 @@
 package NSDSprojects.HVAC;
 
+import NSDSprojects.CustomException;
 import NSDSprojects.Messages.GenericMessages.CrashMessage;
 import NSDSprojects.Messages.HVAC.SensorOperationMessage;
 import NSDSprojects.Messages.HVAC.SensorReplyMessage;
@@ -98,8 +99,8 @@ public class SensorActor extends AbstractActor {
         }
      }
 
-    void onCrash(CrashMessage msg) throws Exception{
-        throw new Exception("Sensor crashed");
+    void onCrash(CrashMessage msg) throws CustomException {
+        throw new CustomException();
     }
 
     static Props props () {
