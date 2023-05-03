@@ -1,4 +1,4 @@
-package NSDSprojects;
+/*package NSDSprojects;
 
 import NSDSprojects.Messages.GenericMessages.*;
 import NSDSprojects.Messages.HVAC.AddSensorMessage;
@@ -9,27 +9,28 @@ import NSDSprojects.Messages.InHouseEntertainment.RemoveTVMessage;
 import NSDSprojects.Messages.InHouseEntertainment.TurnTVMessage;
 import NSDSprojects.Messages.KitchenMachine.AddMachineMessage;
 import NSDSprojects.Messages.KitchenMachine.RemoveMachineMessage;
-import NSDSprojects.Messages.KitchenMachine.TurnKitchenMachineMessage;
+import NSDSprojects.Messages.KitchenMachine.TurnMachineMessage;
 import akka.actor.AbstractActor;
 import akka.actor.ActorSelection;
 import akka.actor.Props;
+import akka.cluster.Cluster;
+import akka.cluster.ClusterEvent;
 
 public class ClientActor extends AbstractActor {
 
-    //private ActorSelection hvac, kitchenMachine, inHouseEntertainment;
-    String hvacAddr = "akka.tcp://HVACServer@127.0.0.1:9000/user/HVACActor";
+    String hvacAddr = "akka://HVACServer@192.168.56.1:9003/user/HVACActor";
     ActorSelection hvac = getContext().actorSelection(hvacAddr);
 
-    String inHouseEntertainmentAddr = "akka.tcp://InHouseEntertainmentServer@INDIRIZZOIP:PORTA/user/InHouseEntertainmentActor";
+    String inHouseEntertainmentAddr = "akka://InHouseEntertainmentServer@192.168.56.1:9004/user/InHouseEntertainmentActor";
     ActorSelection inHouseEntertainment = getContext().actorSelection(inHouseEntertainmentAddr);
 
-    String kitchenMachineAddr = "akka.tcp://KitchenMachineServer@INDIRIZZOIP:PORTA/user/KitchenMachineActor";
+    String kitchenMachineAddr = "akka://KitchenMachineServer@192.168.56.1:9005/user/KitchenMachineActor";
     ActorSelection kitchenMachine = getContext().actorSelection(kitchenMachineAddr);
 
     Cluster cluster = Cluster.get(getContext().getSystem());
 
     public void preStart(){
-        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), MemberEvent.class, UnreachableMember.class);
+        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
     }
 
     public void postStop(){
@@ -45,7 +46,7 @@ public class ClientActor extends AbstractActor {
 
                 .match(TemperatureMessage.class, this::sendDesiredTemp) //4
                 .match(TurnTVMessage.class, this::sendTurnTv) //5
-                .match(TurnKitchenMachineMessage.class, this::sendTurnMachine) //6
+                .match(TurnMachineMessage.class, this::sendTurnMachine) //6
 
                 .match(AddSensorMessage.class, this::sendNewSensor) //7
                 .match(AddTVMessage.class, this::sendNewTv) //8
@@ -71,18 +72,11 @@ public class ClientActor extends AbstractActor {
 
 
     void requestAllDevices (RequestAllDeviceMessage msg){
-        switch (msg.getController()){
-            case "HVAC":
-                hvac.tell(msg, self());
-                break;
-            case "InHouseEnt":
-                inHouseEntertainment.tell(msg, self());
-                break;
-            case "KitchenMachines":
-                kitchenMachine.tell(msg, self());
-                break;
-            default:
-                System.out.println("invalid value");
+        switch (msg.getController()) {
+            case "HVAC" -> hvac.tell(msg, self());
+            case "InHouseEnt" -> inHouseEntertainment.tell(msg, self());
+            case "KitchenMachines" -> kitchenMachine.tell(msg, self());
+            default -> System.out.println("invalid value");
         }
     }
 
@@ -94,7 +88,7 @@ public class ClientActor extends AbstractActor {
         inHouseEntertainment.tell(msg, self());
     }
 
-    void sendTurnMachine (TurnKitchenMachineMessage msg){
+    void sendTurnMachine (TurnMachineMessage msg){
         kitchenMachine.tell(msg, self());
     }
 
@@ -123,22 +117,11 @@ public class ClientActor extends AbstractActor {
     }
 
     void showConsumption (EnergyConsumptionMessage msg){
-        System.out.println(msg.getFrom() + "'s consumption: " + msg.getEnergyConsumption());
+        System.out.println(msg.getFrom() + "'s problem: " + msg.getEnergyConsumption());
     }
 
     void showWarning (WarningMessage msg){
         System.out.println(msg.getText());
-    }
-
-    void setup() {
-        String hvacAddr = "akka.tcp://HVACServer@INDIRIZZOIP:PORTA/user/HVACActor";
-        hvac = getContext().actorSelection(hvacAddr);
-
-        String inHouseEntertainmentAddr = "akka.tcp://HVACServer@INDIRIZZOIP:PORTA/user/InHouseEntertainmentActor";
-        inHouseEntertainment = getContext().actorSelection(inHouseEntertainmentAddr);
-
-        String kitchenMachineAddr = "akka.tcp://HVACServer@INDIRIZZOIP:PORTA/user/KitchenMachineActor";
-        kitchenMachine = getContext().actorSelection(kitchenMachineAddr);
     }
 
     static Props props () {
@@ -146,3 +129,4 @@ public class ClientActor extends AbstractActor {
     }
 
 }
+*/

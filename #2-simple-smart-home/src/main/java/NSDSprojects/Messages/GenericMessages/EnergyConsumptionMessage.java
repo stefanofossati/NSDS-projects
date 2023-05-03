@@ -1,19 +1,14 @@
 package NSDSprojects.Messages.GenericMessages;
-
+import com.fasterxml.jackson.annotation.JsonCreator;
 public class EnergyConsumptionMessage {
     private float energyConsumption;
     private String from;
-
-    public EnergyConsumptionMessage(float energyConsumption, String from) {
+    @JsonCreator
+    public EnergyConsumptionMessage(float energyConsumption) {
         this.energyConsumption = energyConsumption;
-        this.from = from;
     }
 
     public float getEnergyConsumption() {
         return energyConsumption;
-    }
-
-    public String getFrom() {
-        return from;
     }
 }

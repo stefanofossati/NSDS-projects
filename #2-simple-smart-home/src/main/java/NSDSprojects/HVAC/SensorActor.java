@@ -1,5 +1,6 @@
 package NSDSprojects.HVAC;
 
+import NSDSprojects.Messages.GenericMessages.CrashMessage;
 import NSDSprojects.Messages.HVAC.SensorOperationMessage;
 import NSDSprojects.Messages.HVAC.SensorReplyMessage;
 import NSDSprojects.Messages.HVAC.SetupMessage;
@@ -8,6 +9,8 @@ import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Cancellable;
 import akka.actor.Props;
+import akka.cluster.Cluster;
+import akka.cluster.ClusterEvent;
 
 import java.time.Duration;
 
@@ -24,7 +27,7 @@ public class SensorActor extends AbstractActor {
     private Cancellable sensorTask;
 
     public void preStart(){
-        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), MemberEvent.class, UnreachableMember.class);
+        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
     }
 
     public void postStop(){
@@ -40,6 +43,7 @@ public class SensorActor extends AbstractActor {
         return receiveBuilder()
                 .match(SetupMessage.class, this::setup)
                 .match(SensorOperationMessage.class, this::instantiateTask)
+                .match(CrashMessage.class, this::onCrash)
                 .build();
     }
 
@@ -47,6 +51,7 @@ public class SensorActor extends AbstractActor {
         return receiveBuilder()
                 .match(SensorOperationMessage.class, this::checkOperation)
                 .match(TickMessage.class, this::modifyTemp)
+                .match(CrashMessage.class, this::onCrash)
                 .build();
     }
 
@@ -65,7 +70,7 @@ public class SensorActor extends AbstractActor {
              operation = msg.getOperation();
              sensorTask = getContext().system().scheduler().scheduleWithFixedDelay(
                     Duration.ofSeconds(0),
-                    Duration.ofSeconds(10),
+                    Duration.ofSeconds(3),
                     self(),
                     new TickMessage(sender()),
                     getContext().system().dispatcher(),
@@ -85,14 +90,17 @@ public class SensorActor extends AbstractActor {
 
      void modifyTemp (TickMessage msg){
         if(operation != 0 && operation > 0){
-            this.currentTemp += 0.1;
+            this.currentTemp += 1f;
             msg.getReplyTo().tell(new SensorReplyMessage(this.room, this.currentTemp, true), self());
         } else if (operation != 0 && operation < 0) {
-            this.currentTemp -= 0.1;
+            this.currentTemp -= 1f;
             msg.getReplyTo().tell(new SensorReplyMessage(this.room, this.currentTemp, true), self());
         }
      }
 
+    void onCrash(CrashMessage msg) throws Exception{
+        throw new Exception("Sensor crashed");
+    }
 
     static Props props () {
         return Props.create(SensorActor.class);

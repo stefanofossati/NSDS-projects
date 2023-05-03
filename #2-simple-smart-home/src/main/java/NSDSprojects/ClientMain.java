@@ -1,19 +1,17 @@
 package NSDSprojects;
 
-import NSDSprojects.Messages.GenericMessages.RequestEnergyConsumptionMessage;
-import NSDSprojects.Messages.HVAC.AddSensorMessage;
-import NSDSprojects.Messages.GenericMessages.RequestAllDeviceMessage;
-import NSDSprojects.Messages.HVAC.RemoveSensorMessage;
+import NSDSprojects.Messages.GenericMessages.*;
 import NSDSprojects.Messages.HVAC.TemperatureMessage;
-import NSDSprojects.Messages.InHouseEntertainment.AddTVMessage;
-import NSDSprojects.Messages.InHouseEntertainment.RemoveTVMessage;
-import NSDSprojects.Messages.KitchenMachine.AddMachineMessage;
-import NSDSprojects.Messages.KitchenMachine.RemoveMachineMessage;
-import NSDSprojects.Messages.KitchenMachine.TurnKitchenMachineMessage;
+import NSDSprojects.Messages.KitchenMachine.TurnMachineMessage;
 import NSDSprojects.Messages.InHouseEntertainment.TurnTVMessage;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 
+
+
+import java.io.File;
 import java.util.Scanner;
 
 public class ClientMain {
@@ -22,11 +20,15 @@ public class ClientMain {
         String device;
         float desiredTemp;
 
-        final ActorSystem sys = ActorSystem.create("System");
-        final ActorRef client = sys.actorOf(ClientActor.props(), "client");
+        Config conf = ConfigFactory.parseFile(new File("src/main/java/resources/client_conf.conf"));
+
+        final ActorSystem sys = ActorSystem.create("System", conf);
+
+        final ActorRef clientHVAC = sys.actorOf(ClientActorHVAC.props(), "clientHVAC");
+        final ActorRef clientIHE = sys.actorOf(ClientActorIHE.props(), "clientIHE");
+        final ActorRef clientKM = sys.actorOf(ClientActorKM.props(), "clientKM");
 
         while (on) {
-
 
             System.out.println("Select command:");
 
@@ -50,69 +52,94 @@ public class ClientMain {
 
             System.out.println("14 - Turn OFF Panel");
 
+            System.out.println("15 - Make sensor crash");
+            System.out.println("16 - Make tv crash");
+            System.out.println("17 - Make machine crash");
+
             Scanner scan = new Scanner(System.in);
 
             int selection = scan.nextInt();
 
             switch (selection) {
                 case 1:
-                    client.tell(new RequestAllDeviceMessage("HVAC"), ActorRef.noSender());
+                    clientHVAC.tell(new RequestDeviceMessage(), ActorRef.noSender());
                     break;
                 case 2:
-                    client.tell(new RequestAllDeviceMessage("InHouseEnt"), ActorRef.noSender());
+                    clientIHE.tell(new RequestDeviceMessage(), ActorRef.noSender());
                     break;
                 case 3:
-                    client.tell(new RequestAllDeviceMessage("KitchenMachines"), ActorRef.noSender());
+                    clientKM.tell(new RequestDeviceMessage(), ActorRef.noSender());
                     break;
                 case 4:
                     System.out.println("Select room: ");
                     device = scan.next();
                     System.out.println("Insert desired temperature:");
                     desiredTemp = scan.nextFloat();
-                    client.tell(new TemperatureMessage(desiredTemp, device), ActorRef.noSender());
+                    clientHVAC.tell(new TemperatureMessage(desiredTemp*10, device), ActorRef.noSender());
                     break;
                 case 5:
                     System.out.println("Select TV: ");
                     device = scan.next();
-                    client.tell(new TurnTVMessage(device), ActorRef.noSender());
+                    clientIHE.tell(new TurnTVMessage(device), ActorRef.noSender());
                     break;
                 case 6:
                     System.out.println("Select KitchenMachine: ");
-                    device = scan.nextLine();
-                    client.tell(new TurnKitchenMachineMessage(device), ActorRef.noSender());
+                    device = scan.next();
+                    clientKM.tell(new TurnMachineMessage(device), ActorRef.noSender());
                     break;
                 case 7:
                     System.out.println("Insert new room name:");
                     device = scan.next();
-                    client.tell(new AddSensorMessage(device), ActorRef.noSender());
+                    clientHVAC.tell(new AddDeviceMessage(device), ActorRef.noSender());
                     break;
                 case 8:
                     System.out.println("Insert new TV identifier: ");
                     device = scan.next();
-                    client.tell(new AddTVMessage(device), ActorRef.noSender());
+                    clientIHE.tell(new AddDeviceMessage(device), ActorRef.noSender());
                     break;
                 case 9:
                     System.out.println("Insert new KitchenMachine identifier: ");
                     device = scan.next();
-                    client.tell(new AddMachineMessage(device), ActorRef.noSender());
+                    clientKM.tell(new AddDeviceMessage(device), ActorRef.noSender());
                     break;
                 case 10:
                     System.out.println("Insert room to be removed: ");
                     device = scan.next();
-                    client.tell(new RemoveSensorMessage(device), ActorRef.noSender());
+                    clientHVAC.tell(new RemoveDeviceMessage(device), ActorRef.noSender());
+                    break;
                 case 11:
                     System.out.println("Insert TVID to be removed: ");
                     device = scan.next();
-                    client.tell(new RemoveTVMessage(device), ActorRef.noSender());
+                    clientIHE.tell(new RemoveDeviceMessage(device), ActorRef.noSender());
+                    break;
                 case 12:
                     System.out.println("Insert KitchenMachineID to be removed: ");
                     device = scan.next();
-                    client.tell(new RemoveMachineMessage(device), ActorRef.noSender());
+                    clientKM.tell(new RemoveDeviceMessage(device), ActorRef.noSender());
+                    break;
                 case 13:
                     System.out.println("Consumption:");
-                    client.tell(new RequestEnergyConsumptionMessage(), ActorRef.noSender());
+                    clientHVAC.tell(new RequestEnergyConsumptionMessage(), ActorRef.noSender());
+                    clientIHE.tell(new RequestEnergyConsumptionMessage(), ActorRef.noSender());
+                    clientKM.tell(new RequestEnergyConsumptionMessage(), ActorRef.noSender());
+                    break;
                 case 14:
                     on = false;
+                    break;
+                case 15:
+                    System.out.println("Select room: ");
+                    device = scan.next();
+                    clientHVAC.tell(new CrashMessage(device), ActorRef.noSender());
+                    break;
+                case 16:
+                    System.out.println("Select tv: ");
+                    device = scan.next();
+                    clientIHE.tell(new CrashMessage(device), ActorRef.noSender());
+                    break;
+                case 17:
+                    System.out.println("Select machine: ");
+                    device = scan.next();
+                    clientKM.tell(new CrashMessage(device), ActorRef.noSender());
                     break;
                 default:
                     System.out.println("Wrong command inserted");

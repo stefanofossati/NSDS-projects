@@ -1,8 +1,9 @@
 package NSDSprojects.KitchenMachine;
 
+import NSDSprojects.Messages.GenericMessages.CrashMessage;
 import NSDSprojects.Messages.GenericMessages.TickMessage;
 import NSDSprojects.Messages.InHouseEntertainment.TurnTVMessage;
-import NSDSprojects.Messages.KitchenMachine.TurnKitchenMachineMessage;
+import NSDSprojects.Messages.KitchenMachine.TurnMachineMessage;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Cancellable;
@@ -33,7 +34,8 @@ public class MachineActor extends AbstractActor {
 
     private final Receive off() {
         return receiveBuilder()
-                .match(TurnKitchenMachineMessage.class, this::TurnOn)
+                .match(TurnMachineMessage.class, this::TurnOn)
+                .match(CrashMessage.class, this::onCrash)
                 .build();
     }
 
@@ -41,14 +43,15 @@ public class MachineActor extends AbstractActor {
         return receiveBuilder()
                 .match(TurnTVMessage.class, this::TurnOff)
                 .match(TickMessage.class, this::tickOperation)
+                .match(CrashMessage.class, this::onCrash)
                 .build();
     }
 
-    void TurnOn(TurnKitchenMachineMessage msg){
+    void TurnOn(TurnMachineMessage msg){
         getContext().become(on());
-        kitchenMachineRoutine = getContext().system().scheduler().schedule(
+        kitchenMachineRoutine = getContext().system().scheduler().scheduleWithFixedDelay(
                 Duration.ofSeconds(0),
-                Duration.ofSeconds(10),
+                Duration.ofSeconds(3),
                 self(),
                 new TickMessage(sender()),
                 getContext().system().dispatcher(),
@@ -63,6 +66,10 @@ public class MachineActor extends AbstractActor {
 
     void tickOperation(TickMessage msg){
         msg.getReplyTo().tell(msg, self());
+    }
+
+    void onCrash(CrashMessage msg) throws Exception{
+        throw new Exception("Sensor died :c");
     }
 
     static Props props () {

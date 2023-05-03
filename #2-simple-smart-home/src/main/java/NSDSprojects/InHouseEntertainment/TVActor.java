@@ -1,11 +1,15 @@
 package NSDSprojects.InHouseEntertainment;
 
+import NSDSprojects.Messages.GenericMessages.CrashMessage;
 import NSDSprojects.Messages.GenericMessages.TickMessage;
 import NSDSprojects.Messages.InHouseEntertainment.TurnTVMessage;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Cancellable;
 import akka.actor.Props;
+import akka.cluster.Cluster;
+import akka.cluster.ClusterEvent;
+
 
 import java.time.Duration;
 
@@ -15,7 +19,7 @@ public class TVActor extends AbstractActor {
 
 
     public void preStart(){
-        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), MemberEvent.class, UnreachableMember.class);
+        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
     }
 
     public void postStop(){
@@ -30,6 +34,7 @@ public class TVActor extends AbstractActor {
     private final Receive off() {
         return receiveBuilder()
                 .match(TurnTVMessage.class, this::TurnOn)
+                .match(CrashMessage.class, this::onCrash)
                 .build();
     }
 
@@ -37,6 +42,7 @@ public class TVActor extends AbstractActor {
         return receiveBuilder()
                 .match(TurnTVMessage.class, this::TurnOff)
                 .match(TickMessage.class, this::tickOperation)
+                .match(CrashMessage.class, this::onCrash)
                 .build();
     }
 
@@ -44,7 +50,7 @@ public class TVActor extends AbstractActor {
         getContext().become(on());
         tvOnRoutine = getContext().system().scheduler().scheduleWithFixedDelay(
                 Duration.ofSeconds(0),
-                Duration.ofSeconds(10),
+                Duration.ofSeconds(3),
                 self(),
                 new TickMessage(sender()),
                 getContext().system().dispatcher(),
@@ -59,6 +65,10 @@ public class TVActor extends AbstractActor {
 
     void tickOperation(TickMessage msg){
         msg.getReplyTo().tell(msg, self());
+    }
+
+    void onCrash(CrashMessage msg) throws Exception{
+        throw new Exception("Sensor died :c");
     }
 
     static Props props () {

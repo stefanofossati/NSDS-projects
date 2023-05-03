@@ -1,11 +1,10 @@
 package NSDSprojects.InHouseEntertainment;
 
 import NSDSprojects.Messages.GenericMessages.*;
-import NSDSprojects.Messages.HVAC.RemoveSensorMessage;
-import NSDSprojects.Messages.InHouseEntertainment.AddTVMessage;
-import NSDSprojects.Messages.InHouseEntertainment.RemoveTVMessage;
 import NSDSprojects.Messages.InHouseEntertainment.TurnTVMessage;
 import akka.actor.*;
+import akka.cluster.Cluster;
+import akka.cluster.ClusterEvent;
 import akka.japi.pf.DeciderBuilder;
 
 import java.time.Duration;
@@ -21,7 +20,7 @@ public class InHouseEntertainmentActor extends AbstractActor {
 
 
     public void preStart(){
-        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), MemberEvent.class, UnreachableMember.class);
+        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
     }
 
     public void postStop(){
@@ -41,18 +40,20 @@ public class InHouseEntertainmentActor extends AbstractActor {
                 .match(TurnTVMessage.class, this::turnTV)
                 .match(TickMessage.class, this::increaseEnergyConsumption)
 
-                .match(AddTVMessage.class, this::addTv)
-                .match(RemoveTVMessage.class, this::removeTv)
-                .match(RequestAllDeviceMessage.class, this::getDevices)
+                .match(AddDeviceMessage.class, this::addTv)
+                .match(RemoveDeviceMessage.class, this::removeTv)
+                .match(RequestDeviceMessage.class, this::getDevices)
                 .match(RequestEnergyConsumptionMessage.class, this::retrieveConsumption)
+
+                .match(CrashMessage.class, this::doCrash)
                 .build();
     }
 
-    void addTv (AddTVMessage msg){
+    void addTv (AddDeviceMessage msg){
         tvs.put(msg.getDeviceid(), getContext().actorOf(TVActor.props(), msg.getDeviceid()));
     }
 
-    void removeTv (RemoveTVMessage msg){
+    void removeTv (RemoveDeviceMessage msg){
         if(tvs.containsKey(msg.getDeviceid())){
             getContext().stop(tvs.get(msg.getDeviceid()));
             tvs.remove(msg.getDeviceid());
@@ -61,7 +62,7 @@ public class InHouseEntertainmentActor extends AbstractActor {
         }
     }
 
-    void getDevices(RequestAllDeviceMessage msg){
+    void getDevices(RequestDeviceMessage msg){
         sender().tell(new ReplyDevicesMessage(tvs.keySet()), self());
     }
 
@@ -75,10 +76,19 @@ public class InHouseEntertainmentActor extends AbstractActor {
 
     void increaseEnergyConsumption (TickMessage msg){
         this.energyConsumption += this.dE;
+        System.out.println(this.energyConsumption);
     }
 
     void retrieveConsumption (RequestEnergyConsumptionMessage msg){
-        sender().tell(new EnergyConsumptionMessage(this.energyConsumption, "InHouseEntertainment"), self());
+        sender().tell(new EnergyConsumptionMessage(this.energyConsumption), self());
+    }
+
+    void doCrash(CrashMessage msg){
+        if(tvs.containsKey(msg.getDeviceid())) {
+            tvs.get(msg.getDeviceid()).tell(msg, self());
+        }else{
+            sender().tell(new WarningMessage("Room inserted to be removed doesnt exists!"), self());
+        }
     }
 
     static Props props () {
