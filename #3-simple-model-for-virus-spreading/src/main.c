@@ -253,26 +253,27 @@ int main(int argc, char **argv) {
 
             if(my_rank == LEADER) {
                 int i = 1;
-                country_number_t *country_file_array = calloc(init_config.W/init_config.w * init_config.L/init_config.l, sizeof(country_number_t));
-                country_file_array = convert_to_array(countries, country_file_array, init_config.W/init_config.w, init_config.L/init_config.l);
+                country_number_t *country_file_array = calloc((init_config.W/init_config.w) * (init_config.L/init_config.l), sizeof(country_number_t));
+                country_file_array = convert_to_array(country_file_array, init_config.W/init_config.w, init_config.L/init_config.l, countries);
                 while (i < world_size) {
                     //receive the country array from the other processes
-                    country_number_t *received_countries = calloc(init_config.W/init_config.w * init_config.L/init_config.l, sizeof(country_number_t));
-                    MPI_Recv(received_countries, init_config.W / init_config.w * init_config.L / init_config.l,MPI_COUNTRY_NUMBER, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                    country_number_t *received_countries = calloc((init_config.W/init_config.w) * (init_config.L/init_config.l), sizeof(country_number_t));
+                    MPI_Recv(received_countries, (init_config.W / init_config.w) * (init_config.L / init_config.l), MPI_COUNTRY_NUMBER, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-                    merge_country_arrays(country_file_array, received_countries, init_config.W/init_config.w * init_config.L/init_config.l);
+                    merge_country_arrays(country_file_array, received_countries, (init_config.W/init_config.w) * (init_config.L/init_config.l));
+                    i++;
                 }
 
-                write_on_file("results.csv", country_file_array, init_config.W/init_config.w * init_config.L/init_config.l);
+                write_on_file("results.csv", country_file_array, (init_config.W/init_config.w) * (init_config.L/init_config.l));
 
                 free(country_file_array);
             }else{
                 //send the country array to the leader
 
-                country_number_t *country_array_to_send = calloc(init_config.W/init_config.w * init_config.L/init_config.l, sizeof(country_number_t));
-                country_array_to_send = convert_to_array(countries, country_array_to_send, init_config.W/init_config.w, init_config.L/init_config.l);
+                country_number_t *country_array_to_send = calloc((init_config.W/init_config.w) * (init_config.L/init_config.l), sizeof(country_number_t));
+                country_array_to_send = convert_to_array(country_array_to_send, init_config.W/init_config.w, init_config.L/init_config.l, countries);
 
-                MPI_Send(country_array_to_send, init_config.W/init_config.w * init_config.L/init_config.l, MPI_COUNTRY_NUMBER, LEADER, 0, MPI_COMM_WORLD);
+                MPI_Send(country_array_to_send, (init_config.W/init_config.w) * (init_config.L/init_config.l), MPI_COUNTRY_NUMBER, LEADER, 0, MPI_COMM_WORLD);
 
                 free(country_array_to_send);
             }

@@ -31,7 +31,7 @@ void person_in_country(person_t *person, int W, int L, int w, int l, country_num
     }
 }
 
-country_number_t *convert_to_array(country_number_t** countries, country_number_t *countries_array, int width, int length){
+country_number_t *convert_to_array(country_number_t *countries_array, int width, int length, country_number_t countries[][length]){
     //[1][2][3][4]
     //[5][6][7][8]
     //[9][10][11][12]
