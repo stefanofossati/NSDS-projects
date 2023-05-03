@@ -5,7 +5,7 @@ OUTPUT_DIR = output
 .SUFFIXES: exec
 
 exec = main
-objects = main.o read_file.o person.o mpi_datatypes.o init_config.o linked_list.o log.o
+objects = main.o read_file.o person.o mpi_datatypes.o init_config.o linked_list.o log.o country.o
 
 
 $(exec): $(objects)
@@ -27,6 +27,9 @@ person.o: utils/person.c utils/person.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $(OUTPUT_DIR)/$@
 
 linked_list.o: utils/linked_list.c utils/linked_list.h utils/person.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $(OUTPUT_DIR)/$@
+
+country.o: utils/country.c utils/country.h utils/person.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $(OUTPUT_DIR)/$@
 
 main.o: main.c utils/read_file.h  utils/mpi_datatypes.h utils/init_config.h utils/linked_list.h utils/log.h

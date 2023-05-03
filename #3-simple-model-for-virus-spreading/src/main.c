@@ -233,23 +233,23 @@ int main(int argc, char **argv) {
 
         free(received_infected_array);
 
-        /*
+        
         if(day_time >= 24*60*60){  // probabilmente bisogna pensare di avere un init_config_t divisibile per un giorno;
             day_time = 0;
             country_number_t countries[init_config.W/init_config.w][init_config.L/init_config.l];
 
-            for(int i=0, node_t *node_person = non_infected_list->head; i< get_linked_list_length(non_infected_list); i++, node_person = node_person->next){
-                person_in_country(node_person->person,init_config.W, init_config.L. init_config.w, init_config.l ,countries);
+            for(node_t *node_person = non_infected_list-> head; node_person != NULL; node_person = node_person->next){
+                person_in_country(node_person->person, init_config.W, init_config.L, init_config.w, init_config.l ,countries);
             }
 
-            for(int i=0, node_t *node_person = infected_list->head; i< get_linked_list_length(infected_list); i++, node_person = node_person->next){
-                person_in_country(node_person->person,init_config.W, init_config.L. init_config.w, init_config.l ,countries);
+            for(node_t *node_person = infected_list-> head; node_person != NULL; node_person = node_person->next){
+                person_in_country(node_person->person, init_config.W, init_config.L, init_config.w, init_config.l ,countries);
             }
-
 
             if(my_rank = LEADER) {
                 int i = 1;
-                country_number_t country_file_array[init_config.W/init_config.w * init_config.L/init_config.l] = convert_to_array(countries, init_config.W/init_config.w, init_config.L/init_config.l);
+                country_number_t *country_file_array = calloc(init_config.W/init_config.w * init_config.L/init_config.l, sizeof(country_number_t));
+                country_file_array = convert_to_array(countries, country_file_array, init_config.W/init_config.w, init_config.L/init_config.l);
                 while (i < world_size) {
                     //receive the country array from the other processes
                     country_number_t *received_countries = calloc(init_config.W/init_config.w * init_config.L/init_config.l, sizeof(country_number_t));
@@ -258,21 +258,23 @@ int main(int argc, char **argv) {
                     merge_country_arrays(country_file_array, received_countries, init_config.W/init_config.w * init_config.L/init_config.l);
                 }
 
-                void write_on_file("results.csv", country_file_array, init_config.W/init_config.w * init_config.L/init_config.l);
+                write_on_file("results.csv", country_file_array, init_config.W/init_config.w * init_config.L/init_config.l);
 
                 free(country_file_array);
             }else{
                 //send the country array to the leader
-                county_number_t *country_array_to_send = convert_to_array(countries, init_config.W/init_config.w, init_config.L/init_config.l);
 
-                MPI_Send(country_array, init_config.W/init_config.w * init_config.L/init_config.l, MPI_COUNTRY_NUMBER, LEADER, 0, MPI_COMM_WORLD);
+                country_number_t *country_array_to_send = calloc(init_config.W/init_config.w * init_config.L/init_config.l, sizeof(country_number_t));
+                country_array_to_send = convert_to_array(countries, country_array_to_send, init_config.W/init_config.w, init_config.L/init_config.l);
+
+                MPI_Send(country_array_to_send, init_config.W/init_config.w * init_config.L/init_config.l, MPI_COUNTRY_NUMBER, LEADER, 0, MPI_COMM_WORLD);
 
                 free(country_array_to_send);
             }
 
             free(countries);
             MPI_Barrier(MPI_COMM_WORLD);
-        }*/
+        }
 
 
         current_time += init_config.t;

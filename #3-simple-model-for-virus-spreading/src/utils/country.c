@@ -1,14 +1,15 @@
 #include "person.h"
+#include "country.h"
 
 void person_in_country(person_t *person, int W, int L, int w, int l, country_number_t** countries) {
     int country_y;
     int country_x;
 
-    for(int i,j = 0; i<W; i=i+w, j++){
+    for(int i = 0, j = 0; i<W; i=i+w, j++){
         if(person->position.x >= i && person->position.x < i+w){
             for(int k, h = 0; h<L; h=h+l, k++) {
                 if (person->position.y >= h && person->position.y < h + l) {
-                    country_x = h;
+                    country_x = j;
                     country_y = k;
                     switch (person->status) {
                         case NON_INFECTED:
@@ -28,8 +29,7 @@ void person_in_country(person_t *person, int W, int L, int w, int l, country_num
     }
 }
 
-country_number_t *convert_to_array(country_number_t** countries, int width, int length){
-    country_number_t countries_array[width*length];
+country_number_t *convert_to_array(country_number_t** countries, country_number_t *countries_array, int width, int length){
     //[1][2][3][4]
     //[5][6][7][8]
     //[9][10][11][12]
