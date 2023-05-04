@@ -2,10 +2,10 @@ package NSDSprojects.Messages.GenericMessages;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public class WarningMessage {
+public class TextMessage {
     String text;
     @JsonCreator
-    public WarningMessage(String text) {
+    public TextMessage(String text) {
         this.text = text;
     }
 

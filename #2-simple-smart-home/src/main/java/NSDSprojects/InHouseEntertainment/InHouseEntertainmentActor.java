@@ -2,6 +2,7 @@ package NSDSprojects.InHouseEntertainment;
 
 import NSDSprojects.CustomException;
 import NSDSprojects.Messages.GenericMessages.*;
+import NSDSprojects.Messages.InHouseEntertainment.TVReplyMessage;
 import NSDSprojects.Messages.InHouseEntertainment.TurnTVMessage;
 import akka.actor.*;
 import akka.cluster.Cluster;
@@ -17,7 +18,7 @@ public class InHouseEntertainmentActor extends AbstractActor {
     private int dE = 1;
     private int energyConsumption = 0;
 
-    private HashMap<String, ActorRef> tvs = new HashMap<>();
+    private HashMap<String, TVInfoContainer> tvs = new HashMap<>();
 
 
     public void preStart(){
@@ -44,7 +45,7 @@ public class InHouseEntertainmentActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(TurnTVMessage.class, this::turnTV)
-                .match(TickMessage.class, this::increaseEnergyConsumption)
+                .match(TVReplyMessage.class, this::increaseEnergyConsumption)
 
                 .match(AddDeviceMessage.class, this::addTv)
                 .match(RemoveDeviceMessage.class, this::removeTv)
@@ -56,33 +57,40 @@ public class InHouseEntertainmentActor extends AbstractActor {
     }
 
     void addTv (AddDeviceMessage msg){
-        tvs.put(msg.getDeviceid(), getContext().actorOf(TVActor.props(), msg.getDeviceid()));
+        tvs.put(msg.getDeviceid(), new TVInfoContainer(getContext().actorOf(TVActor.props(), msg.getDeviceid()), "off"));
     }
 
     void removeTv (RemoveDeviceMessage msg){
         if(tvs.containsKey(msg.getDeviceid())){
-            getContext().stop(tvs.get(msg.getDeviceid()));
+            getContext().stop(tvs.get(msg.getDeviceid()).getTvref());
             tvs.remove(msg.getDeviceid());
         }else {
-            sender().tell(new WarningMessage("TV inserted to be removed doesnt exists!"), self());
+            sender().tell(new TextMessage("TV inserted to be removed doesnt exists!"), self());
         }
     }
 
     void getDevices(RequestDeviceMessage msg){
-        sender().tell(new ReplyDevicesMessage(tvs.keySet()), self());
+        tvs.entrySet().forEach(entry ->
+                sender().tell(new TextMessage("Room '" + entry.getKey().toString() + "' - Current State: " + (entry.getValue().getState())), self())
+        );
     }
 
     void turnTV(TurnTVMessage msg){
         if(tvs.containsKey(msg.getTv())) {
-            tvs.get(msg.getTv()).tell(msg, self());
+            tvs.get(msg.getTv()).getTvref().tell(msg, self());
         }else{
-            sender().tell(new WarningMessage("TV inserted to be turned doesnt exists!"), self());
+            sender().tell(new TextMessage("TV inserted to be turned doesnt exists!"), self());
         }
     }
 
-    void increaseEnergyConsumption (TickMessage msg){
-        this.energyConsumption += this.dE;
-        System.out.println(this.energyConsumption);
+    void increaseEnergyConsumption (TVReplyMessage msg){
+        if(tvs.get(msg.getTv()).getState() != msg.getState()){
+            tvs.get(msg.getTv()).changeState();
+        }
+        if(msg.getState().equals("on")) {
+            this.energyConsumption += this.dE;
+            System.out.println(this.energyConsumption);
+        }
     }
 
     void retrieveConsumption (RequestEnergyConsumptionMessage msg){
@@ -91,9 +99,9 @@ public class InHouseEntertainmentActor extends AbstractActor {
 
     void doCrash(CrashMessage msg){
         if(tvs.containsKey(msg.getDeviceid())) {
-            tvs.get(msg.getDeviceid()).tell(msg, self());
+            tvs.get(msg.getDeviceid()).getTvref().tell(msg, self());
         }else{
-            sender().tell(new WarningMessage("Room inserted to be removed doesnt exists!"), self());
+            sender().tell(new TextMessage("Room inserted to be removed doesnt exists!"), self());
         }
     }
 

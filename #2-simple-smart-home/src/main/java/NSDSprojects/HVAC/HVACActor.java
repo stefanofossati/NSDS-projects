@@ -64,16 +64,17 @@ public class HVACActor extends AbstractActor {
                     sensors.get(msg.getRoom()).getRoomref().tell(new SensorOperationMessage(1), self());
                 }
             } else {
-                sender().tell(new WarningMessage("Room already has Temperature equal to DesiredTemp"), self());
+                sender().tell(new TextMessage("Room already has Temperature equal to DesiredTemp"), self());
             }
         } else {
-            sender().tell(new WarningMessage("Room inserted doesnt exists!"), self());
+            sender().tell(new TextMessage("Room inserted doesnt exists!"), self());
         }
     }
 
     void checkSensor(SensorReplyMessage msg){
         if(msg.isActive()){
             this.energyConsumption += dE;
+            sensors.get(msg.getRoom()).setTemp(msg.getTemp());
             System.out.println(this.energyConsumption + "| temp: "+ msg.getTemp());
         }
         if(sensors.get(msg.getRoom()).getDesiredTemp() == msg.getTemp()){
@@ -102,7 +103,7 @@ public class HVACActor extends AbstractActor {
             getContext().stop(sensors.get(msg.getDeviceid()).getRoomref());
             sensors.remove(msg.getDeviceid());
         }else {
-            sender().tell(new WarningMessage("Room inserted to be removed doesnt exists!"), self());
+            sender().tell(new TextMessage("Room inserted to be removed doesnt exists!"), self());
         }
     }
 
@@ -112,14 +113,16 @@ public class HVACActor extends AbstractActor {
 
 
     void getRooms(RequestDeviceMessage msg){
-        sender().tell(new ReplyDevicesMessage(sensors.keySet()), self());
+        sensors.entrySet().forEach(entry ->
+                sender().tell(new TextMessage("Room '" + entry.getKey().toString() + "' - Current Temp: " + (entry.getValue().getTemp()/10)), self())
+        );
     }
 
     void doCrash(CrashMessage msg){
         if(sensors.containsKey(msg.getDeviceid())) {
             sensors.get(msg.getDeviceid()).getRoomref().tell(msg, self());
         }else{
-            sender().tell(new WarningMessage("Room inserted to be removed doesnt exists!"), self());
+            sender().tell(new TextMessage("Room inserted to be removed doesnt exists!"), self());
         }
     }
 

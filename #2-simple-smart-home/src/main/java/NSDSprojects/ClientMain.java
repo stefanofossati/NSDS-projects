@@ -41,7 +41,7 @@ public class ClientMain {
             System.out.println("6 - ON/OFF on KitchenMachine");
 
             System.out.println("7 - Setup new Sensor");
-            System.out.println("8 - Setup new TV:");
+            System.out.println("8 - Setup new TV");
             System.out.println("9 - Setup new KitchenMachine");
 
             System.out.println("10 - Remove sensor");

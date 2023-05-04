@@ -2,6 +2,7 @@ package NSDSprojects.KitchenMachine;
 
 import NSDSprojects.CustomException;
 import NSDSprojects.Messages.GenericMessages.*;
+import NSDSprojects.Messages.KitchenMachine.MachineReplyMessage;
 import NSDSprojects.Messages.KitchenMachine.TurnMachineMessage;
 import akka.actor.*;
 import akka.cluster.Cluster;
@@ -15,7 +16,7 @@ public class KitchenMachineActor extends AbstractActor {
 
     Cluster cluster = Cluster.get(getContext().getSystem());
 
-    private HashMap<String, ActorRef> machines = new HashMap<>();
+    private HashMap<String, MachineInfoContainer> machines = new HashMap<>();
 
     private int energyConsumption = 0;
     private int dE = 5;
@@ -46,7 +47,7 @@ public class KitchenMachineActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(TurnMachineMessage.class, this::turnMachine)
-                .match(TickMessage.class, this::increaseEnergyConsumption)
+                .match(MachineReplyMessage.class, this::increaseEnergyConsumption)
                 .match(AddDeviceMessage.class, this::addMachine)
                 .match(RemoveDeviceMessage.class, this::removeMachine)
                 .match(RequestDeviceMessage.class, this::getDevices)
@@ -57,33 +58,40 @@ public class KitchenMachineActor extends AbstractActor {
     }
 
     void addMachine (AddDeviceMessage msg){
-            machines.put(msg.getDeviceid(), getContext().actorOf(MachineActor.props(), msg.getDeviceid()));
+            machines.put(msg.getDeviceid(), new MachineInfoContainer(getContext().actorOf(MachineActor.props(), msg.getDeviceid()), "off"));
     }
 
     void removeMachine (RemoveDeviceMessage msg){
         if(machines.containsKey(msg.getDeviceid())){
-            getContext().stop(machines.get(msg.getDeviceid()));
+            getContext().stop(machines.get(msg.getDeviceid()).getMachineref());
             machines.remove(msg.getDeviceid());
         }else {
-            sender().tell(new WarningMessage("Machine inserted to be removed doesnt exists!"), self());
+            sender().tell(new TextMessage("Machine inserted to be removed doesnt exists!"), self());
         }
     }
 
     void turnMachine(TurnMachineMessage msg){
         if(machines.containsKey(msg.getKitchenmachine())) {
-            machines.get(msg.getKitchenmachine()).tell(msg, self());
+            machines.get(msg.getKitchenmachine()).getMachineref().tell(msg, self());
         } else {
-            sender().tell(new WarningMessage("Machine inserted to be turned doenst exists!"), self());
+            sender().tell(new TextMessage("Machine inserted to be turned doenst exists!"), self());
         }
     }
 
-    void increaseEnergyConsumption (TickMessage msg){
-        this.energyConsumption += this.dE;
-        System.out.println(this.energyConsumption);
+    void increaseEnergyConsumption (MachineReplyMessage msg){
+        if(machines.get(msg.getMachine()).getState() != msg.getState()){
+            machines.get(msg.getMachine()).changeState();
+        }
+        if(msg.getState().equals("on")) {
+            this.energyConsumption += this.dE;
+            System.out.println(this.energyConsumption);
+        }
     }
 
     void getDevices(RequestDeviceMessage msg){
-        sender().tell(new ReplyDevicesMessage(machines.keySet()), self());
+        machines.entrySet().forEach(entry ->
+                sender().tell(new TextMessage("Room '" + entry.getKey().toString() + "' - Current State: " + (entry.getValue().getState())), self())
+        );
     }
 
     void retrieveConsumption (RequestEnergyConsumptionMessage msg){
@@ -92,9 +100,9 @@ public class KitchenMachineActor extends AbstractActor {
 
     void doCrash(CrashMessage msg){
         if(machines.containsKey(msg.getDeviceid())) {
-            machines.get(msg.getDeviceid()).tell(msg, self());
+            machines.get(msg.getDeviceid()).getMachineref().tell(msg, self());
         }else{
-            sender().tell(new WarningMessage("Room inserted to be removed doesnt exists!"), self());
+            sender().tell(new TextMessage("Room inserted to be removed doesnt exists!"), self());
         }
     }
 

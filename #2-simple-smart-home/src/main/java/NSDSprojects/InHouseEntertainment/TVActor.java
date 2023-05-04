@@ -3,6 +3,7 @@ package NSDSprojects.InHouseEntertainment;
 import NSDSprojects.CustomException;
 import NSDSprojects.Messages.GenericMessages.CrashMessage;
 import NSDSprojects.Messages.GenericMessages.TickMessage;
+import NSDSprojects.Messages.InHouseEntertainment.TVReplyMessage;
 import NSDSprojects.Messages.InHouseEntertainment.TurnTVMessage;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
@@ -17,6 +18,7 @@ import java.time.Duration;
 public class TVActor extends AbstractActor {
     Cluster cluster = Cluster.get(getContext().getSystem());
     private Cancellable tvOnRoutine;
+    private String state = "off";
 
 
     public void preStart(){
@@ -49,6 +51,7 @@ public class TVActor extends AbstractActor {
 
     void TurnOn(TurnTVMessage msg){
         getContext().become(on());
+        state = "on";
         tvOnRoutine = getContext().system().scheduler().scheduleWithFixedDelay(
                 Duration.ofSeconds(0),
                 Duration.ofSeconds(3),
@@ -60,12 +63,14 @@ public class TVActor extends AbstractActor {
     }
 
     void TurnOff(TurnTVMessage msg){
+        state = "off";
         tvOnRoutine.cancel();
+        sender().tell(new TVReplyMessage(self().path().name(), this.state), self());
         getContext().become(off());
     }
 
     void tickOperation(TickMessage msg){
-        msg.getReplyTo().tell(msg, self());
+        msg.getReplyTo().tell(new TVReplyMessage(self().path().name(), this.state), self());
     }
 
     void onCrash(CrashMessage msg) throws CustomException{

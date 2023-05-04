@@ -3,7 +3,9 @@ package NSDSprojects.KitchenMachine;
 import NSDSprojects.CustomException;
 import NSDSprojects.Messages.GenericMessages.CrashMessage;
 import NSDSprojects.Messages.GenericMessages.TickMessage;
+import NSDSprojects.Messages.InHouseEntertainment.TVReplyMessage;
 import NSDSprojects.Messages.InHouseEntertainment.TurnTVMessage;
+import NSDSprojects.Messages.KitchenMachine.MachineReplyMessage;
 import NSDSprojects.Messages.KitchenMachine.TurnMachineMessage;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
@@ -15,6 +17,8 @@ import akka.cluster.ClusterEvent;
 import java.time.Duration;
 
 public class MachineActor extends AbstractActor {
+
+    private String state = "off";
 
     Cluster cluster = Cluster.get(getContext().getSystem());
 
@@ -42,7 +46,7 @@ public class MachineActor extends AbstractActor {
 
     private final Receive on(){
         return receiveBuilder()
-                .match(TurnTVMessage.class, this::TurnOff)
+                .match(TurnMachineMessage.class, this::TurnOff)
                 .match(TickMessage.class, this::tickOperation)
                 .match(CrashMessage.class, this::onCrash)
                 .build();
@@ -50,6 +54,7 @@ public class MachineActor extends AbstractActor {
 
     void TurnOn(TurnMachineMessage msg){
         getContext().become(on());
+        state = "on";
         kitchenMachineRoutine = getContext().system().scheduler().scheduleWithFixedDelay(
                 Duration.ofSeconds(0),
                 Duration.ofSeconds(3),
@@ -60,13 +65,15 @@ public class MachineActor extends AbstractActor {
         );
     }
 
-    void TurnOff(TurnTVMessage msg){
+    void TurnOff(TurnMachineMessage msg){
+        state = "off";
         kitchenMachineRoutine.cancel();
+        sender().tell(new MachineReplyMessage(self().path().name(), this.state), self());
         getContext().become(off());
     }
 
     void tickOperation(TickMessage msg){
-        msg.getReplyTo().tell(msg, self());
+        msg.getReplyTo().tell(new MachineReplyMessage(self().path().name(), this.state), self());
     }
 
     void onCrash(CrashMessage msg) throws CustomException{

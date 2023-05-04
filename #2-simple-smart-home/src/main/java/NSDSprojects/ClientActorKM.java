@@ -28,7 +28,6 @@ public class ClientActorKM extends AbstractActor {
         return receiveBuilder()
 
                 .match(RequestDeviceMessage.class, this::requestDevices) //1-3
-                .match(ReplyDevicesMessage.class, this::showDevices) // reply to 1-3
 
                 .match(AddDeviceMessage.class, this::onAddNewDevice) //7
                 .match(RemoveDeviceMessage.class, this::onRemoveDevice) //10
@@ -37,7 +36,7 @@ public class ClientActorKM extends AbstractActor {
                 .match(RequestEnergyConsumptionMessage.class, this::getConsumption) //10
                 .match(EnergyConsumptionMessage.class,  this::showConsumption) //10
 
-                .match(WarningMessage.class, this::showWarning)
+                .match(TextMessage.class, this::showWarning)
 
                 .match(TurnMachineMessage.class, this::sendTurnMachine)
                 .build();
@@ -45,13 +44,6 @@ public class ClientActorKM extends AbstractActor {
 
     void requestDevices(RequestDeviceMessage msg){
         kitchenMachine.tell(msg, self());
-    }
-
-    void showDevices(ReplyDevicesMessage msg){
-        System.out.println("Kitchen Machine Devices: ");
-        for (String device : msg.getDevices()) {
-            System.out.println(" - " + device);
-        }
     }
 
     void onAddNewDevice(AddDeviceMessage msg){
@@ -74,7 +66,7 @@ public class ClientActorKM extends AbstractActor {
         System.out.println("Kitchen machine's consumption: " + msg.getEnergyConsumption());
     }
 
-    void showWarning (WarningMessage msg){
+    void showWarning (TextMessage msg){
         System.out.println(msg.getText());
     }
 
