@@ -21,11 +21,7 @@ person_t *merge_people_arrays(person_t *infected_people, person_t *received_infe
 
 int main(int argc, char **argv) {
 
-    /*volatile int i = 0;
-    char hostname[256];
-    gethostname(hostname, sizeof(hostname));
-    printf("PID %d on %s ready for attach\n", getpid(), hostname);
-    fflush(stdout);
+    /*
     while (0 == i)
         sleep(5);
     */
@@ -41,8 +37,13 @@ int main(int argc, char **argv) {
     MPI_Datatype MPI_PERSON = create_mpi_person(MPI_POSITION);
     MPI_Datatype MPI_COUNTRY_NUMBER = create_mpi_country_number();
 
+    // Initialize result file
+    FILE *results_file = fopen("results.csv", "w");
+    fprintf(results_file, "day, country_id, non_infected, infected, immune\n");
+
     file_parameters_t param;
     init_config_t init_config;
+    int simulation_day = 1;
     if(my_rank == LEADER){
         log_message(INFO_1,"start initialization\n", PRIORITY_LOG_LEVEL);
         param = get_parameters_from_file("config.txt", PRIORITY_LOG_LEVEL);
@@ -239,9 +240,14 @@ int main(int argc, char **argv) {
         if(day_time >= 24*60*60){  // probabilmente bisogna pensare di avere un init_config_t divisibile per un giorno;
             day_time = 0;
             country_number_t countries[init_config.W/init_config.w][init_config.L/init_config.l];
+            memset(countries, 0, sizeof(countries));
+
+            printf("First country: non_infected: %d, infected: %d, immune: %d\n", countries[0][0].non_infected_person, countries[0][0].infected_person, countries[0][0].immune_person);
+            printf("Second country: non_infected: %d, infected: %d, immune: %d\n", countries[10][10].non_infected_person, countries[10][10].infected_person, countries[10][10].immune_person);
+            printf("Third country: non_infected: %d, infected: %d, immune: %d\n", countries[12][10].non_infected_person, countries[12][10].infected_person, countries[12][10].immune_person);
 
             // DEBUG ONLY
-            printf("I'm process %d and I am alive before computing people in countries.\n", my_rank);
+            // printf("I'm process %d and I am alive before computing people in countries.\n", my_rank);
 
             for(node_t *node_person = non_infected_list->head; node_person != NULL; node_person = node_person->next){
                 person_in_country(node_person->person, init_config.W, init_config.L, init_config.w, init_config.l, countries);
@@ -252,38 +258,89 @@ int main(int argc, char **argv) {
             }
 
             // DEBUG ONLY
-            printf("I'm process %d and I am alive after computing people in countries.\n", my_rank);
+            // printf("I'm process %d and I am alive after computing people in countries.\n", my_rank);
+
+
+            //volatile int i = 0;
+            char hostname[256];
+            gethostname(hostname, sizeof(hostname));
+            printf("PID %d on %s ready for attach\n", getpid(), hostname);
+            fflush(stdout);
 
             if(my_rank == LEADER) {
                 int i = 1;
+
+                // DEBUG ONLY
+                // printf("I'm process LEADER and I am alive before doing calloc.\n");
+
                 country_number_t *country_file_array = calloc(num_of_countries, sizeof(country_number_t));
                 country_file_array = convert_to_array(init_config.W/init_config.w, init_config.L/init_config.l, country_file_array, countries);
+                
+                // DEBUG ONLY
+                // printf("I'm process LEADER and I am alive after doing calloc.\n");
+
                 while (i < world_size) {
                     //receive the country array from the other processes
-                    country_number_t *received_countries = calloc(num_of_countries, sizeof(country_number_t));
+
+                    // DEBUG ONLY
+                    // printf("I'm process LEADER and I am alive before calloc.\n");
+
+                    country_number_t *received_countries = (country_number_t *)calloc(num_of_countries, sizeof(country_number_t));
+
+                    // DEBUG ONLY
+                    // printf("I'm process LEADER and I am alive before receiving country array.\n");
+
                     MPI_Recv(received_countries, num_of_countries, MPI_COUNTRY_NUMBER, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
+                    // DEBUG ONLY
+                    // printf("I'm process LEADER and I am alive before merging country arrays.\n");
+
                     merge_country_arrays(country_file_array, received_countries, num_of_countries);
+                    
+                    // DEBUG ONLY
+                    // printf("I'm process LEADER and I am alive after merging country arrays.\n");
+
                     free(received_countries);
                     i++;
                 }
 
-                write_on_file("results.csv", country_file_array, num_of_countries);
+                // compute the total number of people in countries array
+                int total_population = 0;
+                for(int i=0; i<num_of_countries; i++){
+                    total_population += country_file_array[i].non_infected_person + country_file_array[i].infected_person + country_file_array[i].immune_person;
+                }
+                printf("Total population: %d\n", total_population);
+
+                write_on_file(results_file, country_file_array, num_of_countries, simulation_day);
 
                 free(country_file_array);
+
+                simulation_day++;
             }else{
                 //send the country array to the leader
+
+                // DEBUG ONLY
+                // printf("I'm process %d and I am alive before doing calloc.\n", my_rank);
+
                 country_number_t *country_array_to_send = calloc(num_of_countries, sizeof(country_number_t));
                 country_array_to_send = convert_to_array(init_config.W/init_config.w, init_config.L/init_config.l, country_array_to_send, countries);
 
-                MPI_Send(country_array_to_send, (init_config.W/init_config.w) * (init_config.L/init_config.l), MPI_COUNTRY_NUMBER, LEADER, 0, MPI_COMM_WORLD);
+                // DEBUG ONLY
+                // printf("I'm process %d and I am alive after doing calloc.\n", my_rank);
+
+                MPI_Send(country_array_to_send, num_of_countries, MPI_COUNTRY_NUMBER, LEADER, 0, MPI_COMM_WORLD);
+
+                // DEBUG ONLY
+                printf("I'm process %d and I am alive after sending country array.\n", my_rank);
 
                 free(country_array_to_send);
+
+                // DEBUG ONLY
+                printf("I'm process %d and I am alive after freeing array to send.\n", my_rank);
             }
 
             MPI_Barrier(MPI_COMM_WORLD);
         }
-
 
         current_time += init_config.t;
         day_time += init_config.t;
@@ -293,6 +350,8 @@ int main(int argc, char **argv) {
 
     // printf("POST: my rank: %d, position a: x=%f, y=%f\n", my_rank, non_infected_list->head->person->position.x, non_infected_list->head->person->position.y);
     // printf("POST: my rank: %d, position b: x=%f, y=%f\n", my_rank, non_infected_list->head->next->person->position.x, non_infected_list->head->next->person->position.y);
+
+    fclose(results_file);
 
     MPI_Type_free(&MPI_INIT_CONFIG);
     MPI_Type_free(&MPI_POSITION);

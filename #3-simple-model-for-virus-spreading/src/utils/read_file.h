@@ -22,6 +22,6 @@ file_parameters_t get_parameters_from_file(char *file_name, int priority_level);
 
 bool check_parameters(file_parameters_t *parameters);
 
-void write_on_file(char *filename, country_number_t countries[], int total_length);
+void write_on_file(FILE *file, country_number_t countries[], int total_length, int simulation_day);
 
 #endif //FILE_READER_H

@@ -32,14 +32,14 @@ void person_in_country(person_t *person, int W, int L, int w, int l, country_num
 }
 
 country_number_t *convert_to_array(int width, int length, country_number_t *countries_array, country_number_t countries[][length]){
-    //[1][2][3][4]
-    //[5][6][7][8]
-    //[9][10][11][12]
+    //[0][1][2][3]
+    //[4][5][6][7]
+    //[8][9][10][11]
 
     //TODO check if this is correct
-    for(int i=0; i<length; i++){
-        for(int j=0; j<width; j++){
-            countries_array[i*length+j] = countries[j][i];
+    for(int i=0; i<width; i++){
+        for(int j=0; j<length; j++){
+            countries_array[i*length+j] = countries[i][j];
         }
     }
 
