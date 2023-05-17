@@ -19,13 +19,17 @@ dependencies {
     testImplementation 'com.typesafe.akka:akka-actor-testkit-typed_2.13:2.7.0'
     testImplementation 'junit:junit:4.13.2'
 
-
-
-
-
-
 }
 
 test {
     useJUnitPlatform()
+}
+
+tasks.register('JarCreation', Jar) {
+    manifest {
+        attributes 'Main-Class': 'NSDSprojects.ClientMain'
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
