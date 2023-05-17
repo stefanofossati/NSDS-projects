@@ -15,11 +15,12 @@ import java.util.Random;
 
 public class HVACActor extends AbstractActor {
 
-    Cluster cluster = Cluster.get(getContext().getSystem());
+    //Cluster cluster = Cluster.get(getContext().getSystem());
     private int dE = 10;
     private HashMap<String, RoomInfoContainer> sensors = new HashMap<>();
     private float energyConsumption = 0;
 
+/*
     public void preStart(){
         cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
     }
@@ -27,7 +28,7 @@ public class HVACActor extends AbstractActor {
     public void postStop(){
         cluster.unsubscribe(getSelf());
     }
-
+*/
     private static SupervisorStrategy strategy =
             new OneForOneStrategy(
                 10,

@@ -14,13 +14,14 @@ import java.util.HashMap;
 
 public class InHouseEntertainmentActor extends AbstractActor {
 
-    Cluster cluster = Cluster.get(getContext().getSystem());
+    //Cluster cluster = Cluster.get(getContext().getSystem());
     private int dE = 1;
     private int energyConsumption = 0;
 
     private HashMap<String, TVInfoContainer> tvs = new HashMap<>();
 
 
+/*
     public void preStart(){
         cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
     }
@@ -28,7 +29,7 @@ public class InHouseEntertainmentActor extends AbstractActor {
     public void postStop(){
         cluster.unsubscribe(getSelf());
     }
-
+*/
 
     private static SupervisorStrategy strategy =
             new OneForOneStrategy(

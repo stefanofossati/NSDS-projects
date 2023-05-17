@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 public class KitchenMachineActor extends AbstractActor {
 
-    Cluster cluster = Cluster.get(getContext().getSystem());
+    //Cluster cluster = Cluster.get(getContext().getSystem());
 
     private HashMap<String, MachineInfoContainer> machines = new HashMap<>();
 
@@ -23,6 +23,7 @@ public class KitchenMachineActor extends AbstractActor {
 
 
 
+/*
     public void preStart(){
         cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
     }
@@ -30,7 +31,7 @@ public class KitchenMachineActor extends AbstractActor {
     public void postStop(){
         cluster.unsubscribe(getSelf());
     }
-
+*/
 
     private static SupervisorStrategy strategy =
             new OneForOneStrategy(

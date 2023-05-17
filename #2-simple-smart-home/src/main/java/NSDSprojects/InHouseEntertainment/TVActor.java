@@ -16,18 +16,18 @@ import akka.cluster.ClusterEvent;
 import java.time.Duration;
 
 public class TVActor extends AbstractActor {
-    Cluster cluster = Cluster.get(getContext().getSystem());
+   // Cluster cluster = Cluster.get(getContext().getSystem());
     private Cancellable tvOnRoutine;
     private String state = "off";
 
 
-    public void preStart(){
+  /*  public void preStart(){
         cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
     }
 
     public void postStop(){
         cluster.unsubscribe(getSelf());
-    }
+    }*/
 
     @Override
     public Receive createReceive() {

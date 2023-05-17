@@ -11,7 +11,7 @@ import akka.cluster.ClusterEvent;
 public class ClientActorIHE extends AbstractActor {
     String inHouseEntertainmentAddr = "akka://InHouseEntertainmentServer@192.168.56.1:9004/user/InHouseEntertainmentActor";
     ActorSelection inHouseEntertainment = getContext().actorSelection(inHouseEntertainmentAddr);
-
+/*
     Cluster cluster = Cluster.get(getContext().getSystem());
 
     public void preStart(){
@@ -21,7 +21,7 @@ public class ClientActorIHE extends AbstractActor {
     public void postStop(){
         cluster.unsubscribe(getSelf());
     }
-
+*/
 
     @Override
     public Receive createReceive() {

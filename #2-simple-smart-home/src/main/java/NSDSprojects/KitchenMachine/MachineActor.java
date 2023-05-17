@@ -3,8 +3,6 @@ package NSDSprojects.KitchenMachine;
 import NSDSprojects.CustomException;
 import NSDSprojects.Messages.GenericMessages.CrashMessage;
 import NSDSprojects.Messages.GenericMessages.TickMessage;
-import NSDSprojects.Messages.InHouseEntertainment.TVReplyMessage;
-import NSDSprojects.Messages.InHouseEntertainment.TurnTVMessage;
 import NSDSprojects.Messages.KitchenMachine.MachineReplyMessage;
 import NSDSprojects.Messages.KitchenMachine.TurnMachineMessage;
 import akka.actor.AbstractActor;
@@ -20,17 +18,17 @@ public class MachineActor extends AbstractActor {
 
     private String state = "off";
 
-    Cluster cluster = Cluster.get(getContext().getSystem());
+    //Cluster cluster = Cluster.get(getContext().getSystem());
 
     private Cancellable kitchenMachineRoutine;
 
-    public void preStart(){
+    /*public void preStart(){
         cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
     }
 
     public void postStop(){
         cluster.unsubscribe(getSelf());
-    }
+    }*/
 
     @Override
     public Receive createReceive() {

@@ -18,7 +18,7 @@ import java.time.Duration;
 
 public class SensorActor extends AbstractActor {
 
-    Cluster cluster = Cluster.get(getContext().getSystem());
+    //Cluster cluster = Cluster.get(getContext().getSystem());
     private String room;
     private float currentTemp;
     final float dE = 10.0f;
@@ -27,14 +27,14 @@ public class SensorActor extends AbstractActor {
 
     private Cancellable sensorTask;
 
-    public void preStart(){
+   /* public void preStart(){
         cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
     }
 
     public void postStop(){
         cluster.unsubscribe(getSelf());
     }
-
+*/
     @Override
     public Receive createReceive() {
         return inactive();

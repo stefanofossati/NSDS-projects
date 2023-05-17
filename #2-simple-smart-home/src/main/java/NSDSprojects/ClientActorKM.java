@@ -12,6 +12,7 @@ public class ClientActorKM extends AbstractActor {
     String kitchenMachineAddr = "akka://KitchenMachineServer@192.168.56.1:9005/user/KitchenMachineActor";
     ActorSelection kitchenMachine = getContext().actorSelection(kitchenMachineAddr);
 
+/*
     Cluster cluster = Cluster.get(getContext().getSystem());
 
     public void preStart(){
@@ -21,7 +22,7 @@ public class ClientActorKM extends AbstractActor {
     public void postStop(){
         cluster.unsubscribe(getSelf());
     }
-
+*/
 
     @Override
     public Receive createReceive() {

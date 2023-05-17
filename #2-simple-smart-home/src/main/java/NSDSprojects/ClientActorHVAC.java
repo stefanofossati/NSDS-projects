@@ -12,6 +12,7 @@ public class ClientActorHVAC extends AbstractActor {
     String hvacAddr = "akka://HVACServer@192.168.56.1:9003/user/HVACActor";
     ActorSelection hvac = getContext().actorSelection(hvacAddr);
 
+/*
     Cluster cluster = Cluster.get(getContext().getSystem());
 
     public void preStart(){
@@ -21,7 +22,7 @@ public class ClientActorHVAC extends AbstractActor {
     public void postStop(){
         cluster.unsubscribe(getSelf());
     }
-
+*/
 
     @Override
     public Receive createReceive() {
