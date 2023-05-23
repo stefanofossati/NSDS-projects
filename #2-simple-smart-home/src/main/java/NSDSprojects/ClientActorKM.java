@@ -8,9 +8,13 @@ import akka.actor.Props;
 import akka.cluster.Cluster;
 import akka.cluster.ClusterEvent;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 public class ClientActorKM extends AbstractActor {
-    String kitchenMachineAddr = "akka://KitchenMachineServer@192.168.56.1:9005/user/KitchenMachineActor";
-    ActorSelection kitchenMachine = getContext().actorSelection(kitchenMachineAddr);
+    String kitchenMachineAddr;// = "akka://KitchenMachineServer@192.168.56.1:9005/user/KitchenMachineActor";
+    ActorSelection kitchenMachine;// = getContext().actorSelection(kitchenMachineAddr);
 
 /*
     Cluster cluster = Cluster.get(getContext().getSystem());
@@ -40,6 +44,8 @@ public class ClientActorKM extends AbstractActor {
                 .match(TextMessage.class, this::showWarning)
 
                 .match(TurnMachineMessage.class, this::sendTurnMachine)
+
+                .match(SetupConnectionMessage.class, this::setup)
                 .build();
     }
 
@@ -77,5 +83,22 @@ public class ClientActorKM extends AbstractActor {
 
     static Props props () {
         return Props.create(ClientActorKM.class);
+    }
+
+    void setup(SetupConnectionMessage msg) {
+        try {
+            File myObj = new File("src/main/java/resources/connectTo/km.txt");
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+                this.kitchenMachineAddr = "akka://KitchenMachineServer@" + data + "/user/KitchenMachineActor";
+                System.out.println(this.kitchenMachineAddr);
+                this.kitchenMachine = getContext().actorSelection(this.kitchenMachineAddr);
+            }
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+            e.printStackTrace();
+        }
     }
 }

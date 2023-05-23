@@ -76,7 +76,7 @@ public class HVACActor extends AbstractActor {
         if(msg.isActive()){
             this.energyConsumption += dE;
             sensors.get(msg.getRoom()).setTemp(msg.getTemp());
-            System.out.println(this.energyConsumption + "| temp: "+ msg.getTemp());
+            System.out.println(this.energyConsumption + "| temp: "+ msg.getTemp()/10);
         }
         if(sensors.get(msg.getRoom()).getDesiredTemp() == msg.getTemp()){
             sender().tell(new SensorOperationMessage(0), self());

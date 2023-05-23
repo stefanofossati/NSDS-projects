@@ -10,7 +10,9 @@ import java.io.IOException;
 public class HVACServer {
     public static void main(String[] args) throws IOException {
         Config conf = ConfigFactory.parseFile(new File("src/main/java/resources/hvac_conf.conf"));
+        System.out.println(conf.toString());
         ActorSystem sys = ActorSystem.create("HVACServer", conf);
         sys.actorOf(HVACActor.props(), "HVACActor");
+
     }
 }

@@ -25,8 +25,11 @@ public class ClientMain {
         final ActorSystem sys = ActorSystem.create("System", conf);
 
         final ActorRef clientHVAC = sys.actorOf(ClientActorHVAC.props(), "clientHVAC");
+        clientHVAC.tell(new SetupConnectionMessage(), ActorRef.noSender());
         final ActorRef clientIHE = sys.actorOf(ClientActorIHE.props(), "clientIHE");
+        clientIHE.tell(new SetupConnectionMessage(), ActorRef.noSender());
         final ActorRef clientKM = sys.actorOf(ClientActorKM.props(), "clientKM");
+        clientKM.tell(new SetupConnectionMessage(), ActorRef.noSender());
 
         while (on) {
 

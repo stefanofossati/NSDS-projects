@@ -8,9 +8,13 @@ import akka.actor.Props;
 import akka.cluster.Cluster;
 import akka.cluster.ClusterEvent;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 public class ClientActorIHE extends AbstractActor {
-    String inHouseEntertainmentAddr = "akka://InHouseEntertainmentServer@192.168.56.1:9004/user/InHouseEntertainmentActor";
-    ActorSelection inHouseEntertainment = getContext().actorSelection(inHouseEntertainmentAddr);
+    String inHouseEntertainmentAddr;// = "akka://InHouseEntertainmentServer@192.168.56.1:9004/user/InHouseEntertainmentActor";
+    ActorSelection inHouseEntertainment;// = getContext().actorSelection(inHouseEntertainmentAddr);
 /*
     Cluster cluster = Cluster.get(getContext().getSystem());
 
@@ -39,6 +43,8 @@ public class ClientActorIHE extends AbstractActor {
                 .match(TextMessage.class, this::showWarning)
 
                 .match(TurnTVMessage.class, this::sendTurnTv)
+
+                .match(SetupConnectionMessage.class, this::setup)
                 .build();
     }
 
@@ -76,5 +82,24 @@ public class ClientActorIHE extends AbstractActor {
 
     static Props props () {
         return Props.create(ClientActorIHE.class);
+    }
+
+    void setup(SetupConnectionMessage msg){
+        try {
+            File myObj = new File("src/main/java/resources/connectTo/ihe.txt");
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+                this.inHouseEntertainmentAddr = "akka://InHouseEntertainmentServer@" + data + "/user/InHouseEntertainmentActor";
+                System.out.println(this.inHouseEntertainmentAddr);
+                this.inHouseEntertainment = getContext().actorSelection(this.inHouseEntertainmentAddr);
+            }
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+            e.printStackTrace();
+        }
+
+
     }
 }

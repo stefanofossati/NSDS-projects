@@ -5,13 +5,20 @@ import NSDSprojects.Messages.HVAC.TemperatureMessage;
 import akka.actor.AbstractActor;
 import akka.actor.ActorSelection;
 import akka.actor.Props;
-import akka.cluster.Cluster;
-import akka.cluster.ClusterEvent;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class ClientActorHVAC extends AbstractActor {
-    String hvacAddr = "akka://HVACServer@192.168.56.1:9003/user/HVACActor";
+    /*
+    String hvacAddr = "akka://HVACServer@192.168.1.229:25520/user/HVACActor";
     ActorSelection hvac = getContext().actorSelection(hvacAddr);
-
+*/
+    String hvacAddr;
+    ActorSelection hvac;
 /*
     Cluster cluster = Cluster.get(getContext().getSystem());
 
@@ -41,6 +48,7 @@ public class ClientActorHVAC extends AbstractActor {
 
                 .match(TemperatureMessage.class, this::sendDesiredTemp) //4
 
+                .match(SetupConnectionMessage.class, this::setup)
                 .build();
     }
 
@@ -80,4 +88,22 @@ public class ClientActorHVAC extends AbstractActor {
         return Props.create(ClientActorHVAC.class);
     }
 
+    void setup(SetupConnectionMessage msg){
+        try {
+            File myObj = new File("src/main/java/resources/connectTo/hvac.txt");
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+                this.hvacAddr = "akka://HVACServer@" + data + "/user/HVACActor";
+                System.out.println(hvacAddr);
+                this.hvac = getContext().actorSelection(this.hvacAddr);
+            }
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+            e.printStackTrace();
+        }
+
+
+    }
 }

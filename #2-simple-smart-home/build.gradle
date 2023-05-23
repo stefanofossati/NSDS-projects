@@ -28,18 +28,13 @@ test {
 
 jar {
     manifest {
-        attributes "Main-Class": "NSDSprojects.HVAC.HVACServer"
+        attributes "Main-Class": "NSDSprojects.ClientMain"
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
-tasks.register('JarCreation', Jar) {
-    manifest {
-        attributes 'Main-Class': 'NSDSprojects.ClientMain'
-    }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}
 
 shadowJar {
     append 'reference.conf'
