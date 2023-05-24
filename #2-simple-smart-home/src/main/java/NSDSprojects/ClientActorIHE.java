@@ -13,32 +13,22 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class ClientActorIHE extends AbstractActor {
-    String inHouseEntertainmentAddr;// = "akka://InHouseEntertainmentServer@192.168.56.1:9004/user/InHouseEntertainmentActor";
-    ActorSelection inHouseEntertainment;// = getContext().actorSelection(inHouseEntertainmentAddr);
-/*
-    Cluster cluster = Cluster.get(getContext().getSystem());
+    String inHouseEntertainmentAddr;
+    ActorSelection inHouseEntertainment;
 
-    public void preStart(){
-        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
-    }
-
-    public void postStop(){
-        cluster.unsubscribe(getSelf());
-    }
-*/
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
 
-                .match(RequestDeviceMessage.class, this::requestDevices) //1-3
+                .match(RequestDeviceMessage.class, this::requestDevices)
 
-                .match(AddDeviceMessage.class, this::onAddNewDevice) //7
-                .match(RemoveDeviceMessage.class, this::onRemoveDevice) //10
+                .match(AddDeviceMessage.class, this::onAddNewDevice)
+                .match(RemoveDeviceMessage.class, this::onRemoveDevice)
                 .match(CrashMessage.class, this::onCrash)
 
-                .match(RequestEnergyConsumptionMessage.class, this::getConsumption) //10
-                .match(EnergyConsumptionMessage.class,  this::showConsumption) //10
+                .match(RequestEnergyConsumptionMessage.class, this::getConsumption)
+                .match(EnergyConsumptionMessage.class,  this::showConsumption)
 
                 .match(TextMessage.class, this::showWarning)
 

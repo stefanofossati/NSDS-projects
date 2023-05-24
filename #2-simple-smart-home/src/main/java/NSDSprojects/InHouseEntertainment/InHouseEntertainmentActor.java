@@ -13,23 +13,10 @@ import java.time.Duration;
 import java.util.HashMap;
 
 public class InHouseEntertainmentActor extends AbstractActor {
-
-    //Cluster cluster = Cluster.get(getContext().getSystem());
     private int dE = 1;
     private int energyConsumption = 0;
 
     private HashMap<String, TVInfoContainer> tvs = new HashMap<>();
-
-
-/*
-    public void preStart(){
-        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
-    }
-
-    public void postStop(){
-        cluster.unsubscribe(getSelf());
-    }
-*/
 
     private static SupervisorStrategy strategy =
             new OneForOneStrategy(
@@ -58,13 +45,21 @@ public class InHouseEntertainmentActor extends AbstractActor {
     }
 
     void addTv (AddDeviceMessage msg){
-        tvs.put(msg.getDeviceid(), new TVInfoContainer(getContext().actorOf(TVActor.props(), msg.getDeviceid()), "off"));
+        if(!tvs.containsKey(msg.getDeviceid())){
+            tvs.put(msg.getDeviceid(), new TVInfoContainer(getContext().actorOf(TVActor.props(), msg.getDeviceid()), "off"));
+            System.out.println(msg.getDeviceid() + " added");
+        }else{
+            sender().tell(new TextMessage("TV " + msg.getDeviceid() + " already exists"), self());
+        }
+
     }
 
     void removeTv (RemoveDeviceMessage msg){
         if(tvs.containsKey(msg.getDeviceid())){
             getContext().stop(tvs.get(msg.getDeviceid()).getTvref());
             tvs.remove(msg.getDeviceid());
+            System.out.println("TV " + msg.getDeviceid() + "removed");
+            sender().tell(new TextMessage("TV " + msg.getDeviceid() + " removed"), self());
         }else {
             sender().tell(new TextMessage("TV inserted to be removed doesnt exists!"), self());
         }
@@ -90,7 +85,7 @@ public class InHouseEntertainmentActor extends AbstractActor {
         }
         if(msg.getState().equals("on")) {
             this.energyConsumption += this.dE;
-            System.out.println(this.energyConsumption);
+            System.out.println(msg.getTv() + " | " +this.energyConsumption);
         }
     }
 

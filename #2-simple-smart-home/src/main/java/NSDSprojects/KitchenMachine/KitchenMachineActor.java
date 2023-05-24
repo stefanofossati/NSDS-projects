@@ -13,25 +13,11 @@ import java.time.Duration;
 import java.util.HashMap;
 
 public class KitchenMachineActor extends AbstractActor {
-
-    //Cluster cluster = Cluster.get(getContext().getSystem());
-
     private HashMap<String, MachineInfoContainer> machines = new HashMap<>();
 
     private int energyConsumption = 0;
     private int dE = 5;
 
-
-
-/*
-    public void preStart(){
-        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
-    }
-
-    public void postStop(){
-        cluster.unsubscribe(getSelf());
-    }
-*/
 
     private static SupervisorStrategy strategy =
             new OneForOneStrategy(
@@ -59,13 +45,20 @@ public class KitchenMachineActor extends AbstractActor {
     }
 
     void addMachine (AddDeviceMessage msg){
+        if(!machines.containsKey(msg.getDeviceid())){
             machines.put(msg.getDeviceid(), new MachineInfoContainer(getContext().actorOf(MachineActor.props(), msg.getDeviceid()), "off"));
+            System.out.println(msg.getDeviceid() + " added");
+        }else{
+            sender().tell(new TextMessage("KitchenMachine " + msg.getDeviceid() + " already exists"), self());
+        }
     }
 
     void removeMachine (RemoveDeviceMessage msg){
         if(machines.containsKey(msg.getDeviceid())){
             getContext().stop(machines.get(msg.getDeviceid()).getMachineref());
             machines.remove(msg.getDeviceid());
+            System.out.println("KitchenMachine " + msg.getDeviceid() + "removed");
+            sender().tell(new TextMessage("KitchenMachine " + msg.getDeviceid() + " removed"), self());
         }else {
             sender().tell(new TextMessage("Machine inserted to be removed doesnt exists!"), self());
         }
@@ -85,7 +78,7 @@ public class KitchenMachineActor extends AbstractActor {
         }
         if(msg.getState().equals("on")) {
             this.energyConsumption += this.dE;
-            System.out.println(this.energyConsumption);
+            System.out.println(msg.getMachine() + " | " + this.energyConsumption);
         }
     }
 

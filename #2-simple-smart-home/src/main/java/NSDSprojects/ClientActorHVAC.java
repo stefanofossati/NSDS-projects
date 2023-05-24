@@ -13,40 +13,25 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class ClientActorHVAC extends AbstractActor {
-    /*
-    String hvacAddr = "akka://HVACServer@192.168.1.229:25520/user/HVACActor";
-    ActorSelection hvac = getContext().actorSelection(hvacAddr);
-*/
     String hvacAddr;
     ActorSelection hvac;
-/*
-    Cluster cluster = Cluster.get(getContext().getSystem());
-
-    public void preStart(){
-        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
-    }
-
-    public void postStop(){
-        cluster.unsubscribe(getSelf());
-    }
-*/
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
 
-                .match(RequestDeviceMessage.class, this::requestDevices) //1-3
+                .match(RequestDeviceMessage.class, this::requestDevices)
 
-                .match(AddDeviceMessage.class, this::onAddNewDevice) //7
-                .match(RemoveDeviceMessage.class, this::onRemoveDevice) //10
+                .match(AddDeviceMessage.class, this::onAddNewDevice)
+                .match(RemoveDeviceMessage.class, this::onRemoveDevice)
                 .match(CrashMessage.class, this::onCrash)
 
-                .match(RequestEnergyConsumptionMessage.class, this::getConsumption) //10
-                .match(EnergyConsumptionMessage.class,  this::showConsumption) //10
+                .match(RequestEnergyConsumptionMessage.class, this::getConsumption)
+                .match(EnergyConsumptionMessage.class,  this::showConsumption)
 
                 .match(TextMessage.class, this::showWarning)
 
-                .match(TemperatureMessage.class, this::sendDesiredTemp) //4
+                .match(TemperatureMessage.class, this::sendDesiredTemp)
 
                 .match(SetupConnectionMessage.class, this::setup)
                 .build();

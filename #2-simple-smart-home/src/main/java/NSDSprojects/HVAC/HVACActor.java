@@ -14,21 +14,10 @@ import java.util.Random;
 
 
 public class HVACActor extends AbstractActor {
-
-    //Cluster cluster = Cluster.get(getContext().getSystem());
     private int dE = 10;
     private HashMap<String, RoomInfoContainer> sensors = new HashMap<>();
     private float energyConsumption = 0;
 
-/*
-    public void preStart(){
-        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
-    }
-
-    public void postStop(){
-        cluster.unsubscribe(getSelf());
-    }
-*/
     private static SupervisorStrategy strategy =
             new OneForOneStrategy(
                 10,
@@ -76,11 +65,11 @@ public class HVACActor extends AbstractActor {
         if(msg.isActive()){
             this.energyConsumption += dE;
             sensors.get(msg.getRoom()).setTemp(msg.getTemp());
-            System.out.println(this.energyConsumption + "| temp: "+ msg.getTemp()/10);
+            System.out.println("room:" + msg.getRoom() + " | current consumption: " + this.energyConsumption + " | temp: "+ msg.getTemp()/10);
         }
         if(sensors.get(msg.getRoom()).getDesiredTemp() == msg.getTemp()){
             sender().tell(new SensorOperationMessage(0), self());
-            System.out.println(msg.getRoom() + ": Temperatura raggiunta");
+            System.out.println("room " + msg.getRoom() + " reached desired temperature!");
         }else {
             if(sensors.get(msg.getRoom()).getDesiredTemp() > msg.getTemp()){
                 sender().tell(new SensorOperationMessage(1), self());
@@ -91,18 +80,24 @@ public class HVACActor extends AbstractActor {
     }
 
     void addSensor (AddDeviceMessage msg){
-        Random rand = new Random();
-        float initialTemp = rand.nextInt(250-100) + 100;
-        ActorRef sens = getContext().actorOf(SensorActor.props(), msg.getDeviceid());
-        sensors.put(msg.getDeviceid(), new RoomInfoContainer(sens, initialTemp, -999));
-        System.out.println("Created sensor: " + msg.getDeviceid() + " with temperature: " + initialTemp/10);
-        sens.tell(new SetupMessage(msg.getDeviceid(), initialTemp), self());
+        if(!sensors.containsKey(msg.getDeviceid())){
+            Random rand = new Random();
+            float initialTemp = rand.nextInt(250-100) + 100;
+            ActorRef sens = getContext().actorOf(SensorActor.props(), msg.getDeviceid());
+            sensors.put(msg.getDeviceid(), new RoomInfoContainer(sens, initialTemp, -999));
+            System.out.println("Created sensor: " + msg.getDeviceid() + " with temperature: " + initialTemp/10);
+            sens.tell(new SetupMessage(msg.getDeviceid(), initialTemp), self());
+        } else {
+            sender().tell(new TextMessage("Room name " + msg.getDeviceid() + " already exists"), self());
+        }
     }
 
     void removeSensor (RemoveDeviceMessage msg){
         if(sensors.containsKey(msg.getDeviceid())){
             getContext().stop(sensors.get(msg.getDeviceid()).getRoomref());
             sensors.remove(msg.getDeviceid());
+            System.out.println("Room " + msg.getDeviceid() + "removed");
+            sender().tell(new TextMessage("Room " + msg.getDeviceid() + "removed"), self());
         }else {
             sender().tell(new TextMessage("Room inserted to be removed doesnt exists!"), self());
         }
