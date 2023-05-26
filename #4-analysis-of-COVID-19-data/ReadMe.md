@@ -67,15 +67,16 @@ Now it's possible to access the Spark Web UI of the History Server at [127.0.0.1
 
 Note: The application must have been already compiled to a Jar (use `gradle shadowJar`).
 
-* `.\bin\spark-submit --class NSDSprojects.Main --master spark://<master_ip>:7077 <path_to_jar> spark://<master_ip>:7077 <input_path> false true true <output_path>`
+* `.\bin\spark-submit --class NSDSprojects.Main --master spark://<master_ip>:7077 <path_to_jar> spark://<master_ip>:7077 <input_path> <dataset_type> false true true <output_path>`
 
 Note about arguments:
 1) First parameter: address of the Spark Master.
 2) Second parameter: path to the file to be used as input dataset. 
-3) Third parameter: `true` to show results also on the terminal, `false` otherwise.
-4) Fourth parameter: `true` to use cache, `false` otherwise.
-5) Fifth parameter: `true` to write results on file, `false` otherwise.
-6) Sixth parameter: path to the folder where the output file will be created.
+3) Third parameter: dataset type, "ecdc" for real ECDC dataset, "simul" for datasets produced by an appropriate simulator.
+4) Fourth parameter: `true` to show results also on the terminal, `false` otherwise.
+5) Five parameter: `true` to use cache, `false` otherwise.
+6) Sixth parameter: `true` to write results on file, `false` otherwise.
+7) Seven parameter: path to the folder where the output file will be created.
 
 At the end of the computation, if write on file was enabled, results can be found in the output file.
 

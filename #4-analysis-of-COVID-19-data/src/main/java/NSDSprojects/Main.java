@@ -2,6 +2,7 @@ package NSDSprojects;
 
 import NSDSprojects.preprocessors.AbstractPreprocessor;
 import NSDSprojects.preprocessors.EcdcPreprocessor;
+import NSDSprojects.preprocessors.SyntheticDataPreprocessor;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
@@ -11,10 +12,11 @@ public class Main {
     public static void main(String[] args) {
         final String master = args.length > 0 ? args[0] : "local[4]";
         final String inputDatasetPath = args.length > 1 ? args[1] : "./files/input/ecdc_data.csv";
-        final boolean logOnConsole = args.length > 2 ? args[2].equals("true") : true;
-        final boolean useCache = args.length > 3 ? Boolean.parseBoolean(args[3]) : true;
-        final boolean writeToFile = args.length > 4 ? Boolean.parseBoolean(args[4]) : true;
-        final String outputPath = args.length > 5 ? args[5] : "./files/output/";
+        final String datasetType = args.length > 2 ? args[2] : "ecdc";
+        final boolean logOnConsole = args.length > 3 ? args[3].equals("true") : true;
+        final boolean useCache = args.length > 4 ? Boolean.parseBoolean(args[4]) : true;
+        final boolean writeToFile = args.length > 5 ? Boolean.parseBoolean(args[5]) : true;
+        final String outputPath = args.length > 6 ? args[6] : "./files/output/";
 
         final SparkSession spark = SparkSession
                 .builder()
@@ -23,8 +25,22 @@ public class Main {
                 .getOrCreate();
         spark.sparkContext().setLogLevel("ERROR");
 
-        AbstractPreprocessor preprocessor = new EcdcPreprocessor(spark, inputDatasetPath);
+        AbstractPreprocessor preprocessor;
+
+        if(datasetType.equals("ecdc")) {
+            preprocessor = new EcdcPreprocessor(spark, inputDatasetPath);
+        } else if(datasetType.equals("simul")) {
+            preprocessor = new SyntheticDataPreprocessor(spark, inputDatasetPath);
+        } else {
+            System.out.println("Dataset type not supported");
+            spark.close();
+            return;
+        }
+
         Dataset<Row> dataset = preprocessor.loadAndPreprocess();
+
+        if(logOnConsole)
+            dataset.show(50);
 
         Dataset<Row> query1Results = QueryExecutor.sevenDaysMovingAverage(dataset);
 
