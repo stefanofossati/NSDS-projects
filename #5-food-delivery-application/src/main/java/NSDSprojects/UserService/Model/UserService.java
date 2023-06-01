@@ -1,6 +1,7 @@
 package NSDSprojects.UserService.Model;
 
-import NSDSprojects.User;
+import NSDSprojects.Common.Kafka.UserKafka;
+import NSDSprojects.Common.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +19,8 @@ public class UserService {
 
 
     public void createUser(String user) {
-        userRepository.save(new User(user));
+        User userSaved = userRepository.save(new User(user));
         System.out.println("User to send: " + user);
-        userProducer.send(user);
+        userProducer.send(new UserKafka(userSaved.getName()));
     }
 }

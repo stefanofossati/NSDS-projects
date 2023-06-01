@@ -1,6 +1,6 @@
 package NSDSprojects.OrderService;
 
-import NSDSprojects.Order;
+import NSDSprojects.Common.Order;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

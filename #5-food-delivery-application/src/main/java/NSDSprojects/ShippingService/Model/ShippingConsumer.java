@@ -1,11 +1,15 @@
 package NSDSprojects.ShippingService.Model;
 
-import NSDSprojects.User;
+import NSDSprojects.Common.Kafka.OrderKafka;
+import NSDSprojects.Common.Kafka.UserKafka;
+import NSDSprojects.Common.Order;
+import NSDSprojects.Common.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Component
@@ -19,21 +23,21 @@ public class ShippingConsumer {
         this.shippingRepository = shippingRepository;
     }
 
-    @KafkaListener(topics = "${spring.kafka.topic2}")
-    public void consumeOrderMessage(String message) {
+    @KafkaListener(topics = "${spring.kafka.topic1}", containerFactory = "kafkaListenerContainerFactoryOrder")
+    public void consumeOrderMessage(OrderKafka message) {
         System.out.println("ShippingService: " + message);
         // facciamo cose
     }
 
     /**
      * Leggiamo e mettiamo nel DB
-     * @param message
+     * @param user
      */
-
-    @KafkaListener(topics = "${spring.kafka.topic1}")
-    public void consumeUserMessage(String message, Acknowledgment acknowledgment) {
-        System.out.println("ShippingService: " + message);
-        shippingRepository.save(new User(message));
+    @Transactional
+    @KafkaListener(topics = "${spring.kafka.topic2}", containerFactory = "kafkaListenerContainerFactoryUser")
+    public void consumeUserMessage(UserKafka user, Acknowledgment acknowledgment) {
+        System.out.println("ShippingService: " + user);
+        shippingRepository.save(new User(user.getName()));
         acknowledgment.acknowledge();
     }
 }

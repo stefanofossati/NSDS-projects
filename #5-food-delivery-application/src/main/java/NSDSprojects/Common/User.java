@@ -1,4 +1,4 @@
-package NSDSprojects;
+package NSDSprojects.Common;
 
 import jakarta.persistence.*;
 
@@ -24,5 +24,9 @@ public class User {
 
     public Long getId() {
         return id;
+    }
+
+    public String getName() {
+            return name;
     }
 }

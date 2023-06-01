@@ -1,6 +1,6 @@
 package NSDSprojects.UserService.Model;
 
-import NSDSprojects.User;
+import NSDSprojects.Common.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

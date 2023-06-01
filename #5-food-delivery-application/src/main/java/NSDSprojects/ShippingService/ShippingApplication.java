@@ -1,6 +1,6 @@
 package NSDSprojects.ShippingService;
 
-import NSDSprojects.User;
+import NSDSprojects.Common.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
