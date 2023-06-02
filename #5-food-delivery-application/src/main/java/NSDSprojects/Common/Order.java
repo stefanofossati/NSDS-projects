@@ -45,7 +45,11 @@ public class Order {
         return name;
     }
 
-    public Order(OrderState orderState) {
+    public OrderState getOrderState() {
+        return orderState;
+    }
+
+    public void setOrderState(OrderState orderState) {
         this.orderState = orderState;
     }
 }
