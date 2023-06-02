@@ -37,7 +37,7 @@ public class ShippingConsumer {
     @KafkaListener(topics = "${spring.kafka.topic2}", containerFactory = "kafkaListenerContainerFactoryUser")
     public void consumeUserMessage(UserKafka user, Acknowledgment acknowledgment) {
         System.out.println("ShippingService: " + user);
-        shippingRepository.save(new User(user.getName()));
+        shippingRepository.save(new User(user.getName(), user.getAddress()));
         acknowledgment.acknowledge();
     }
 }

@@ -11,11 +11,18 @@ public class User {
 
     private String name;
 
+    private String address;
+
     public User(String name) {
         this.name = name;
     }
 
     public User() {
+    }
+
+    public User(String name, String address) {
+        this.name = name;
+        this.address = address;
     }
 
     public void setId(Long id) {
@@ -28,5 +35,9 @@ public class User {
 
     public String getName() {
             return name;
+    }
+
+    public String getAddress(){
+        return address;
     }
 }

@@ -13,8 +13,8 @@ public class UserProducer {
     @Autowired
     private KafkaTemplate<String, UserKafka> kafkaTemplate;
 
-    public void send(UserKafka user) {
+    public void send(String key, UserKafka user) {
         System.out.println("userProducer: " + user);
-        kafkaTemplate.send(topic, user);
+        kafkaTemplate.send(topic, key, user);
     }
 }

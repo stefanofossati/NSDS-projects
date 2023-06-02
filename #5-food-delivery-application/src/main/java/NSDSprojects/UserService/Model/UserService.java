@@ -17,10 +17,13 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public void createUser(User user) {
+        User userSaved = userRepository.save(user);
+        System.out.println("User to send: " + user.getName());
+        userProducer.send(userSaved.getId().toString(), new UserKafka(userSaved.getName(), userSaved.getAddress()));
+    }
 
-    public void createUser(String user) {
-        User userSaved = userRepository.save(new User(user));
-        System.out.println("User to send: " + user);
-        userProducer.send(new UserKafka(userSaved.getName()));
+    public boolean doesUserExist(String name) {
+        return userRepository.existsByName(name);
     }
 }
