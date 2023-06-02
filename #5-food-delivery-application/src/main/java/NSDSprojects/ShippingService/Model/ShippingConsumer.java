@@ -16,17 +16,21 @@ import org.springframework.transaction.annotation.Transactional;
 @EnableJpaRepositories
 public class ShippingConsumer {
 
-    private final ShippingRepository shippingRepository;
+    private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
 
     @Autowired
-    public ShippingConsumer(ShippingRepository shippingRepository) {
-        this.shippingRepository = shippingRepository;
+    public ShippingConsumer(UserRepository userRepository, OrderRepository orderRepository) {
+        this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
     }
 
+    @Transactional
     @KafkaListener(topics = "${spring.kafka.topic1}", containerFactory = "kafkaListenerContainerFactoryOrder")
-    public void consumeOrderMessage(OrderKafka message) {
-        System.out.println("ShippingService: " + message);
-        // facciamo cose
+    public void consumeOrderMessage(OrderKafka order, Acknowledgment acknowledgment) {
+        System.out.println("ShippingService received a new order: " + order);
+        orderRepository.save(new Order(order.getName(), order.getItems()));
+        acknowledgment.acknowledge();
     }
 
     /**
@@ -36,8 +40,8 @@ public class ShippingConsumer {
     @Transactional
     @KafkaListener(topics = "${spring.kafka.topic2}", containerFactory = "kafkaListenerContainerFactoryUser")
     public void consumeUserMessage(UserKafka user, Acknowledgment acknowledgment) {
-        System.out.println("ShippingService: " + user);
-        shippingRepository.save(new User(user.getName(), user.getAddress()));
+        System.out.println("ShippingService received a new user: " + user);
+        userRepository.save(new User(user.getName(), user.getAddress()));
         acknowledgment.acknowledge();
     }
 }

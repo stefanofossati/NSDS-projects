@@ -13,8 +13,8 @@ public class OrderProducer {
     private KafkaTemplate<String, OrderKafka> kafkaTemplate;
 
 
-    public void send(String key, OrderKafka orderKafka) {
-        System.out.println("OrderProducer: " + key);
-        kafkaTemplate.send(topic, key, orderKafka);
+    public void send(OrderKafka orderKafka) {
+        System.out.println("OrderProducer is sending an order by: " + orderKafka.getName());
+        kafkaTemplate.send(topic, orderKafka);
     }
 }

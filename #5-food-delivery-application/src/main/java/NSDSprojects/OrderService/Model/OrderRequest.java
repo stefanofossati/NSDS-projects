@@ -1,19 +1,12 @@
-package NSDSprojects.Common.Kafka;
+package NSDSprojects.OrderService.Model;
 
 import java.util.Map;
 
-public class OrderKafka {
+public class OrderRequest {
     private String name;
-
     private Map<String, Integer> items;
 
-    public OrderKafka() {
-    }
-
-    public OrderKafka(String name, Map<String, Integer> items) {
-        this.name = name;
-        this.items = items;
-    }
+    public OrderRequest() {}
 
     public Map<String, Integer> getItems() {
         return items;
