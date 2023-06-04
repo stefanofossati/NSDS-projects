@@ -9,6 +9,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String globalUID;
+
     private String name;
 
     private String address;
@@ -21,6 +23,12 @@ public class User {
     }
 
     public User(String name, String address) {
+        this.name = name;
+        this.address = address;
+    }
+
+    public User(String globalUID, String name, String address) {
+        this.globalUID = globalUID;
         this.name = name;
         this.address = address;
     }

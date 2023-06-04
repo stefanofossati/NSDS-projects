@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
+    public Order findByGlobalUID(String globalUID);
 }
 

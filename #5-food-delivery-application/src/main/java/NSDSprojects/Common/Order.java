@@ -13,6 +13,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String globalUID;
+
     private String name;
 
     @ElementCollection
@@ -32,8 +34,19 @@ public class Order {
         this.orderState = OrderState.IN_PREPARATION;
     }
 
+    public Order(String globalUID, String name, Map<String, Integer> items) {
+        this.globalUID = globalUID;
+        this.name = name;
+        this.items = items;
+        this.orderState = OrderState.IN_PREPARATION;
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public String getGlobalUID() {
+        return globalUID;
     }
 
     public Map<String, Integer> getItems() {
@@ -50,6 +63,10 @@ public class Order {
 
     public void setOrderState(OrderState orderState) {
         this.orderState = orderState;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     protected void setName(String name) {
