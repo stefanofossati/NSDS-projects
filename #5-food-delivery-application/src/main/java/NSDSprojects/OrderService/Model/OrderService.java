@@ -1,29 +1,35 @@
 package NSDSprojects.OrderService.Model;
 
 import NSDSprojects.Common.Item;
-import NSDSprojects.Common.Kafka.OrderKafka;
 import NSDSprojects.Common.Order;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderService {
+
+    private Logger logger = LoggerFactory.getLogger(OrderService.class);
     private final OrderProducer orderProducer;
 
     private final OrderRepository orderRepository;
+
+    private final OrderOutboxRepository orderOutboxRepository;
     private final ItemRepository itemRepository;
 
     @Autowired
-    public OrderService(OrderProducer orderProducer, OrderRepository orderRepository, ItemRepository itemRepository) {
+    public OrderService(OrderProducer orderProducer, OrderRepository orderRepository, OrderOutboxRepository orderOutboxRepository, ItemRepository itemRepository) {
         this.orderProducer = orderProducer;
         this.orderRepository = orderRepository;
+        this.orderOutboxRepository = orderOutboxRepository;
         this.itemRepository = itemRepository;
     }
 
     @Transactional
     public void createOrder(Order order) {
-        System.out.println("Order to send");
+        logger.debug("Order to send");
         // for each item inserted in the order, reduce its availability in the storage
         order.getItems().forEach((key, value) -> {
             Item item = itemRepository.findByName(key);
@@ -31,8 +37,12 @@ public class OrderService {
             itemRepository.save(item);
         });
         // save the order in the database to be sent later by the sender tasks
-        orderRepository.save(order);
-        orderProducer.send(new OrderKafka(order.getName(), order.getItems()));
+        Order orderSaved = orderRepository.save(order);
+        logger.debug("Order saved in DB");
+        OrderOutbox orderOutbox = new OrderOutbox(orderSaved.getId(), orderSaved); //maybe we can use a trigger to do this
+        orderOutboxRepository.save(orderOutbox);
+        logger.debug("Order saved in outbox");
+        //orderProducer.send( "dd", new OrderKafka(order.getName(), order.getItems()));
     }
 
     public boolean modifyAvailability(AvailabilityRequest availabilityRequest) {

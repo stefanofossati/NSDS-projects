@@ -24,7 +24,6 @@ public class Order {
     private OrderState orderState;
 
     public Order() {
-
     }
 
     public Order(String name, Map<String, Integer> items) {
@@ -51,5 +50,11 @@ public class Order {
 
     public void setOrderState(OrderState orderState) {
         this.orderState = orderState;
+    }
+
+    protected void setName(String name) {
+    }
+
+    protected void setItems(Map<String, Integer> items) {
     }
 }

@@ -28,7 +28,7 @@ public class ShippingConsumer {
     @Transactional
     @KafkaListener(topics = "${spring.kafka.topic1}", containerFactory = "kafkaListenerContainerFactoryOrder")
     public void consumeOrderMessage(OrderKafka order, Acknowledgment acknowledgment) {
-        System.out.println("ShippingService received a new order: " + order);
+        System.out.println("ShippingService received a new order: " + order.getItems().toString());
         orderRepository.save(new Order(order.getName(), order.getItems()));
         acknowledgment.acknowledge();
     }
