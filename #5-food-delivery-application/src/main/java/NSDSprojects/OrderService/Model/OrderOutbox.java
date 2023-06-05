@@ -21,7 +21,7 @@ public class OrderOutbox{
     @Column(name = "quantity_outbox")
     private Map<String, Integer> items;
 
-    boolean isSent;
+    private boolean isSent;
 
     public OrderOutbox() {
     }

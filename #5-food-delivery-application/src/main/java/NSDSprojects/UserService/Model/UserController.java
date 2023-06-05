@@ -1,6 +1,8 @@
 package NSDSprojects.UserService.Model;
 
 import NSDSprojects.Common.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    private Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
     @Autowired
@@ -22,7 +26,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("User already existing!");
         } else {
             userService.createUser(new User(user.getName(), user.getAddress()));
-            System.out.println("User created");
+            logger.debug("User created");
             return ResponseEntity.ok("User created");
         }
     }
