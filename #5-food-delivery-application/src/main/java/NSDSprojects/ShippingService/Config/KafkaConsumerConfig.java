@@ -4,6 +4,7 @@ import NSDSprojects.Common.Kafka.OrderKafka;
 import NSDSprojects.Common.Kafka.UserKafka;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -23,7 +24,8 @@ import java.util.Map;
 @Configuration
 public class KafkaConsumerConfig {
 
-    private final String serverAddress = "localhost:9092";
+    @Value(value = "${spring.kafka.bootstrap-servers}")
+    private String serverAddress;
     private final String groupId = "shipping";
     private final boolean autoCommit = false;
     private final int autoCommitInterval = 100;

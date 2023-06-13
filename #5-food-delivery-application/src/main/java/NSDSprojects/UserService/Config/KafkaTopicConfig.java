@@ -2,6 +2,7 @@ package NSDSprojects.UserService.Config;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaAdmin;
@@ -12,8 +13,11 @@ import java.util.Map;
 @Configuration
 public class KafkaTopicConfig {
 
-    private final String serverAddress = "localhost:9092";
+    @Value(value = "${spring.kafka.bootstrap-servers}")
+    private String serverAddress;
 
+    @Value(value = "${spring.kafka.topic}")
+    private String topicName;
     @Bean
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> configs = new HashMap<>();
@@ -23,6 +27,6 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic topic1() {
-        return new NewTopic("user", 1, (short) 1);
+        return new NewTopic(topicName, 1, (short) 1);
     }
 }

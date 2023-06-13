@@ -16,15 +16,9 @@ import java.util.Map;
 
 @Configuration
 public class KafkaProducerConfig {
-
-    @Value("${spring.kafka.server-address}")
-    private String serverAddress;
     @Bean
     public ProducerFactory<String, UserKafka> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, serverAddress);
-        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         configProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, String.valueOf(true));
         return new DefaultKafkaProducerFactory<>(configProps);
     }

@@ -13,7 +13,11 @@ import java.util.Map;
 @Configuration
 public class KafkaTopicConfig {
 
-    private final String serverAddress = "localhost:9092";
+    @Value(value = "${spring.kafka.bootstrap-servers}")
+    private String serverAddress;
+
+    @Value(value = "${spring.kafka.topic}")
+    private String topicName;
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
@@ -24,6 +28,6 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic topic1() {
-        return new NewTopic("order", 1, (short) 1);
+        return new NewTopic(topicName, 1, (short) 1);
     }
 }
