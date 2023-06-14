@@ -14,14 +14,14 @@ public class OrderProducer {
     private final Logger logger = LoggerFactory.getLogger(OrderProducer.class);
 
     @Value(value="${spring.kafka.topic}")
-    private final String topic = "order";
+    private String topic;
 
     @Autowired
     private KafkaTemplate<String, OrderKafka> kafkaTemplate;
 
 
     public void send(String key, OrderKafka orderKafka) {
-        logger.debug("OrderProducer is sending an order by: " + orderKafka.getName());
+        logger.debug("OrderProducer is sending an order by: " + orderKafka.getName() + " with key " + key);
         kafkaTemplate.send(topic, key, orderKafka);
     }
 }

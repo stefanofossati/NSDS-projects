@@ -42,6 +42,14 @@ task userServiceJar(type: org.springframework.boot.gradle.tasks.bundling.BootJar
 	with bootJar
 }
 
+task shippingServiceJar(type: org.springframework.boot.gradle.tasks.bundling.BootJar){
+	archivesBaseName = 'ShippingService'
+	mainClass = 'NSDSprojects.ShippingService.ShippingApplication'
+	targetJavaVersion = targetCompatibility
+
+	with bootJar
+}
+
 
 
 

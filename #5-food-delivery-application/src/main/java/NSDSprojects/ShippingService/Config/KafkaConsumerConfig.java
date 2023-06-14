@@ -26,6 +26,13 @@ public class KafkaConsumerConfig {
 
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String serverAddress;
+
+    @Value(value = "${spring.kafka.consumer.key-deserializer}")
+    private String keyDeserializer;
+
+    @Value(value = "${spring.kafka.consumer.value-deserializer}")
+    private String valueDeserializer;
+
     private final String groupId = "shipping";
     private final boolean autoCommit = false;
     private final int autoCommitInterval = 100;
@@ -57,6 +64,8 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, OrderKafka> consumerFactoryOrder() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, serverAddress);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeserializer);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, String.valueOf(autoCommit));
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, String.valueOf(autoCommitInterval));
@@ -68,6 +77,8 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, UserKafka> consumerFactoryUser() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, serverAddress);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeserializer);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, String.valueOf(autoCommit));
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, String.valueOf(autoCommitInterval));
