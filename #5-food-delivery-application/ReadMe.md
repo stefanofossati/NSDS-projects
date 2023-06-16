@@ -5,7 +5,6 @@ for now, we have to build the different microservices manually, so go to ```grad
 
 ``` gradle bootJar ```
 
-After that, you have to 
 
 ## How To Run (with Docker)
 
