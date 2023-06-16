@@ -26,28 +26,11 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-Map<String, String> mainMap = new HashMap<String, String>()
-mainMap.put('OrderApplication', 'OrderService')
-mainMap.put('ShippingApplication', 'ShippingService')
-mainMap.put('UserApplication', 'UserService')
-
-
-
-
-task userServiceJar(type: org.springframework.boot.gradle.tasks.bundling.BootJar){
+bootJar{
 	archivesBaseName = 'UserService'
-	mainClass = 'NSDSprojects.UserService.UserApplication'
-	targetJavaVersion = targetCompatibility
-
-	with bootJar
-}
-
-task shippingServiceJar(type: org.springframework.boot.gradle.tasks.bundling.BootJar){
-	archivesBaseName = 'ShippingService'
-	mainClass = 'NSDSprojects.ShippingService.ShippingApplication'
-	targetJavaVersion = targetCompatibility
-
-	with bootJar
+	manifest {
+		attributes 'Start-Class': 'NSDSprojects.UserService.UserApplication'
+	}
 }
 
 
