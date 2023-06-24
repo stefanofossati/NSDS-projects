@@ -2,7 +2,7 @@ package NSDSprojects.ShippingService.Controller;
 
 import NSDSprojects.Common.Kafka.OrderState;
 import NSDSprojects.Common.Order;
-import NSDSprojects.Common.User;
+import NSDSprojects.Common.UserEntity;
 import NSDSprojects.ShippingService.Model.OrderDelivery;
 import NSDSprojects.ShippingService.Repository.OrderRepository;
 import NSDSprojects.ShippingService.Repository.UserRepository;
@@ -24,10 +24,12 @@ public class ShippingService {
     private Logger logger = LoggerFactory.getLogger(ShippingService.class);
 
     @Autowired
-    public ShippingService(ShippingConsumer shippingConsumer, OrderRepository orderRepository, UserRepository userRepository){
-        this.shippingConsumer = shippingConsumer;
-        this.orderRepository = orderRepository;
+    public ShippingService( UserRepository userRepository, OrderRepository orderRepository, ShippingConsumer shippingConsumer){
         this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
+        this.shippingConsumer = shippingConsumer;
+
+
     }
 
     public OrderState getOrderStatus(Long orderId) {
@@ -59,7 +61,7 @@ public class ShippingService {
         ArrayList<Order> allOrders = orderRepository.findAll();
         for(Order order : allOrders) {
             if(order.getOrderState() != OrderState.DELIVERED){
-                User user = userRepository.findByName(order.getName());
+                UserEntity user = userRepository.findByName(order.getName());
                 if(user != null){  // il sistema non fa check sul fatto che ci sono ordini fatti da utenti non registrati
                     orders.add(new OrderDelivery(order.getId(), order.getName(), user.getAddress(), order.getItems()));
                 }else{

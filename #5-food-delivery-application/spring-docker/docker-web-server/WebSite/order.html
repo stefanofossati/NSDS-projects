@@ -41,7 +41,10 @@
 </div>
 
 <div>
-    <h2>Order Status</h2>
+    <div>
+        <h2>Order Status</h2>
+        <button class="button center" onclick="reloadOrderStatusTable()">Refresh</button>
+    </div>
     <div id="OrderStatus" class ="center"></div>
 </div>
 
@@ -103,12 +106,9 @@
             items: Object.fromEntries(itemsMap)
         });
 
-        console.log(body);
         xmlHttp.onload = () => {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
                 console.log(xmlHttp.responseText);
-                resetFormAndReloadTable("orderTable");
-                reloadOrderStatusTable()
             } else {
                 alert(`Error: ${xmlHttp.status}`);
             }
@@ -130,6 +130,7 @@
     };
 
     function reloadOrderStatusTable(){
+        resetFormAndReloadTable("orderTable");
         const tableBody = document.querySelector(".orderStatusTable");
         while (tableBody.childNodes[1]) {
             tableBody.removeChild(tableBody.childNodes[1]);
@@ -137,6 +138,7 @@
 
         getOrdersStatus(function (response) {
             let ordersStatus = JSON.parse(response);
+            console.log(ordersStatus);
             addRowToTableOrderStatus(ordersStatus, "orderStatusTable");
         });
     }

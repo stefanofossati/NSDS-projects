@@ -1,7 +1,6 @@
 package NSDSprojects.UserService.Controller;
 
 import NSDSprojects.Common.User;
-import NSDSprojects.UserService.Model.UserRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/create")
-    public ResponseEntity<String> createUser(@RequestBody UserRequest user) {
+    public ResponseEntity<String> createUser(@RequestBody User user) {
         if(userService.doesUserExist(user.getName())) {
             // Return a response with a 400 Bad Request status code
             return ResponseEntity.badRequest().body("User already existing!");

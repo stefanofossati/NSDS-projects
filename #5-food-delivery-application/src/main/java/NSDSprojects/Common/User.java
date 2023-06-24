@@ -1,44 +1,20 @@
 package NSDSprojects.Common;
 
-import jakarta.persistence.*;
+import jakarta.persistence.MappedSuperclass;
 
-@Entity
-@Table(name = "users")
+@MappedSuperclass
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String globalUID;
-
     private String name;
-
     private String address;
-
-    public User(String name) {
-        this.name = name;
-    }
 
     public User() {
     }
-
+    public User(String name) {
+        this.name = name;
+    }
     public User(String name, String address) {
         this.name = name;
         this.address = address;
-    }
-
-    public User(String globalUID, String name, String address) {
-        this.globalUID = globalUID;
-        this.name = name;
-        this.address = address;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getName() {

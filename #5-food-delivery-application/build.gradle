@@ -27,9 +27,9 @@ tasks.named('test') {
 }
 
 bootJar{
-	archivesBaseName = 'UserService'
+	archivesBaseName = 'ShippingService'
 	manifest {
-		attributes 'Start-Class': 'NSDSprojects.UserService.UserApplication'
+		attributes 'Start-Class': 'NSDSprojects.ShippingService.ShippingApplication'
 	}
 }
 

@@ -1,6 +1,6 @@
 package NSDSprojects.UserService.Controller;
 
-import NSDSprojects.Common.Kafka.UserKafka;
+import NSDSprojects.Common.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +14,9 @@ public class UserProducer {
     private final String topic = "user";
 
     @Autowired
-    private KafkaTemplate<String, UserKafka> kafkaTemplate;
+    private KafkaTemplate<String, User> kafkaTemplate;
 
-    public void send(String key, UserKafka user) {
+    public void send(String key, User user) {
         logger.debug("userProducer: " + user);
         kafkaTemplate.send(topic, key, user);
     }

@@ -21,7 +21,6 @@
 <script type="text/javascript">
   function sendRegistration(){
     let name_input = document.getElementById("username");
-    let password_input = document.getElementById("password");
     let address_input = document.getElementById("address");
 
     var xmlHttp = new XMLHttpRequest();
@@ -42,7 +41,6 @@
     xmlHttp.send(body);
 
     name_input.value = "";
-    password_input.value = "";
     address_input.value = "";
 }
 </script>

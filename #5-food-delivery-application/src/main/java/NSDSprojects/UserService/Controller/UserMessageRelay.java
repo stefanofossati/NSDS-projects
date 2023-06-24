@@ -1,8 +1,8 @@
 package NSDSprojects.UserService.Controller;
 
-import NSDSprojects.Common.Kafka.UserKafka;
+import NSDSprojects.Common.User;
 import NSDSprojects.UserService.Model.UserOutbox;
-import NSDSprojects.UserService.Reopsitory.UserOutboxRepository;
+import NSDSprojects.UserService.Repository.UserOutboxRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class UserMessageRelay {
 
     @Transactional
     public void sendUser(UserOutbox userOutbox){
-        userProducer.send(userOutbox.getId().toString(), new UserKafka(userOutbox.getName(), userOutbox.getAddress()));
+        userProducer.send(userOutbox.getId().toString(), new User(userOutbox.getName(), userOutbox.getAddress()));
         userOutboxRepository.deleteById(userOutbox.getId());
         logger.debug("User sent " + userOutbox.getId().toString() + " " + userOutbox.getName());
     }

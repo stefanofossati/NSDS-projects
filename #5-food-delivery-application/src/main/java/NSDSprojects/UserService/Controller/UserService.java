@@ -1,9 +1,10 @@
 package NSDSprojects.UserService.Controller;
 
 import NSDSprojects.Common.User;
+import NSDSprojects.Common.UserEntity;
 import NSDSprojects.UserService.Model.UserOutbox;
-import NSDSprojects.UserService.Reopsitory.UserOutboxRepository;
-import NSDSprojects.UserService.Reopsitory.UserRepository;
+import NSDSprojects.UserService.Repository.UserOutboxRepository;
+import NSDSprojects.UserService.Repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +30,11 @@ public class UserService {
 
     @Transactional
     public void createUser(User user) {
-        User userSaved = userRepository.save(user);
+        UserEntity userSaved = userRepository.save(new UserEntity(user.getName(), user.getAddress()));
         logger.debug("User to send: " + user.getName());
         UserOutbox userOutbox = new UserOutbox(userSaved.getId(), userSaved.getName(), userSaved.getAddress());
         userOutboxRepository.save(userOutbox);
         logger.debug("User saved in outbox");
-        //userProducer.send(userSaved.getId().toString(), new UserKafka(userSaved.getName(), userSaved.getAddress()));
     }
 
     public boolean doesUserExist(String name) {

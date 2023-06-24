@@ -1,7 +1,7 @@
 package NSDSprojects.ShippingService.Config;
 
 import NSDSprojects.Common.Kafka.OrderKafka;
-import NSDSprojects.Common.Kafka.UserKafka;
+import NSDSprojects.Common.User;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,8 +49,8 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, UserKafka>> kafkaListenerContainerFactoryUser() {
-        ConcurrentKafkaListenerContainerFactory<String, UserKafka> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, User>> kafkaListenerContainerFactoryUser() {
+        ConcurrentKafkaListenerContainerFactory<String, User> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactoryUser());
         factory.setConcurrency(1);
         factory.getContainerProperties().setPollTimeout(3000);
@@ -74,7 +74,7 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConsumerFactory<String, UserKafka> consumerFactoryUser() {
+    public ConsumerFactory<String, User> consumerFactoryUser() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, serverAddress);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
@@ -83,7 +83,7 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, String.valueOf(autoCommit));
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, String.valueOf(autoCommitInterval));
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, String.valueOf(offsetResetStrategy));
-        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(UserKafka.class));
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(User.class));
     }
 
 
