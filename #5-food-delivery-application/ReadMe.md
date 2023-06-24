@@ -19,3 +19,15 @@ go in the folder ```spring-docker``` form the CLI and run the command:
 
 ``` docker-compose up --build ```
 
+### How to access the web site
+You need a browser with CORS disabled
+
+Example in chrome: 
+
+Go in the Chrome folder and run the command:
+
+``` chrome.exe --disable-web-security  --user-data-dir=~/chromeTemp ```
+
+Then go to the url:
+
+``` http://localhost:80/ ```

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>Deliver</h1>
+<div id="textbox">
+    <div class="center">
+        <input type="number" id="orderID" placeholder="order id"><br><br>
+
+        <button class="button" onclick="sendNotifyDeliver()"> Delivered </button>
+    </div>
+    <div>
+        <h2>Order Status</h2>
+        <div id="ordersStatus" class ="center"></div>
+    </div>
+</div>
+
+<script type="text/javascript" src="utils.js"></script>
+<script>
+    function sendNotifyDeliver(){
+        const orderId = document.getElementById("orderID").value;
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("POST", "http://"+  shipping_url +"/shipping/notify-delivered?orderId=" + orderId, false);
+        xmlHttp.setRequestHeader("Content-Type", "application/json; charset=UTF-8")
+        const body = JSON.stringify({});
+        xmlHttp.onload = () => {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                console.log(xmlHttp.responseText);
+                document.getElementById("orderID").value = "";
+                reloadAllOrderToDeliverTable();
+            } else {
+                alert(`Error: ${xmlHttp.status}`);
+            }
+        };
+        xmlHttp.send(body);
+    }
+
+    function getAllOrdersToDeliver(callback){
+        let xmlHttpReq = new XMLHttpRequest();
+        xmlHttpReq.onreadystatechange = function () {
+            if (xmlHttpReq.readyState == 4 && xmlHttpReq.status == 200){
+                callback(xmlHttpReq.responseText);
+            }else if(xmlHttpReq.status == 0){
+                console.log("Error " + xmlHttpReq.status + ": " + xmlHttpReq.statusText)
+            }else{
+                alert(`Error: ${xmlHttpReq.status}`);
+            }
+        };
+        xmlHttpReq.open("GET", "http://"+  shipping_url +"/shipping/orders-to-deliver", false); // true for asynchronous
+        xmlHttpReq.send(null);
+    }
+
+    getAllOrdersToDeliver(function (response) {
+        let allOrdersToDeliver = JSON.parse(response);
+        createTable("ordersStatus", ["ID", "Receiver","Address", "Items"], "allOrdersToDeliver");
+        addRowToTableAllOrder(allOrdersToDeliver, "allOrdersToDeliver");
+    });
+
+    function reloadAllOrderToDeliverTable(){
+        const tableBody = document.querySelector(".allOrdersToDeliver");
+        while (tableBody.childNodes[1]) {
+            tableBody.removeChild(tableBody.childNodes[1]);
+        }
+
+        getAllOrdersToDeliver(function (response) {
+            let allOrdersToDeliver = JSON.parse(response);
+            addRowToTableAllOrder(allOrdersToDeliver, "allOrdersToDeliver");
+        });
+    }
+
+    function addRowToTableAllOrder(rowData, tableName){
+        rowData.forEach((order) =>{
+            const tableBody = document.querySelector("." + tableName);
+
+            let row = document.createElement("tr");
+            row.className = "tableBodyRow";
+
+            let cell = document.createElement("td");
+            cell.innerText = order.orderId;
+            row.append(cell);
+
+            cell = document.createElement("td");
+            cell.innerText = order.name;
+            row.append(cell);
+
+            cell = document.createElement("td");
+            cell.innerText = order.address;
+            row.append(cell);
+
+            cell = document.createElement("td");
+            let orderString = "| ";
+            for(var key in order.items){
+                orderString += key + ": " + order.items[key] + " | ";
+            }
+            cell.innerText = orderString;
+            row.append(cell);
+
+            tableBody.append(row);
+        });
+    };
+</script>
+
+</body>
+</html>

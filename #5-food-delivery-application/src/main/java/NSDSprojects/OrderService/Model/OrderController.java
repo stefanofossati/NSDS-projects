@@ -1,5 +1,6 @@
 package NSDSprojects.OrderService.Model;
 
+import NSDSprojects.Common.Item;
 import NSDSprojects.Common.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +8,9 @@ import org.slf4j.Marker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/order")
@@ -22,7 +26,11 @@ public class OrderController {
     @PostMapping("/create")
     public ResponseEntity<String> createOrder(@RequestBody OrderRequest order) {
         Marker marker = null;
-        boolean areEnoughItemsInStorage = orderService.checkItemsAvailability(order);
+        boolean areEnoughItemsInStorage = orderService.checkItemsAvailability(order); //TODO manage Error
+
+        order.getItems().forEach((key, value) -> {
+            logger.debug("key: " + key + " value: " + value);
+        });
         if (areEnoughItemsInStorage) {
             orderService.createOrder(new Order(order.getName(), order.getItems()));
             logger.debug("Order created");
@@ -44,5 +52,12 @@ public class OrderController {
             logger.debug("New item with indicated availability inserted");
             return ResponseEntity.ok("New item with indicated availability inserted");
         }
+    }
+
+    @GetMapping("/availability")
+    public ResponseEntity<ArrayList<Item>> getAvailability() {
+        ArrayList<Item> availability = orderService.getAvailability();
+        logger.debug("Availability retrieved");
+        return ResponseEntity.ok(availability);
     }
 }

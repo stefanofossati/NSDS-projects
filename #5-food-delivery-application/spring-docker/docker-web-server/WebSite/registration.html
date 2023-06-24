@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>Registration</h1>
+<div class="center">
+  <input type="text" id="username" placeholder="Userame"><br><br>
+  <input type="text" id="address" placeholder="Your address"><br><br>
+  <button class="button" onclick="sendRegistration()"> Register </button>
+</div>
+
+  
+
+</body>
+</html>
+
+<script type="text/javascript" src="utils.js"></script>
+<script type="text/javascript">
+  function sendRegistration(){
+    let name_input = document.getElementById("username");
+    let password_input = document.getElementById("password");
+    let address_input = document.getElementById("address");
+
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("POST", "http://"+ user_url +"/user/create", false);
+    xmlHttp.setRequestHeader("Content-Type", "application/json; charset=UTF-8")
+    const body = JSON.stringify({
+      name: name_input.value,
+      address: address_input.value
+    });
+    xmlHttp.onload = () => {
+      if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+        console.log(xmlHttp.responseText);
+        location.href = "order.html";
+      } else {
+        alert(`Error: ${xmlHttp.status}`);
+      }
+    };
+    xmlHttp.send(body);
+
+    name_input.value = "";
+    password_input.value = "";
+    address_input.value = "";
+}
+</script>
+

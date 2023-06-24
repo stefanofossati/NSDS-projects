@@ -1,9 +1,12 @@
 package NSDSprojects.ShippingService.Model;
 
 import NSDSprojects.Common.Kafka.OrderState;
+import NSDSprojects.Common.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/shipping")
@@ -22,6 +25,26 @@ public class ShippingController {
             return ResponseEntity.badRequest().body("The order doesn't exist");
         } else {
             return ResponseEntity.ok("The order you requested is in state: " + orderState);
+        }
+    }
+
+    @GetMapping("/check-order-state")
+    public ResponseEntity<ArrayList<Order>> checkOrdersStatus(@RequestParam String username) {
+        ArrayList<Order> orders = shippingService.getOrdersStatus(username);
+        if(orders==null) {
+            return ResponseEntity.badRequest().header("Header - Massage","No orders found for the user").body(null);
+        } else {
+            return ResponseEntity.ok(orders);
+        }
+    }
+
+    @GetMapping("/orders-to-deliver")
+    public ResponseEntity<ArrayList<OrderDelivery>> checkOrders() {
+        ArrayList<OrderDelivery> orders = shippingService.getOrderToDeliver();
+        if(orders==null) {
+            return ResponseEntity.badRequest().header("Header - Massage","No orders found").body(null);
+        } else {
+            return ResponseEntity.ok(orders);
         }
     }
 

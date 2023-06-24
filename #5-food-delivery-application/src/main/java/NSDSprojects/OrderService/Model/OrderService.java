@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 @Service
 public class OrderService {
 
@@ -62,5 +65,9 @@ public class OrderService {
 
     public boolean checkItemsAvailability(OrderRequest order) {
         return order.getItems().entrySet().stream().allMatch((x) -> itemRepository.findByName(x.getKey()).getAmount() >= x.getValue());
+    }
+
+    public ArrayList<Item> getAvailability() {
+        return itemRepository.findAll();
     }
 }

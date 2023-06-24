@@ -1,5 +1,17 @@
 version: '2'
 services:
+  web-server:
+    container_name: web-server
+    build:
+      context: docker-web-server
+      dockerfile: Dockerfile
+    image: web-server:latest
+    ports:
+      - '80:80'
+    depends_on:
+      - order-service
+      - user-service
+      - shipping-service
   order-service:
     container_name: order-service
     build:
@@ -7,11 +19,11 @@ services:
       dockerfile: Dockerfile
     image: order-service:latest
     environment:
-      - SERVER_PORT=8080
+      - SERVER_PORT=8090
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9093
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/order_db
     ports:
-      - '8080:8080'
+      - '8090:8090'
     depends_on:
       - mysql
       - kafka
@@ -22,11 +34,11 @@ services:
       dockerfile: Dockerfile
     image: user-service:latest
     environment:
-      - SERVER_PORT=8081
+      - SERVER_PORT=8091
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9093
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/user_db
     ports:
-      - '8081:8081'
+      - '8091:8091'
     depends_on:
       - mysql
       - kafka
@@ -37,11 +49,11 @@ services:
       dockerfile: Dockerfile
     image: shipping-service:latest
     environment:
-      - SERVER_PORT=8082
+      - SERVER_PORT=8092
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9093
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/shipping_db
     ports:
-      - '8082:8082'
+      - '8092:8092'
     depends_on:
       - mysql
       - kafka

@@ -30,4 +30,15 @@ public class UserController {
             return ResponseEntity.ok("User created");
         }
     }
+
+    @GetMapping(path = "/login")
+    public ResponseEntity<String> getUser(@RequestParam String username) {
+        if(userService.doesUserExist(username)) {
+            logger.debug("User retrieved");
+            return ResponseEntity.ok("User retrieved");
+        } else {
+            logger.debug("User not existing");
+            return ResponseEntity.badRequest().body("User not existing");
+        }
+    }
 }
