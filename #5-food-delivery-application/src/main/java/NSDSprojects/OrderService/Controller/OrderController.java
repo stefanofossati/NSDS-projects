@@ -1,7 +1,9 @@
-package NSDSprojects.OrderService.Model;
+package NSDSprojects.OrderService.Controller;
 
 import NSDSprojects.Common.Item;
 import NSDSprojects.Common.Order;
+import NSDSprojects.OrderService.Model.AvailabilityRequest;
+import NSDSprojects.OrderService.Model.OrderRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -10,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/order")

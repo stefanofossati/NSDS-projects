@@ -1,9 +1,11 @@
-package NSDSprojects.ShippingService.Model;
+package NSDSprojects.ShippingService.Controller;
 
 import NSDSprojects.Common.Kafka.OrderState;
 import NSDSprojects.Common.Order;
 import NSDSprojects.Common.User;
-import NSDSprojects.OrderService.Model.OrderController;
+import NSDSprojects.ShippingService.Model.OrderDelivery;
+import NSDSprojects.ShippingService.Repository.OrderRepository;
+import NSDSprojects.ShippingService.Repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

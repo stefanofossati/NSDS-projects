@@ -1,6 +1,9 @@
-package NSDSprojects.UserService.Model;
+package NSDSprojects.UserService.Controller;
 
 import NSDSprojects.Common.User;
+import NSDSprojects.UserService.Model.UserOutbox;
+import NSDSprojects.UserService.Reopsitory.UserOutboxRepository;
+import NSDSprojects.UserService.Reopsitory.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

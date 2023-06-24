@@ -1,7 +1,13 @@
-package NSDSprojects.OrderService.Model;
+package NSDSprojects.OrderService.Controller;
 
 import NSDSprojects.Common.Item;
 import NSDSprojects.Common.Order;
+import NSDSprojects.OrderService.Model.AvailabilityRequest;
+import NSDSprojects.OrderService.Model.OrderOutbox;
+import NSDSprojects.OrderService.Model.OrderRequest;
+import NSDSprojects.OrderService.Repository.ItemRepository;
+import NSDSprojects.OrderService.Repository.OrderOutboxRepository;
+import NSDSprojects.OrderService.Repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 @Service
 public class OrderService {

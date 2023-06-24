@@ -1,4 +1,4 @@
-package NSDSprojects.OrderService.Model;
+package NSDSprojects.OrderService.Controller;
 
 import NSDSprojects.Common.Kafka.OrderKafka;
 import org.slf4j.Logger;

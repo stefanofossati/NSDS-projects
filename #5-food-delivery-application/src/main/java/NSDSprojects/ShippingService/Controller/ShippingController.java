@@ -1,7 +1,8 @@
-package NSDSprojects.ShippingService.Model;
+package NSDSprojects.ShippingService.Controller;
 
 import NSDSprojects.Common.Kafka.OrderState;
 import NSDSprojects.Common.Order;
+import NSDSprojects.ShippingService.Model.OrderDelivery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package NSDSprojects.OrderService.Model;
+package NSDSprojects.OrderService.Repository;
 
 import NSDSprojects.Common.Order;
 import org.springframework.data.jpa.repository.JpaRepository;

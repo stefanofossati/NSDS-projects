@@ -1,4 +1,4 @@
-package NSDSprojects.UserService.Model;
+package NSDSprojects.UserService.Reopsitory;
 
 import NSDSprojects.Common.User;
 import org.springframework.data.jpa.repository.JpaRepository;

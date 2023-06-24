@@ -1,5 +1,6 @@
-package NSDSprojects.OrderService.Model;
+package NSDSprojects.OrderService.Repository;
 
+import NSDSprojects.OrderService.Model.OrderOutbox;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

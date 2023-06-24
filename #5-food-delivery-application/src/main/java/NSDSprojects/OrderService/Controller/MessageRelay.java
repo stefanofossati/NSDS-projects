@@ -1,6 +1,8 @@
-package NSDSprojects.OrderService.Model;
+package NSDSprojects.OrderService.Controller;
 
 import NSDSprojects.Common.Kafka.OrderKafka;
+import NSDSprojects.OrderService.Model.OrderOutbox;
+import NSDSprojects.OrderService.Repository.OrderOutboxRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

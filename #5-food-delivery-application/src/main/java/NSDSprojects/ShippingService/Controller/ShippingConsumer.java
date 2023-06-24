@@ -1,12 +1,13 @@
-package NSDSprojects.ShippingService.Model;
+package NSDSprojects.ShippingService.Controller;
 
 import NSDSprojects.Common.Kafka.OrderKafka;
 import NSDSprojects.Common.Kafka.UserKafka;
 import NSDSprojects.Common.Order;
 import NSDSprojects.Common.User;
+import NSDSprojects.ShippingService.Repository.OrderRepository;
+import NSDSprojects.ShippingService.Repository.UserRepository;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.kafka.annotation.KafkaListener;
