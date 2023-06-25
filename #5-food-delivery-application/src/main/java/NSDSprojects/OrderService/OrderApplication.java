@@ -1,6 +1,6 @@
 package NSDSprojects.OrderService;
 
-import NSDSprojects.Common.Order;
+import NSDSprojects.Common.OrderEntity;
 import NSDSprojects.OrderService.Model.OrderOutbox;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,7 +11,7 @@ import java.util.Collections;
 
 @SpringBootApplication(scanBasePackages = {"NSDSprojects.OrderService"})
 @EnableJpaRepositories("NSDSprojects.OrderService.Repository")
-@EntityScan(basePackageClasses = {Order.class, OrderOutbox.class})
+@EntityScan(basePackageClasses = {OrderEntity.class, OrderOutbox.class})
 public class OrderApplication {
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(OrderApplication.class);

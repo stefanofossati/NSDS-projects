@@ -1,6 +1,6 @@
 package NSDSprojects.OrderService.Controller;
 
-import NSDSprojects.Common.Kafka.OrderKafka;
+import NSDSprojects.Common.Order;
 import NSDSprojects.OrderService.Model.OrderOutbox;
 import NSDSprojects.OrderService.Repository.OrderOutboxRepository;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ public class MessageRelay {
 
     @Transactional
     public void sendOrder(OrderOutbox orderOutbox) {
-        orderProducer.send(orderOutbox.getId().toString() ,new OrderKafka(orderOutbox.getName(), orderOutbox.getItems()));
+        orderProducer.send(orderOutbox.getId().toString() ,new Order(orderOutbox.getName(), orderOutbox.getItems()));
         orderOutboxRepository.deleteById(orderOutbox.getId());
         logger.debug("Order sent " + orderOutbox.getId().toString() + " " + orderOutbox.getName());
     }

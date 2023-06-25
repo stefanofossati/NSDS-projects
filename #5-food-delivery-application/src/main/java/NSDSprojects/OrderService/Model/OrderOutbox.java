@@ -1,6 +1,6 @@
 package NSDSprojects.OrderService.Model;
 
-import NSDSprojects.Common.Order;
+import NSDSprojects.Common.OrderEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
@@ -25,10 +25,10 @@ public class OrderOutbox{
 
     public OrderOutbox() {
     }
-    public OrderOutbox(Long id, Order order){
+    public OrderOutbox(Long id, OrderEntity orderEntity){
         Id = id;
-        name = order.getName();
-        items = order.getItems();
+        name = orderEntity.getName();
+        items = orderEntity.getItems();
         isSent = false;
     }
 

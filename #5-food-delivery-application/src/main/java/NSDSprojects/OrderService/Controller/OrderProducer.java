@@ -1,6 +1,6 @@
 package NSDSprojects.OrderService.Controller;
 
-import NSDSprojects.Common.Kafka.OrderKafka;
+import NSDSprojects.Common.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +17,11 @@ public class OrderProducer {
     private String topic;
 
     @Autowired
-    private KafkaTemplate<String, OrderKafka> kafkaTemplate;
+    private KafkaTemplate<String, Order> kafkaTemplate;
 
 
-    public void send(String key, OrderKafka orderKafka) {
-        logger.debug("OrderProducer is sending an order by: " + orderKafka.getName() + " with key " + key);
-        kafkaTemplate.send(topic, key, orderKafka);
+    public void send(String key, Order order) {
+        logger.debug("OrderProducer is sending an order by: " + order.getName() + " with key " + key);
+        kafkaTemplate.send(topic, key, order);
     }
 }

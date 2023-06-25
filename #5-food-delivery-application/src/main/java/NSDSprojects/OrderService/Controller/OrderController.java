@@ -1,7 +1,7 @@
 package NSDSprojects.OrderService.Controller;
 
 import NSDSprojects.Common.Item;
-import NSDSprojects.Common.Order;
+import NSDSprojects.Common.OrderEntity;
 import NSDSprojects.OrderService.Model.AvailabilityRequest;
 import NSDSprojects.OrderService.Model.OrderRequest;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class OrderController {
             logger.debug("key: " + key + " value: " + value);
         });
         if (areEnoughItemsInStorage) {
-            orderService.createOrder(new Order(order.getName(), order.getItems()));
+            orderService.createOrder(new OrderEntity(order.getName(), order.getItems()));
             logger.debug("Order created");
             return ResponseEntity.ok("Order created");
         } else {

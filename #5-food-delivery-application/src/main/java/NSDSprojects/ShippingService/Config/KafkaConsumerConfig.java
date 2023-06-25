@@ -1,6 +1,6 @@
 package NSDSprojects.ShippingService.Config;
 
-import NSDSprojects.Common.Kafka.OrderKafka;
+import NSDSprojects.Common.Order;
 import NSDSprojects.Common.User;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -15,7 +15,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,8 +37,8 @@ public class KafkaConsumerConfig {
     private final int autoCommitInterval = 100;
     private final String offsetResetStrategy = "latest";
     @Bean
-    KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, OrderKafka>> kafkaListenerContainerFactoryOrder() {
-        ConcurrentKafkaListenerContainerFactory<String, OrderKafka> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Order>> kafkaListenerContainerFactoryOrder() {
+        ConcurrentKafkaListenerContainerFactory<String, Order> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactoryOrder());
         factory.setConcurrency(1);
         factory.getContainerProperties().setPollTimeout(3000);
@@ -61,7 +60,7 @@ public class KafkaConsumerConfig {
 
 
     @Bean
-    public ConsumerFactory<String, OrderKafka> consumerFactoryOrder() {
+    public ConsumerFactory<String, Order> consumerFactoryOrder() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, serverAddress);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
@@ -70,7 +69,7 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, String.valueOf(autoCommit));
         props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, String.valueOf(autoCommitInterval));
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, String.valueOf(offsetResetStrategy));
-        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(OrderKafka.class));
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), new JsonDeserializer<>(Order.class));
     }
 
     @Bean

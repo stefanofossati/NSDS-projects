@@ -1,7 +1,7 @@
 package NSDSprojects.ShippingService.Controller;
 
-import NSDSprojects.Common.Kafka.OrderKafka;
 import NSDSprojects.Common.Order;
+import NSDSprojects.Common.OrderEntity;
 import NSDSprojects.Common.User;
 import NSDSprojects.Common.UserEntity;
 import NSDSprojects.ShippingService.Repository.OrderRepository;
@@ -39,22 +39,22 @@ public class ShippingConsumer {
 
     @Transactional
     @KafkaListener(topics = "${spring.kafka.topic1}", containerFactory = "kafkaListenerContainerFactoryOrder")
-    public void consumeOrderMessage(ConsumerRecord<String, OrderKafka> record, Acknowledgment acknowledgment) {
+    public void consumeOrderMessage(ConsumerRecord<String, Order> record, Acknowledgment acknowledgment) {
         String key = record.key();
-        OrderKafka order = record.value();
+        Order order = record.value();
         System.out.println("ShippingService received a new order: " + key);
         if(firstOrderConsumedAfterRecovery) {
             // check whether the first order found is a duplicate due to a previous crash of the service
-            boolean isDuplicate = orderRepository.findByGlobalUID(key) != null;
+            boolean isDuplicate = orderRepository.findById(Long.parseLong(key)).isPresent();
             if(!isDuplicate) {
                 // if it's not a duplicate, save it
-                orderRepository.save(new Order(key, order.getName(), order.getItems()));
+                orderRepository.save(new OrderEntity(Long.parseLong(key), order.getName(), order.getItems()));
             } else {
                 System.out.println("Found a duplicate order having key: " + key);
             }
             firstOrderConsumedAfterRecovery = false;
         } else {
-            orderRepository.save(new Order(key, order.getName(), order.getItems()));
+            orderRepository.save(new OrderEntity(Long.parseLong(key), order.getName(), order.getItems()));
         }
         acknowledgment.acknowledge();
     }

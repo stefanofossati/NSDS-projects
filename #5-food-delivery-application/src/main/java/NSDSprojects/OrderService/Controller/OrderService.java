@@ -1,7 +1,7 @@
 package NSDSprojects.OrderService.Controller;
 
 import NSDSprojects.Common.Item;
-import NSDSprojects.Common.Order;
+import NSDSprojects.Common.OrderEntity;
 import NSDSprojects.OrderService.Model.AvailabilityRequest;
 import NSDSprojects.OrderService.Model.OrderOutbox;
 import NSDSprojects.OrderService.Model.OrderRequest;
@@ -36,18 +36,18 @@ public class OrderService {
     }
 
     @Transactional
-    public void createOrder(Order order) {
+    public void createOrder(OrderEntity orderEntity) {
         logger.debug("Order to send");
         // for each item inserted in the order, reduce its availability in the storage
-        order.getItems().forEach((key, value) -> {
+        orderEntity.getItems().forEach((key, value) -> {
             Item item = itemRepository.findByName(key);
             item.setAmount(item.getAmount() - value);
             itemRepository.save(item);
         });
         // save the order in the database to be sent later by the sender tasks
-        Order orderSaved = orderRepository.save(order);
+        OrderEntity orderEntitySaved = orderRepository.save(orderEntity);
         logger.debug("Order saved in DB");
-        OrderOutbox orderOutbox = new OrderOutbox(orderSaved.getId(), orderSaved); //maybe we can use a trigger to do this
+        OrderOutbox orderOutbox = new OrderOutbox(orderEntitySaved.getId(), orderEntitySaved); //maybe we can use a trigger to do this
         orderOutboxRepository.save(orderOutbox);
         logger.debug("Order saved in outbox");
         //orderProducer.send( "dd", new OrderKafka(order.getName(), order.getItems()));

@@ -1,7 +1,7 @@
 package NSDSprojects.ShippingService.Controller;
 
-import NSDSprojects.Common.Kafka.OrderState;
-import NSDSprojects.Common.Order;
+import NSDSprojects.Common.OrderState;
+import NSDSprojects.Common.OrderEntity;
 import NSDSprojects.Common.UserEntity;
 import NSDSprojects.ShippingService.Model.OrderDelivery;
 import NSDSprojects.ShippingService.Repository.OrderRepository;
@@ -33,39 +33,39 @@ public class ShippingService {
     }
 
     public OrderState getOrderStatus(Long orderId) {
-        Optional<Order> order = orderRepository.findById(orderId);
-        return order.map(Order::getOrderState).orElse(null);
+        Optional<OrderEntity> order = orderRepository.findById(orderId);
+        return order.map(OrderEntity::getOrderState).orElse(null);
     }
 
     public boolean updateOrderStatus(Long orderId, OrderState delivered) {
-        Optional<Order> optOrder = orderRepository.findById(orderId);
+        Optional<OrderEntity> optOrder = orderRepository.findById(orderId);
         if(optOrder.isPresent()) {
-            Order order = optOrder.get();
-            order.setOrderState(delivered);
-            orderRepository.save(order);
+            OrderEntity orderEntity = optOrder.get();
+            orderEntity.setOrderState(delivered);
+            orderRepository.save(orderEntity);
             return true;
         } else return false;
     }
 
-    public ArrayList<Order> getOrdersStatus(String username) {
-        ArrayList<Order> orders = orderRepository.findByUsername(username);
-        if(orders.isEmpty()) {
+    public ArrayList<OrderEntity> getOrdersStatus(String username) {
+        ArrayList<OrderEntity> orderEntities = orderRepository.findByUsername(username);
+        if(orderEntities.isEmpty()) {
             return null;
         } else {
-            return orders;
+            return orderEntities;
         }
     }
 
     public ArrayList<OrderDelivery> getOrderToDeliver() {
         ArrayList<OrderDelivery> orders = new ArrayList<>();
-        ArrayList<Order> allOrders = orderRepository.findAll();
-        for(Order order : allOrders) {
-            if(order.getOrderState() != OrderState.DELIVERED){
-                UserEntity user = userRepository.findByName(order.getName());
+        ArrayList<OrderEntity> allOrders = orderRepository.findAll();
+        for(OrderEntity orderEntity : allOrders) {
+            if(orderEntity.getOrderState() != OrderState.DELIVERED){
+                UserEntity user = userRepository.findByName(orderEntity.getName());
                 if(user != null){  // il sistema non fa check sul fatto che ci sono ordini fatti da utenti non registrati
-                    orders.add(new OrderDelivery(order.getId(), order.getName(), user.getAddress(), order.getItems()));
+                    orders.add(new OrderDelivery(orderEntity.getId(), orderEntity.getName(), user.getAddress(), orderEntity.getItems()));
                 }else{
-                    orders.add(new OrderDelivery(order.getId(), order.getName(), "No address", order.getItems()));
+                    orders.add(new OrderDelivery(orderEntity.getId(), orderEntity.getName(), "No address", orderEntity.getItems()));
                 }
             }
         }

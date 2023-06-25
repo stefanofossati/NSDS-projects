@@ -1,7 +1,7 @@
 package NSDSprojects.ShippingService.Controller;
 
-import NSDSprojects.Common.Kafka.OrderState;
-import NSDSprojects.Common.Order;
+import NSDSprojects.Common.OrderState;
+import NSDSprojects.Common.OrderEntity;
 import NSDSprojects.ShippingService.Model.OrderDelivery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +30,12 @@ public class ShippingController {
     }
 
     @GetMapping("/check-order-state")
-    public ResponseEntity<ArrayList<Order>> checkOrdersStatus(@RequestParam String username) {
-        ArrayList<Order> orders = shippingService.getOrdersStatus(username);
-        if(orders==null) {
+    public ResponseEntity<ArrayList<OrderEntity>> checkOrdersStatus(@RequestParam String username) {
+        ArrayList<OrderEntity> orderEntities = shippingService.getOrdersStatus(username);
+        if(orderEntities ==null) {
             return ResponseEntity.badRequest().header("Header - Massage","No orders found for the user").body(null);
         } else {
-            return ResponseEntity.ok(orders);
+            return ResponseEntity.ok(orderEntities);
         }
     }
 
