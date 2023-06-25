@@ -67,7 +67,7 @@
           }else if(xmlHttpReq.status == 0){
             console.log("Error " + xmlHttpReq.status + ": " + xmlHttpReq.statusText)
           }else{
-            alert(`Error: ${xmlHttpReq.status}`);
+            alert(`Error ${xmlHttpReq.status}: ${xmlHttpReq.responseText}`);
           }
         };
         xmlHttpReq.open("GET", "http://"+ shipping_url + "/shipping/check-order-state?username=" + username, false);

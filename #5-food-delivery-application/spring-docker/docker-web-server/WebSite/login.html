@@ -23,9 +23,9 @@
           if (xmlHttpReq.readyState == 4 && xmlHttpReq.status == 200){
             location.href = "order.html?username=" + username;
           }else if(xmlHttpReq.status == 0){
-            console.log("Error " + xmlHttpReq.status + ": " + xmlHttpReq.statusText)
+            console.log("Error " + xmlHttpReq.status)
           }else{
-            alert(`Error: ${xmlHttpReq.status}`);
+            alert(`Error ${xmlHttpReq.status}: ${xmlHttpReq.responseText}`);
           } 
         };
         xmlHttpReq.open("GET", "http://"+ user_url + "/user/login?username=" + username, false); // true for asynchronous

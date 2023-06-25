@@ -33,7 +33,7 @@
                 document.getElementById("orderID").value = "";
                 reloadAllOrderToDeliverTable();
             } else {
-                alert(`Error: ${xmlHttp.status}`);
+                alert(`Error ${xmlHttp.status}: ${xmlHttpReq.responseText}`);
             }
         };
         xmlHttp.send(body);
@@ -47,7 +47,7 @@
             }else if(xmlHttpReq.status == 0){
                 console.log("Error " + xmlHttpReq.status + ": " + xmlHttpReq.statusText)
             }else{
-                alert(`Error: ${xmlHttpReq.status}`);
+                alert(`Error ${xmlHttpReq.status}: ${xmlHttpReq.responseText}`);
             }
         };
         xmlHttpReq.open("GET", "http://"+  shipping_url +"/shipping/orders-to-deliver", false); // true for asynchronous

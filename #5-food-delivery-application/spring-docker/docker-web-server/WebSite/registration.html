@@ -35,7 +35,7 @@
         console.log(xmlHttp.responseText);
         location.href = "order.html";
       } else {
-        alert(`Error: ${xmlHttp.status}`);
+        alert(`Error ${xmlHttp.status}: ${xmlHttp.responseText}`);
       }
     };
     xmlHttp.send(body);

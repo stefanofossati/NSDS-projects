@@ -24,7 +24,7 @@ function getAvailability(callback) {
       }else if(xmlHttpReq.status == 0){
         console.log("Error " + xmlHttpReq.status + ": " + xmlHttpReq.statusText)
       }else{
-        alert(`Error: ${xmlHttpReq.status}`);
+        alert(`Error ${xmlHttpReq.status}: ${xmlHttpReq.responseText}`);
       }
     };
     xmlHttpReq.open("GET", "http://"+  order_url +"/order/availability", false); // true for asynchronous
@@ -49,7 +49,7 @@ function updateAvaiability(){
             console.log(xmlHttp.responseText);
             reloadToTable("orderTable");
         } else {
-            alert(`Error: ${xmlHttp.status}`);
+            alert(`Error ${xmlHttp.status}: ${xmlHttp.responseText}`);
         }
     };
     xmlHttp.send(body);
