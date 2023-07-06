@@ -56,7 +56,7 @@
         "type": "mqtt in",
         "z": "e0d233bea8e17753",
         "name": "",
-        "topic": "iot/native/temp",
+        "topic": "iot/native/temp/json",
         "qos": "2",
         "datatype": "auto-detect",
         "broker": "e0054114c2c88607",
@@ -64,7 +64,7 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 190,
+        "x": 200,
         "y": 240,
         "wires": [
             [
@@ -254,7 +254,7 @@
         "key": "topic",
         "joiner": "\\n",
         "joinerType": "str",
-        "accumulate": true,
+        "accumulate": false,
         "timeout": "",
         "count": "2",
         "reduceRight": false,
@@ -275,7 +275,7 @@
         "type": "mqtt in",
         "z": "e0d233bea8e17753",
         "name": "",
-        "topic": "iot/native/humidity",
+        "topic": "iot/native/humidity/json",
         "qos": "2",
         "datatype": "auto-detect",
         "broker": "e0054114c2c88607",
@@ -283,7 +283,7 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 200,
+        "x": 210,
         "y": 140,
         "wires": [
             [
@@ -385,14 +385,14 @@
         "id": "d72fd9e67a43a5da",
         "type": "function",
         "z": "e0d233bea8e17753",
-        "name": "query of last ten days",
-        "func": "const date = new Date();\n\nvar dateFilter;\n\nif (true) {\n    dateFilter = {\n        timestemp: {\n            $gt: new Date(date.getFullYear(), date.getMonth(), date.getDate()-10),\n            $lt: new Date(date.getFullYear(), date.getMonth(), date.getDate()+1)\n        }\n    };\n    msg.payload = dateFilter\n    return msg;\n\n}\n",
+        "name": "query of last x days",
+        "func": "const date = new Date();\n\nvar dateFilter;\n\n\n\nif (true) {\n    dateFilter = {\n        timestemp: {\n            $gt: new Date(date.getFullYear(), date.getMonth(), date.getDate()-msg.payload),\n            $lt: new Date(date.getFullYear(), date.getMonth(), date.getDate()+1)\n        }\n    };\n    msg.payload = dateFilter\n    return msg;\n\n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
+        "x": 390,
         "y": 740,
         "wires": [
             [
@@ -419,7 +419,8 @@
         "y": 740,
         "wires": [
             [
-                "d72fd9e67a43a5da"
+                "d72fd9e67a43a5da",
+                "753724aceedf7b93"
             ]
         ]
     },
@@ -448,6 +449,25 @@
         "y": 940,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "753724aceedf7b93",
+        "type": "function",
+        "z": "e0d233bea8e17753",
+        "name": "Advse",
+        "func": "\nmsg.payload = \"request data of the last \" + msg.payload + \" days\"\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 820,
+        "wires": [
+            [
+                "3b9b18f318d93488"
+            ]
         ]
     }
 ]

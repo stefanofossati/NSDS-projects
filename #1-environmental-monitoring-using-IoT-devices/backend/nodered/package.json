@@ -4,7 +4,7 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
-        "node-red-contrib-mongodb4": "~1.10.0",
-        "node-red-node-email": "~1.19.1"
+        "node-red-contrib-mongodb4": "~2.0.0",
+        "node-red-node-email": "~2.0.1"
     }
 }
