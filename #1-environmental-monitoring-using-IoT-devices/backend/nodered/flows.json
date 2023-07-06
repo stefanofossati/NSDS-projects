@@ -121,8 +121,8 @@
         "tls": true,
         "name": "",
         "dname": "",
-        "x": 1530,
-        "y": 560,
+        "x": 1370,
+        "y": 500,
         "wires": []
     },
     {
@@ -156,8 +156,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1320,
-        "y": 560,
+        "x": 1380,
+        "y": 600,
         "wires": []
     },
     {
@@ -271,7 +271,8 @@
         "y": 560,
         "wires": [
             [
-                "daba21feb266f058"
+                "daba21feb266f058",
+                "19babfd11b9773e3"
             ]
         ]
     },
