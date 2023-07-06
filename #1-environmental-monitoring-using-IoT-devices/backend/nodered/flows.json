@@ -114,6 +114,9 @@
         "z": "e0d233bea8e17753",
         "server": "smtp.gmail.com",
         "port": "465",
+        "authtype": "BASIC",
+        "saslformat": false,
+        "token": "",
         "secure": true,
         "tls": true,
         "name": "",
@@ -161,17 +164,19 @@
         "id": "cd747e9e8a0a02f6",
         "type": "function",
         "z": "e0d233bea8e17753",
-        "name": "Create filter",
-        "func": "const NotifyEvery = {\n    Hour: 'Hour',\n    Day: 'Day',\n    Week: 'Week',  // da vedere se inserire\n    Month: 'Month'\n};\n\nconst every = NotifyEvery.Month;\n\nconst date = new Date();\n\nvar filter;\nfunction SetPeriodic(){\n    switch(every){\n        case NotifyEvery.Hour:\n            if(date.getMinutes() == 0){\n                filter = {\n                    timestemp: {\n                        $gt: new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours() - 1),\n                        $lt: new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours())\n                    }\n                };\n            }\n            break;\n        case NotifyEvery.Day:\n            if(date.getHours() == 0){\n                filter = {\n                    timestemp: {\n                        $gt: new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1),\n                        $lt: new Date(date.getFullYear(), date.getMonth(), date.getDate())\n                    }\n                }; \n            }\n            break;\n        /*case NotifyEvery.Week:\n            if (date.getHours() = 0) {\n                filter = {\n                    timestemp: {\n                        $gt: new Date(date.getFullYear(), date),\n                        $lt: new Date()\n                    }\n                };\n            }\n            break;*/\n        case NotifyEvery.Month:\n            if (date.getDate() == 0) {\n                filter = {\n                    timestemp: {\n                        $gt: new Date(date.getFullYear(), date.getMonth() - 1),\n                        $lt: new Date(date.getFullYear(), date.getMonth())\n                    }\n                };\n            }\n            break;\n    }\n        \n}\n\nmsg.payload = filter;\nreturn msg;",
+        "name": "Convert To Object",
+        "func": "var object = {\n    request: msg.payload\n}\n\nmsg.payload = object\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 130,
-        "y": 1020,
+        "x": 870,
+        "y": 760,
         "wires": [
-            []
+            [
+                "502ff1f8d393b078"
+            ]
         ]
     },
     {
@@ -425,33 +430,6 @@
         ]
     },
     {
-        "id": "81ca41c27b91bc2f",
-        "type": "inject",
-        "z": "e0d233bea8e17753",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "5",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 150,
-        "y": 940,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "753724aceedf7b93",
         "type": "function",
         "z": "e0d233bea8e17753",
@@ -466,7 +444,8 @@
         "y": 820,
         "wires": [
             [
-                "3b9b18f318d93488"
+                "3b9b18f318d93488",
+                "cd747e9e8a0a02f6"
             ]
         ]
     }
