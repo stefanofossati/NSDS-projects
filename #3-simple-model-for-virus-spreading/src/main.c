@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
                                       (int) param.I / world_size + param.I % world_size, param.W, param.L, param.w,
                                       param.l, param.v, param.d, param.t);
     }
-    printf("My rank % d, init_config: N = %d, I = %d, W = %d, L = %d, w = %d, l = %d, d = %d, v = %d, t = %d\n", my_rank, init_config.total_people, init_config.infected_people, init_config.W, init_config.L, init_config.w, init_config.l, init_config.v, init_config.d, init_config.t);
+    printf("My rank % d, init_config: N = %d, I = %d, W = %d, L = %d, w = %d, l = %d, v = %f, d = %d, t = %d\n", my_rank, init_config.total_people, init_config.infected_people, init_config.W, init_config.L, init_config.w, init_config.l, init_config.v, init_config.d, init_config.t);
     srand(time(NULL) + my_rank);
 
     /* Create the linked list of people */
@@ -101,7 +101,6 @@ int main(int argc, char **argv) {
         int number_amount;
         int infected_num;
 
-        // TO VERIFY WHETHER IT IS NECESSARY
         MPI_Barrier(MPI_COMM_WORLD);
 
         if(my_rank == LEADER){
@@ -242,9 +241,10 @@ int main(int argc, char **argv) {
             country_number_t countries[init_config.W/init_config.w][init_config.L/init_config.l];
             memset(countries, 0, sizeof(countries));
 
-            printf("First country: non_infected: %d, infected: %d, immune: %d\n", countries[0][0].non_infected_person, countries[0][0].infected_person, countries[0][0].immune_person);
-            printf("Second country: non_infected: %d, infected: %d, immune: %d\n", countries[10][10].non_infected_person, countries[10][10].infected_person, countries[10][10].immune_person);
-            printf("Third country: non_infected: %d, infected: %d, immune: %d\n", countries[12][10].non_infected_person, countries[12][10].infected_person, countries[12][10].immune_person);
+            // DEBUG ONLY
+            // printf("First country: non_infected: %d, infected: %d, immune: %d\n", countries[0][0].non_infected_person, countries[0][0].infected_person, countries[0][0].immune_person);
+            // printf("Second country: non_infected: %d, infected: %d, immune: %d\n", countries[10][10].non_infected_person, countries[10][10].infected_person, countries[10][10].immune_person);
+            // printf("Third country: non_infected: %d, infected: %d, immune: %d\n", countries[12][10].non_infected_person, countries[12][10].infected_person, countries[12][10].immune_person);
 
             // DEBUG ONLY
             // printf("I'm process %d and I am alive before computing people in countries.\n", my_rank);
@@ -344,14 +344,14 @@ int main(int argc, char **argv) {
 
         current_time += init_config.t;
         day_time += init_config.t;
-
-        MPI_Barrier(MPI_COMM_WORLD);
     }
 
     // printf("POST: my rank: %d, position a: x=%f, y=%f\n", my_rank, non_infected_list->head->person->position.x, non_infected_list->head->person->position.y);
     // printf("POST: my rank: %d, position b: x=%f, y=%f\n", my_rank, non_infected_list->head->next->person->position.x, non_infected_list->head->next->person->position.y);
 
     fclose(results_file);
+
+
 
     MPI_Type_free(&MPI_INIT_CONFIG);
     MPI_Type_free(&MPI_POSITION);

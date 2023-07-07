@@ -41,7 +41,7 @@ all:
 	mkdir -p $(OUTPUT_DIR)
 
 run:
-	cd $(OUTPUT_DIR) && mpirun -np 2 ./main
+	cd $(OUTPUT_DIR) && mpirun -np 8 ./main
 
 clean:
 	rm -rf $(OUTPUT_DIR)
