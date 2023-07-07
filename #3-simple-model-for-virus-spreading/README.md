@@ -33,4 +33,5 @@ MPI or Apache Spark
 1. go in the `src` folder and run the following command: `make all build`
 2. move or copy the `config.txt` file in the output folder
 3. run `make all run`
+4. the result file is in the src folder with name `result.csv`
 
