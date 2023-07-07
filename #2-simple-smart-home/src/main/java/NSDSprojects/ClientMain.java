@@ -59,6 +59,10 @@ public class ClientMain {
             System.out.println("16 - Make tv crash");
             System.out.println("17 - Make machine crash");
 
+            System.out.println("18 - Make HVACServer crash");
+            System.out.println("19 - Make IHEServer crash");
+            System.out.println("20 - Make KMServer crash");
+
             Scanner scan = new Scanner(System.in);
 
             int selection = scan.nextInt();
@@ -144,6 +148,13 @@ public class ClientMain {
                     device = scan.next();
                     clientKM.tell(new CrashMessage(device), ActorRef.noSender());
                     break;
+
+                case 18:
+                    clientHVAC.tell(new CrashServerMessage(), ActorRef.noSender());
+                case 19:
+                    clientIHE.tell(new CrashServerMessage(), ActorRef.noSender());
+                case 20:
+                    clientKM.tell(new CrashServerMessage(), ActorRef.noSender());
                 default:
                     System.out.println("Wrong command inserted");
             }

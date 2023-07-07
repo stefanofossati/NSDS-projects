@@ -9,8 +9,7 @@ import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Cancellable;
 import akka.actor.Props;
-import akka.cluster.Cluster;
-import akka.cluster.ClusterEvent;
+
 
 import java.time.Duration;
 
@@ -18,17 +17,7 @@ public class MachineActor extends AbstractActor {
 
     private String state = "off";
 
-    //Cluster cluster = Cluster.get(getContext().getSystem());
-
     private Cancellable kitchenMachineRoutine;
-
-    /*public void preStart(){
-        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
-    }
-
-    public void postStop(){
-        cluster.unsubscribe(getSelf());
-    }*/
 
     @Override
     public Receive createReceive() {

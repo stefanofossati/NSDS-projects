@@ -4,8 +4,6 @@ import NSDSprojects.CustomException;
 import NSDSprojects.Messages.GenericMessages.*;
 import NSDSprojects.Messages.HVAC.*;
 import akka.actor.*;
-import akka.cluster.Cluster;
-import akka.cluster.ClusterEvent;
 import akka.japi.pf.DeciderBuilder;
 
 import java.time.Duration;
@@ -40,6 +38,7 @@ public class HVACActor extends AbstractActor {
                 .match(RequestEnergyConsumptionMessage.class, this::retrieveConsumption)
 
                 .match(CrashMessage.class, this::doCrash)
+                .match(CrashServerMessage.class, this::doSelfCrash)
                 .build();
     }
 
@@ -120,6 +119,10 @@ public class HVACActor extends AbstractActor {
         }else{
             sender().tell(new TextMessage("Room inserted to be removed doesnt exists!"), self());
         }
+    }
+
+    void doSelfCrash(CrashServerMessage msg) throws CustomException{
+        throw new CustomException();
     }
 
     static Props props () {

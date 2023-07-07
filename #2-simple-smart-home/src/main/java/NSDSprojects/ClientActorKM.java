@@ -5,8 +5,6 @@ import NSDSprojects.Messages.KitchenMachine.TurnMachineMessage;
 import akka.actor.AbstractActor;
 import akka.actor.ActorSelection;
 import akka.actor.Props;
-import akka.cluster.Cluster;
-import akka.cluster.ClusterEvent;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,6 +23,7 @@ public class ClientActorKM extends AbstractActor {
                 .match(AddDeviceMessage.class, this::onAddNewDevice)
                 .match(RemoveDeviceMessage.class, this::onRemoveDevice)
                 .match(CrashMessage.class, this::onCrash)
+                .match(CrashServerMessage.class, this::onServerCrash)
 
                 .match(RequestEnergyConsumptionMessage.class, this::getConsumption)
                 .match(EnergyConsumptionMessage.class,  this::showConsumption)
@@ -50,6 +49,10 @@ public class ClientActorKM extends AbstractActor {
     }
 
     void onCrash(CrashMessage msg){
+        kitchenMachine.tell(msg, self());
+    }
+
+    void onServerCrash(CrashServerMessage msg){
         kitchenMachine.tell(msg, self());
     }
 
@@ -79,7 +82,7 @@ public class ClientActorKM extends AbstractActor {
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
-                this.kitchenMachineAddr = "akka://KitchenMachineServer@" + data + "/user/KitchenMachineActor";
+                this.kitchenMachineAddr = "akka://KitchenMachineServer@" + data + "/user/KitchenMachineSupervisor/KitchenMachineActor";
                 System.out.println(this.kitchenMachineAddr);
                 this.kitchenMachine = getContext().actorSelection(this.kitchenMachineAddr);
             }

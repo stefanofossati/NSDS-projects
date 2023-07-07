@@ -28,7 +28,7 @@ test {
 
 jar {
     manifest {
-        attributes "Main-Class": "NSDSprojects.ClientMain"
+        attributes "Main-Class": "NSDSprojects.KitchenMachine.KitchenMachineServer"
     }
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }

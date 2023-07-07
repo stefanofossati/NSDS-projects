@@ -27,14 +27,6 @@ public class SensorActor extends AbstractActor {
 
     private Cancellable sensorTask;
 
-   /* public void preStart(){
-        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
-    }
-
-    public void postStop(){
-        cluster.unsubscribe(getSelf());
-    }
-*/
     @Override
     public Receive createReceive() {
         return inactive();

@@ -9,9 +9,6 @@ import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Cancellable;
 import akka.actor.Props;
-import akka.cluster.Cluster;
-import akka.cluster.ClusterEvent;
-
 
 import java.time.Duration;
 
@@ -21,13 +18,6 @@ public class TVActor extends AbstractActor {
     private String state = "off";
 
 
-  /*  public void preStart(){
-        cluster.subscribe(getSelf(), ClusterEvent.initialStateAsEvents(), ClusterEvent.MemberEvent.class, ClusterEvent.UnreachableMember.class);
-    }
-
-    public void postStop(){
-        cluster.unsubscribe(getSelf());
-    }*/
 
     @Override
     public Receive createReceive() {

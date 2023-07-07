@@ -5,8 +5,6 @@ import NSDSprojects.Messages.GenericMessages.*;
 import NSDSprojects.Messages.InHouseEntertainment.TVReplyMessage;
 import NSDSprojects.Messages.InHouseEntertainment.TurnTVMessage;
 import akka.actor.*;
-import akka.cluster.Cluster;
-import akka.cluster.ClusterEvent;
 import akka.japi.pf.DeciderBuilder;
 
 import java.time.Duration;

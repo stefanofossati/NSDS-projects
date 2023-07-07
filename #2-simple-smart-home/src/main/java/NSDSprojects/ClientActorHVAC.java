@@ -5,8 +5,6 @@ import NSDSprojects.Messages.HVAC.TemperatureMessage;
 import akka.actor.AbstractActor;
 import akka.actor.ActorSelection;
 import akka.actor.Props;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,6 +23,7 @@ public class ClientActorHVAC extends AbstractActor {
                 .match(AddDeviceMessage.class, this::onAddNewDevice)
                 .match(RemoveDeviceMessage.class, this::onRemoveDevice)
                 .match(CrashMessage.class, this::onCrash)
+                .match(CrashServerMessage.class, this::onServerCrash)
 
                 .match(RequestEnergyConsumptionMessage.class, this::getConsumption)
                 .match(EnergyConsumptionMessage.class,  this::showConsumption)
@@ -50,6 +49,9 @@ public class ClientActorHVAC extends AbstractActor {
     }
 
     void onCrash(CrashMessage msg){
+        hvac.tell(msg, self());
+    }
+    void onServerCrash(CrashServerMessage msg){
         hvac.tell(msg, self());
     }
 
@@ -79,7 +81,7 @@ public class ClientActorHVAC extends AbstractActor {
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
-                this.hvacAddr = "akka://HVACServer@" + data + "/user/HVACActor";
+                this.hvacAddr = "akka://HVACServer@" + data + "/user/HVACSupervisor/HVACActor";
                 System.out.println(hvacAddr);
                 this.hvac = getContext().actorSelection(this.hvacAddr);
             }
