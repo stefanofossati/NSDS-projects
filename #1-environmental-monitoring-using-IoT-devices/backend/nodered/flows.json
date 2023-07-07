@@ -28,7 +28,34 @@
         "id": "e0054114c2c88607",
         "type": "mqtt-broker",
         "name": "",
-        "broker": "192.168.178.70",
+        "broker": "192.168.8.132",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "7611e39f1ef4d0a9",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "192.168.8.70",
         "port": "1883",
         "clientid": "",
         "autoConnect": true,
@@ -56,7 +83,7 @@
         "type": "mqtt in",
         "z": "e0d233bea8e17753",
         "name": "",
-        "topic": "iot/native/temp",
+        "topic": "iot/native/temp/json",
         "qos": "2",
         "datatype": "auto-detect",
         "broker": "e0054114c2c88607",
@@ -64,7 +91,7 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 190,
+        "x": 200,
         "y": 240,
         "wires": [
             [
@@ -114,12 +141,15 @@
         "z": "e0d233bea8e17753",
         "server": "smtp.gmail.com",
         "port": "465",
+        "authtype": "BASIC",
+        "saslformat": false,
+        "token": "",
         "secure": true,
         "tls": true,
         "name": "",
         "dname": "",
-        "x": 1530,
-        "y": 560,
+        "x": 1370,
+        "y": 500,
         "wires": []
     },
     {
@@ -153,25 +183,27 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1320,
-        "y": 560,
+        "x": 1380,
+        "y": 600,
         "wires": []
     },
     {
         "id": "cd747e9e8a0a02f6",
         "type": "function",
         "z": "e0d233bea8e17753",
-        "name": "Create filter",
-        "func": "const NotifyEvery = {\n    Hour: 'Hour',\n    Day: 'Day',\n    Week: 'Week',  // da vedere se inserire\n    Month: 'Month'\n};\n\nconst every = NotifyEvery.Month;\n\nconst date = new Date();\n\nvar filter;\nfunction SetPeriodic(){\n    switch(every){\n        case NotifyEvery.Hour:\n            if(date.getMinutes() == 0){\n                filter = {\n                    timestemp: {\n                        $gt: new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours() - 1),\n                        $lt: new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours())\n                    }\n                };\n            }\n            break;\n        case NotifyEvery.Day:\n            if(date.getHours() == 0){\n                filter = {\n                    timestemp: {\n                        $gt: new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1),\n                        $lt: new Date(date.getFullYear(), date.getMonth(), date.getDate())\n                    }\n                }; \n            }\n            break;\n        /*case NotifyEvery.Week:\n            if (date.getHours() = 0) {\n                filter = {\n                    timestemp: {\n                        $gt: new Date(date.getFullYear(), date),\n                        $lt: new Date()\n                    }\n                };\n            }\n            break;*/\n        case NotifyEvery.Month:\n            if (date.getDate() == 0) {\n                filter = {\n                    timestemp: {\n                        $gt: new Date(date.getFullYear(), date.getMonth() - 1),\n                        $lt: new Date(date.getFullYear(), date.getMonth())\n                    }\n                };\n            }\n            break;\n    }\n        \n}\n\nmsg.payload = filter;\nreturn msg;",
+        "name": "Convert To Object",
+        "func": "var object = {\n    request: msg.payload\n}\n\nmsg.payload = object\nmsg.topic = \"Request\"\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 130,
-        "y": 1020,
+        "x": 870,
+        "y": 760,
         "wires": [
-            []
+            [
+                "502ff1f8d393b078"
+            ]
         ]
     },
     {
@@ -179,7 +211,7 @@
         "type": "function",
         "z": "e0d233bea8e17753",
         "name": "Find highest and lowest temperature",
-        "func": "// TODO:controllo se si può fare qualcosa con le classi in comune (import)\n\nclass Value {\n    value;\n    timestemp;\n\n    constructor(value, timestemp) {\n        this.value = value;\n        this.timestemp = timestemp;\n    }\n\n    setTimestemp(newTimestemp) {\n        this.timestemp = newTimestemp;\n    };\n    setValue(newValue) {\n        this.value = newValue;\n    };\n}\n\nclass HighAndLowValues {\n    highestValue;\n    lowestValue;\n\n    constructor(firstValue, timestemp) {\n        this.highestValue = new Value(firstValue, timestemp);\n        this.lowestValue = new Value(firstValue, timestemp);\n    }\n};\n\nclass Temperatures extends HighAndLowValues {\n    returnObject() {\n        return {\n            highestTemp: this.highestValue,\n            lowestTemp: this.lowestValue\n        };\n    }\n\n}\n\nfunction CalculateAvarageTemp(array) {\n    let count = 0;\n    let sumTemp = 0;\n    for (let index = 0; index < array.length; index++) {\n        for (let i = 0; i < array[index].temp.length; i++) {\n            sumTemp = sumTemp + array[index].temp[i];\n            count++;\n        }\n    }\n\n    return sumTemp / count;\n}\n\nfunction CalculateTemperatures(array){\n    var tempData;\n    \n    if (array === undefined || array.length == 0){   // if the DB returns an empty array\n        return {messageTemp : 'no temperature reveled in this month'};\n    }else{\n        for (let date = 1; date <= 31; date++) {\n            // filtered array is the array with all the temperatures in a day\n            let filteredArray = array.filter(function tempsOfDay(object) {\n                //if (typeof object !== 'undefined') {   \n                    if (object.timestemp > new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), date)\n                        && object.timestemp < new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), date + 1)) {\n                        return object;\n                    }\n                //}\n\n            });\n\n            if (filteredArray !== undefined && filteredArray.length != 0) {  //The day of the month could have dates with no data\n                let avarageTemp = CalculateAvarageTemp(filteredArray); \n                let timestemp = new Date(array[0].timestemp.getFullYear(), array[0].timestemp.getMonth(), date)\n\n                if (typeof tempData === 'undefined') {\n                    tempData = new Temperatures(avarageTemp, timestemp);\n                } else {\n                    if (avarageTemp > tempData.highestValue.value) {\n                        tempData.highestValue.setValue(avarageTemp);\n                        tempData.highestValue.setTimestemp(timestemp);\n                    }\n                    if (avarageTemp < tempData.lowestValue.value) {\n                        tempData.lowestValue.setValue(avarageTemp);\n                        tempData.lowestValue.setTimestemp(timestemp);\n                    }\n                }\n            }\n\n        }\n    }\n    return tempData.returnObject();\n    \n    \n}\n\n\n\n\n\nmsg.payload = CalculateTemperatures(msg.payload);\nreturn msg;\n",
+        "func": "// TODO:controllo se si può fare qualcosa con le classi in comune (import)\n\nclass Value {\n    value;\n    timestemp;\n\n    constructor(value, timestemp) {\n        this.value = value;\n        this.timestemp = timestemp;\n    }\n\n    setTimestemp(newTimestemp) {\n        this.timestemp = newTimestemp;\n    };\n    setValue(newValue) {\n        this.value = newValue;\n    };\n}\n\nclass HighAndLowValues {\n    highestValue;\n    lowestValue;\n\n    constructor(firstValue, timestemp) {\n        this.highestValue = new Value(firstValue, timestemp);\n        this.lowestValue = new Value(firstValue, timestemp);\n    }\n};\n\nclass Temperatures extends HighAndLowValues {\n    returnObject() {\n        return {\n            highestTemp: this.highestValue,\n            lowestTemp: this.lowestValue\n        };\n    }\n\n}\n\nfunction CalculateAvarageTemp(array) {\n    let count = 0;\n    let sumTemp = 0;\n    for (let index = 0; index < array.length; index++) {\n        for (let i = 0; i < array[index].temp.length; i++) {\n            sumTemp = sumTemp + array[index].temp[i];\n            count++;\n        }\n    }\n\n    return sumTemp / count;\n}\n\nfunction CalculateTemperatures(array){\n    var tempData;\n    \n    if (array === undefined || array.length == 0){   // if the DB returns an empty array\n        return {messageTemp : 'no temperature reveled in this month'};\n    }else{\n        for (let date = 1; date <= 31; date++) {\n            // filtered array is the array with all the temperatures in a day\n            let filteredArray = array.filter(function tempsOfDay(object) {\n                //if (typeof object !== 'undefined') {   \n                    if (object.timestemp > new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), date)\n                        && object.timestemp < new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), date + 1)) {\n                        return object;\n                    }\n                //}\n\n            });\n\n            if (filteredArray !== undefined && filteredArray.length != 0) {  //The day of the month could have dates with no data\n                let avarageTemp = CalculateAvarageTemp(filteredArray); \n                let timestemp = new Date(array[0].timestemp.getFullYear(), array[0].timestemp.getMonth(), date)\n\n                if (typeof tempData === 'undefined') {\n                    tempData = new Temperatures(avarageTemp, timestemp);\n                } else {\n                    if (avarageTemp > tempData.highestValue.value) {\n                        tempData.highestValue.setValue(avarageTemp);\n                        tempData.highestValue.setTimestemp(timestemp);\n                    }\n                    if (avarageTemp < tempData.lowestValue.value) {\n                        tempData.lowestValue.setValue(avarageTemp);\n                        tempData.lowestValue.setTimestemp(timestemp);\n                    }\n                }\n            }\n\n        }\n    }\n    return tempData.returnObject();\n    \n    \n}\n\n\n\n\n\nmsg.payload = CalculateTemperatures(msg.payload);\nmsg.topic = \"TempInfo\"\nreturn msg;\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -227,7 +259,7 @@
         "type": "function",
         "z": "e0d233bea8e17753",
         "name": "query if is the first day of the month",
-        "func": "const date = new Date();\n\nvar dateFilter;\n\nif (date.getDate() == 1) {\n    dateFilter = {\n        timestemp: {\n            $gt: new Date(date.getFullYear(), date.getMonth() - 1),\n            $lt: new Date(date.getFullYear(), date.getMonth())\n        }\n    };\n    msg.payload = dateFilter\n    return msg ;\n\n}\n",
+        "func": "const date = new Date();\n\nvar dateFilter;\n\nif (date.getDate() == 1) {\n    dateFilter = {\n        timestemp: {\n            $gt: new Date(date.getFullYear(), date.getMonth() - 1),\n            $lt: new Date(date.getFullYear(), date.getMonth())\n        }\n    };\n    msg.payload = dateFilter\n    msg.topic = \"LastMonth\"\n    return msg ;\n\n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -238,7 +270,8 @@
         "wires": [
             [
                 "e663d2e35285168c",
-                "2be2244bb4fc1d0a"
+                "2be2244bb4fc1d0a",
+                "502ff1f8d393b078"
             ]
         ]
     },
@@ -248,7 +281,7 @@
         "z": "e0d233bea8e17753",
         "name": "",
         "mode": "custom",
-        "build": "merged",
+        "build": "object",
         "property": "payload",
         "propertyType": "msg",
         "key": "topic",
@@ -256,7 +289,7 @@
         "joinerType": "str",
         "accumulate": true,
         "timeout": "",
-        "count": "2",
+        "count": "3",
         "reduceRight": false,
         "reduceExp": "",
         "reduceInit": "",
@@ -266,7 +299,8 @@
         "y": 560,
         "wires": [
             [
-                "daba21feb266f058"
+                "daba21feb266f058",
+                "19babfd11b9773e3"
             ]
         ]
     },
@@ -275,7 +309,7 @@
         "type": "mqtt in",
         "z": "e0d233bea8e17753",
         "name": "",
-        "topic": "iot/native/humidity",
+        "topic": "iot/native/humidity/json",
         "qos": "2",
         "datatype": "auto-detect",
         "broker": "e0054114c2c88607",
@@ -283,7 +317,7 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 200,
+        "x": 210,
         "y": 140,
         "wires": [
             [
@@ -332,7 +366,7 @@
         "type": "function",
         "z": "e0d233bea8e17753",
         "name": "Find highest and lowest humidity value",
-        "func": "class Value {\n    value;\n    timestemp;\n\n    constructor(value, timestemp) {\n        this.value = value;\n        this.timestemp = timestemp;\n    }\n\n    setTimestemp(newTimestemp) {\n        this.timestemp = newTimestemp;\n    };\n    setValue(newValue) {\n        this.value = newValue;\n    };\n}\n\nclass HighAndLowValues {\n    highestValue;\n    lowestValue;\n\n    constructor(firstValue, timestemp) {\n        this.highestValue = new Value(firstValue, timestemp);\n        this.lowestValue = new Value(firstValue, timestemp);\n    }\n};\n\nclass Humidities extends HighAndLowValues {\n    returnObject() {\n        return {\n            highestHumidity: this.highestValue,\n            lowestHumidity: this.lowestValue\n        };\n    }\n\n}\n\nfunction CalculateAvarageHumidity(array) {\n    let count = 0;\n    let sumHumidity = 0;\n    for (let index = 0; index < array.length; index++) {\n        for (let i = 0; i < array[index].humidity.length; i++) {\n            sumHumidity = sumHumidity + array[index].humidity[i];\n            count++;\n        }\n    }\n\n    return sumHumidity / count;\n}\n\nfunction CalculateTemperatures(array) {\n    var tempData;\n\n    if (array === undefined || array.length == 0) {   // if the DB returns an empty array\n        return { messageTemp: 'no humidity reveled in this month' };\n    } else {\n        for (let date = 1; date <= 31; date++) {\n            // filtered array is the array with all the temperatures in a day\n            let filteredArray = array.filter(function tempsOfDay(object) {\n                //if (typeof object !== 'undefined') {   \n                if (object.timestemp > new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), date)\n                    && object.timestemp < new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), date + 1)) {\n                    return object;\n                }\n                //}\n\n            });\n\n            if (filteredArray !== undefined && filteredArray.length != 0) {  //The day of the month could have dates with no data\n                let avarageHumidity = CalculateAvarageHumidity(filteredArray);\n                let timestemp = new Date(array[0].timestemp.getFullYear(), array[0].timestemp.getMonth(), date)\n\n                if (typeof tempData === 'undefined') {\n                    tempData = new Humidities(avarageHumidity, timestemp);\n                } else {\n                    if (avarageHumidity > tempData.highestValue.value) {\n                        tempData.highestValue.setValue(avarageHumidity);\n                        tempData.highestValue.setTimestemp(timestemp);\n                    }\n                    if (avarageHumidity < tempData.lowestValue.value) {\n                        tempData.lowestValue.setValue(avarageHumidity);\n                        tempData.lowestValue.setTimestemp(timestemp);\n                    }\n                }\n            }\n\n        }\n    }\n    return tempData.returnObject();\n\n\n}\n\n\n\n\n\nmsg.payload = CalculateTemperatures(msg.payload);\nreturn msg;\n",
+        "func": "class Value {\n    value;\n    timestemp;\n\n    constructor(value, timestemp) {\n        this.value = value;\n        this.timestemp = timestemp;\n    }\n\n    setTimestemp(newTimestemp) {\n        this.timestemp = newTimestemp;\n    };\n    setValue(newValue) {\n        this.value = newValue;\n    };\n}\n\nclass HighAndLowValues {\n    highestValue;\n    lowestValue;\n\n    constructor(firstValue, timestemp) {\n        this.highestValue = new Value(firstValue, timestemp);\n        this.lowestValue = new Value(firstValue, timestemp);\n    }\n};\n\nclass Humidities extends HighAndLowValues {\n    returnObject() {\n        return {\n            highestHumidity: this.highestValue,\n            lowestHumidity: this.lowestValue\n        };\n    }\n\n}\n\nfunction CalculateAvarageHumidity(array) {\n    let count = 0;\n    let sumHumidity = 0;\n    for (let index = 0; index < array.length; index++) {\n        for (let i = 0; i < array[index].humidity.length; i++) {\n            sumHumidity = sumHumidity + array[index].humidity[i];\n            count++;\n        }\n    }\n\n    return sumHumidity / count;\n}\n\nfunction CalculateTemperatures(array) {\n    var tempData;\n\n    if (array === undefined || array.length == 0) {   // if the DB returns an empty array\n        return { messageTemp: 'no humidity reveled in this month' };\n    } else {\n        for (let date = 1; date <= 31; date++) {\n            // filtered array is the array with all the temperatures in a day\n            let filteredArray = array.filter(function tempsOfDay(object) {\n                //if (typeof object !== 'undefined') {   \n                if (object.timestemp > new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), date)\n                    && object.timestemp < new Date(object.timestemp.getFullYear(), object.timestemp.getMonth(), date + 1)) {\n                    return object;\n                }\n                //}\n\n            });\n\n            if (filteredArray !== undefined && filteredArray.length != 0) {  //The day of the month could have dates with no data\n                let avarageHumidity = CalculateAvarageHumidity(filteredArray);\n                let timestemp = new Date(array[0].timestemp.getFullYear(), array[0].timestemp.getMonth(), date)\n\n                if (typeof tempData === 'undefined') {\n                    tempData = new Humidities(avarageHumidity, timestemp);\n                } else {\n                    if (avarageHumidity > tempData.highestValue.value) {\n                        tempData.highestValue.setValue(avarageHumidity);\n                        tempData.highestValue.setTimestemp(timestemp);\n                    }\n                    if (avarageHumidity < tempData.lowestValue.value) {\n                        tempData.lowestValue.setValue(avarageHumidity);\n                        tempData.lowestValue.setTimestemp(timestemp);\n                    }\n                }\n            }\n\n        }\n    }\n    return tempData.returnObject();\n\n\n}\n\n\n\n\n\nmsg.payload = CalculateTemperatures(msg.payload);\nmsg.topic = \"HumidityInfo\"\nreturn msg;\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -385,14 +419,14 @@
         "id": "d72fd9e67a43a5da",
         "type": "function",
         "z": "e0d233bea8e17753",
-        "name": "query of last ten days",
-        "func": "const date = new Date();\n\nvar dateFilter;\n\nif (true) {\n    dateFilter = {\n        timestemp: {\n            $gt: new Date(date.getFullYear(), date.getMonth(), date.getDate()-10),\n            $lt: new Date(date.getFullYear(), date.getMonth(), date.getDate()+1)\n        }\n    };\n    msg.payload = dateFilter\n    return msg;\n\n}\n",
+        "name": "query of last x days",
+        "func": "const date = new Date();\n\nvar dateFilter;\n\n\n\nif (true) {\n    dateFilter = {\n        timestemp: {\n            $gt: new Date(date.getFullYear(), date.getMonth(), date.getDate()-msg.payload),\n            $lt: new Date(date.getFullYear(), date.getMonth(), date.getDate()+1)\n        }\n    };\n    msg.payload = dateFilter\n    return msg;\n\n}\n",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
+        "x": 390,
         "y": 740,
         "wires": [
             [
@@ -419,35 +453,29 @@
         "y": 740,
         "wires": [
             [
-                "d72fd9e67a43a5da"
+                "d72fd9e67a43a5da",
+                "753724aceedf7b93"
             ]
         ]
     },
     {
-        "id": "81ca41c27b91bc2f",
-        "type": "inject",
+        "id": "753724aceedf7b93",
+        "type": "function",
         "z": "e0d233bea8e17753",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "5",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 150,
-        "y": 940,
+        "name": "Advse",
+        "func": "\nmsg.payload = \"request data of the last \" + msg.payload + \" days\"\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 820,
         "wires": [
-            []
+            [
+                "3b9b18f318d93488",
+                "cd747e9e8a0a02f6"
+            ]
         ]
     }
 ]
