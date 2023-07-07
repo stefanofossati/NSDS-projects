@@ -22,8 +22,8 @@ MPI_Datatype create_mpi_init_config(){
             (size_t) & (init_config.L) - (size_t) & init_config,
             (size_t) & (init_config.w) - (size_t) & init_config,
             (size_t) & (init_config.l) - (size_t) & init_config,
-            (size_t) & (init_config.d) - (size_t) & init_config,
             (size_t) & (init_config.v) - (size_t) & init_config,
+            (size_t) & (init_config.d) - (size_t) & init_config,
             (size_t) & (init_config.t) - (size_t) & init_config,
     };
 
@@ -34,7 +34,7 @@ MPI_Datatype create_mpi_init_config(){
             MPI_INT,
             MPI_INT,
             MPI_INT,
-            MPI_INT,
+            MPI_FLOAT,
             MPI_INT,
             MPI_INT
     };
