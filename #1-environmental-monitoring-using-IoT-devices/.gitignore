@@ -1,0 +1,13 @@
+#ignore this folder
+backend/nodered/*
+
+#exept these files
+!backend/nodered/flows.json
+!backend/nodered/package.json
+
+#ignore cooja compilation files
+iot/mqtt-project/humidity-sensor/obj_cooja/*
+iot/mqtt-project/temp-sensor/obj_cooja/*
+
+#ignore makefile windows
+!iot/mqtt-project/humidity-sensor/Makefile~
