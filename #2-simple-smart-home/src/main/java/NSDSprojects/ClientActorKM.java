@@ -8,6 +8,9 @@ import akka.actor.Props;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Scanner;
 
 public class ClientActorKM extends AbstractActor {
@@ -26,7 +29,7 @@ public class ClientActorKM extends AbstractActor {
                 .match(CrashServerMessage.class, this::onServerCrash)
 
                 .match(RequestEnergyConsumptionMessage.class, this::getConsumption)
-                .match(EnergyConsumptionMessage.class,  this::showConsumption)
+                .match(EnergyConsumptionMessage.class, this::showConsumption)
 
                 .match(TextMessage.class, this::showWarning)
 
@@ -36,60 +39,49 @@ public class ClientActorKM extends AbstractActor {
                 .build();
     }
 
-    void requestDevices(RequestDeviceMessage msg){
+    void requestDevices(RequestDeviceMessage msg) {
         kitchenMachine.tell(msg, self());
     }
 
-    void onAddNewDevice(AddDeviceMessage msg){
+    void onAddNewDevice(AddDeviceMessage msg) {
         kitchenMachine.tell(msg, self());
     }
 
-    void onRemoveDevice(RemoveDeviceMessage msg){
+    void onRemoveDevice(RemoveDeviceMessage msg) {
         kitchenMachine.tell(msg, self());
     }
 
-    void onCrash(CrashMessage msg){
+    void onCrash(CrashMessage msg) {
         kitchenMachine.tell(msg, self());
     }
 
-    void onServerCrash(CrashServerMessage msg){
+    void onServerCrash(CrashServerMessage msg) {
         kitchenMachine.tell(msg, self());
     }
 
-    void getConsumption (RequestEnergyConsumptionMessage msg){
+    void getConsumption(RequestEnergyConsumptionMessage msg) {
         kitchenMachine.tell(msg, self());
     }
 
-    void showConsumption (EnergyConsumptionMessage msg){
+    void showConsumption(EnergyConsumptionMessage msg) {
         System.out.println("Kitchen machine's consumption: " + msg.getEnergyConsumption());
     }
 
-    void showWarning (TextMessage msg){
+    void showWarning(TextMessage msg) {
         System.out.println(msg.getText());
     }
 
-    void sendTurnMachine (TurnMachineMessage msg){
+    void sendTurnMachine(TurnMachineMessage msg) {
         kitchenMachine.tell(msg, self());
     }
 
-    static Props props () {
+    static Props props() {
         return Props.create(ClientActorKM.class);
     }
 
-    void setup(SetupConnectionMessage msg) {
-        try {
-            File myObj = new File("src/main/resources/connectTo/km.txt");
-            Scanner myReader = new Scanner(myObj);
-            while (myReader.hasNextLine()) {
-                String data = myReader.nextLine();
-                this.kitchenMachineAddr = "akka://KitchenMachineServer@" + data + "/user/KitchenMachineSupervisor/KitchenMachineActor";
-                System.out.println(this.kitchenMachineAddr);
-                this.kitchenMachine = getContext().actorSelection(this.kitchenMachineAddr);
-            }
-            myReader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found");
-            e.printStackTrace();
-        }
+void setup(SetupConnectionMessage msg) {
+        this.kitchenMachineAddr = "akka://KitchenMachineServer@" + msg.getInfo() + ":25522/user/KitchenMachineSupervisor/KitchenMachineActor";
+        System.out.println(this.kitchenMachineAddr);
+        this.kitchenMachine = getContext().actorSelection(this.kitchenMachineAddr);
     }
 }

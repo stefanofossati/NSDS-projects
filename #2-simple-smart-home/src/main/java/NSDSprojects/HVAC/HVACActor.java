@@ -116,8 +116,6 @@ public class HVACActor extends AbstractActor {
     void doCrash(CrashMessage msg){
         if(sensors.containsKey(msg.getDeviceid())) {
             sensors.get(msg.getDeviceid()).getRoomref().tell(msg, self());
-        }else{
-            sender().tell(new TextMessage("Room inserted to be removed doesnt exists!"), self());
         }
     }
 

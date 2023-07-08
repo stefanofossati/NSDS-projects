@@ -8,7 +8,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-
+import com.typesafe.config.ConfigValueFactory;
 
 
 import java.io.File;
@@ -21,17 +21,16 @@ public class ClientMain {
         boolean on = true, deviceONOFF;
         String device;
         float desiredTemp;
-
-        Config conf = ConfigFactory.parseFile(new File("src/main/resources/client_conf.conf"));
-
-        final ActorSystem sys = ActorSystem.create("System", conf);
-
+        Map<String, String> connectTo = ParsArg(args);
+        Config conf = ConfigFactory.load("client_conf.conf");
+        Config conf2 = conf.withValue("akka.remote.artery.canonical.hostname", ConfigValueFactory.fromAnyRef(connectTo.get("CLIENT")));
+        final ActorSystem sys = ActorSystem.create("System", conf2);
         final ActorRef clientHVAC = sys.actorOf(ClientActorHVAC.props(), "clientHVAC");
-        clientHVAC.tell(new SetupConnectionMessage(), ActorRef.noSender());
+        clientHVAC.tell(new SetupConnectionMessage(connectTo.get("HVAC")), ActorRef.noSender());
         final ActorRef clientIHE = sys.actorOf(ClientActorIHE.props(), "clientIHE");
-        clientIHE.tell(new SetupConnectionMessage(), ActorRef.noSender());
+        clientIHE.tell(new SetupConnectionMessage(connectTo.get("IHE")), ActorRef.noSender());
         final ActorRef clientKM = sys.actorOf(ClientActorKM.props(), "clientKM");
-        clientKM.tell(new SetupConnectionMessage(), ActorRef.noSender());
+        clientKM.tell(new SetupConnectionMessage(connectTo.get("KM")), ActorRef.noSender());
 
         while (on) {
 
@@ -150,13 +149,15 @@ public class ClientMain {
                     device = scan.next();
                     clientKM.tell(new CrashMessage(device), ActorRef.noSender());
                     break;
-
                 case 18:
                     clientHVAC.tell(new CrashServerMessage(), ActorRef.noSender());
+                    break;
                 case 19:
                     clientIHE.tell(new CrashServerMessage(), ActorRef.noSender());
+                    break;
                 case 20:
                     clientKM.tell(new CrashServerMessage(), ActorRef.noSender());
+                    break;
                 default:
                     System.out.println("Wrong command inserted");
             }
@@ -168,15 +169,14 @@ public class ClientMain {
         return null;
     }
 
-    private Map<String, String> ParsArg(String[] arg){
+    private static Map<String, String> ParsArg(String[] arg){
         Map<String, String> map = new HashMap<String, String>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < Math.min(arg.length,4); i++) {
             String[] split = arg[i].split(":");
             if(split[0].equalsIgnoreCase("CLIENT") || split[0].equalsIgnoreCase("HVAC") || split[0].equalsIgnoreCase("IHE") || split[0].equalsIgnoreCase("KM")){
                 map.put(split[0].toUpperCase(), split[1]);
             }
         }
-
         if (map.isEmpty()) {
             System.out.println("Wrong arguments");
             System.exit(1);

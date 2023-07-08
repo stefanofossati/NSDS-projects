@@ -83,7 +83,7 @@ public class KitchenMachineActor extends AbstractActor {
 
     void getDevices(RequestDeviceMessage msg){
         machines.entrySet().forEach(entry ->
-                sender().tell(new TextMessage("Room '" + entry.getKey().toString() + "' - Current State: " + (entry.getValue().getState())), self())
+                sender().tell(new TextMessage("KitchenMachine '" + entry.getKey().toString() + "' - Current State: " + (entry.getValue().getState())), self())
         );
     }
 
@@ -91,11 +91,9 @@ public class KitchenMachineActor extends AbstractActor {
         sender().tell(new EnergyConsumptionMessage(this.energyConsumption), self());
     }
 
-    void doCrash(CrashMessage msg){
-        if(machines.containsKey(msg.getDeviceid())) {
+    void doCrash(CrashMessage msg) {
+        if (machines.containsKey(msg.getDeviceid())) {
             machines.get(msg.getDeviceid()).getMachineref().tell(msg, self());
-        }else{
-            sender().tell(new TextMessage("Room inserted to be removed doesnt exists!"), self());
         }
     }
 
