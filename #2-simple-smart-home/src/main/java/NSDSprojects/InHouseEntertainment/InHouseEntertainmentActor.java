@@ -66,7 +66,7 @@ public class InHouseEntertainmentActor extends AbstractActor {
 
     void getDevices(RequestDeviceMessage msg){
         tvs.entrySet().forEach(entry ->
-                sender().tell(new TextMessage("Room '" + entry.getKey().toString() + "' - Current State: " + (entry.getValue().getState())), self())
+                sender().tell(new TextMessage("Television: '" + entry.getKey().toString() + "' - Current State: " + (entry.getValue().getState())), self())
         );
     }
 
@@ -95,8 +95,6 @@ public class InHouseEntertainmentActor extends AbstractActor {
     void doCrash(CrashMessage msg){
         if(tvs.containsKey(msg.getDeviceid())) {
             tvs.get(msg.getDeviceid()).getTvref().tell(msg, self());
-        }else{
-            sender().tell(new TextMessage("Room inserted to be removed doesnt exists!"), self());
         }
     }
 

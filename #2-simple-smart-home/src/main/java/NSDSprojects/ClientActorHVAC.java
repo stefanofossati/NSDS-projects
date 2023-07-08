@@ -76,21 +76,8 @@ public class ClientActorHVAC extends AbstractActor {
     }
 
     void setup(SetupConnectionMessage msg){
-        try {
-            File myObj = new File("src/main/java/resources/connectTo/hvac.txt");
-            Scanner myReader = new Scanner(myObj);
-            while (myReader.hasNextLine()) {
-                String data = myReader.nextLine();
-                this.hvacAddr = "akka://HVACServer@" + data + "/user/HVACSupervisor/HVACActor";
-                System.out.println(hvacAddr);
-                this.hvac = getContext().actorSelection(this.hvacAddr);
-            }
-            myReader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found");
-            e.printStackTrace();
-        }
-
-
+        this.hvacAddr = "akka://HVACServer@" + msg.getInfo() + ":25520/user/HVACSupervisor/HVACActor";
+        System.out.println(hvacAddr);
+        this.hvac = getContext().actorSelection(this.hvacAddr);
     }
 }

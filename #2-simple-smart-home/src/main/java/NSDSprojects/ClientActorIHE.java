@@ -78,21 +78,8 @@ public class ClientActorIHE extends AbstractActor {
     }
 
     void setup(SetupConnectionMessage msg){
-        try {
-            File myObj = new File("src/main/java/resources/connectTo/ihe.txt");
-            Scanner myReader = new Scanner(myObj);
-            while (myReader.hasNextLine()) {
-                String data = myReader.nextLine();
-                this.inHouseEntertainmentAddr = "akka://InHouseEntertainmentServer@" + data + "/user/InHouseEntertainmentSupervisor/InHouseEntertainmentActor";
-                System.out.println(this.inHouseEntertainmentAddr);
-                this.inHouseEntertainment = getContext().actorSelection(this.inHouseEntertainmentAddr);
-            }
-            myReader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found");
-            e.printStackTrace();
-        }
-
-
+        this.inHouseEntertainmentAddr = "akka://InHouseEntertainmentServer@" + msg.getInfo() + ":25521/user/InHouseEntertainmentSupervisor/InHouseEntertainmentActor";
+        System.out.println(this.inHouseEntertainmentAddr);
+        this.inHouseEntertainment = getContext().actorSelection(this.inHouseEntertainmentAddr);
     }
 }
