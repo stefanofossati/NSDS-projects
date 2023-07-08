@@ -27,4 +27,13 @@ public class InHouseEntertainmentServer {
         }
         System.out.println(server.path());
     }
+
+    private String returnIP(String[] args) {
+        String[] split = args[0].split(":");
+        if(!split[0].equalsIgnoreCase("IP")){
+            System.out.println("Wrong argument. Please use IP:xxx.xxx.xxx.xxx");
+            System.exit(1);
+        }
+        return split[1];
+    }
 }

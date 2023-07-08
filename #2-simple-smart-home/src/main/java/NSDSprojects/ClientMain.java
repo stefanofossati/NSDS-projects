@@ -12,6 +12,8 @@ import com.typesafe.config.ConfigFactory;
 
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ClientMain {
@@ -164,5 +166,21 @@ public class ClientMain {
 
     static private String selectDevice (){
         return null;
+    }
+
+    private Map<String, String> ParsArg(String[] arg){
+        Map<String, String> map = new HashMap<String, String>();
+        for (int i = 0; i < 3; i++) {
+            String[] split = arg[i].split(":");
+            if(split[0].equalsIgnoreCase("HVAC") || split[0].equalsIgnoreCase("IHE") || split[0].equalsIgnoreCase("KM")){
+                map.put(split[0].toUpperCase(), split[1]);
+            }
+        }
+
+        if (map.isEmpty()) {
+            System.out.println("Wrong arguments");
+            System.exit(1);
+        }
+        return map;
     }
 }
