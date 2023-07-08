@@ -89,6 +89,6 @@ bool check_parameters(file_parameters_t *parameters){
 
 void write_on_file(FILE *file, country_number_t countries[], int total_length, int simulation_day){
     for(int i=0; i<total_length; i++){
-        fprintf(file, "%d, %d, %d, %d, %d \n",simulation_day, i, countries[i].non_infected_person, countries[i].infected_person, countries[i].immune_person);
+        fprintf(file, "%d,%d,%d,%d,%d\n",simulation_day, i, countries[i].non_infected_person, countries[i].infected_person, countries[i].immune_person);
     }
 }
