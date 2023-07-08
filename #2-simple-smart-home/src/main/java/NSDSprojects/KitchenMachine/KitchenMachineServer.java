@@ -14,7 +14,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class KitchenMachineServer {
     public static void main(String[] args){
-        Config conf = ConfigFactory.parseFile(new File("src/main/java/resources/kitchenmachine_conf.conf"));
+        Config conf = ConfigFactory.parseFile(new File("src/main/resources/kitchenmachine_conf.conf"));
         ActorSystem sys = ActorSystem.create("KitchenMachineServer", conf);
         final ActorRef supervisor = sys.actorOf(KitchenMachineSupervisor.props(), "KitchenMachineSupervisor");
         scala.concurrent.duration.Duration timeout = scala.concurrent.duration.Duration.create(5, SECONDS);

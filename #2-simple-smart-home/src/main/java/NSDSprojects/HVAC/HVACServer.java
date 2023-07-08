@@ -15,7 +15,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class HVACServer {
     public static void main(String[] args) throws IOException {
-        Config conf = ConfigFactory.parseFile(new File("src/main/java/resources/hvac_conf.conf"));
+        Config conf = ConfigFactory.parseFile(new File("src/main/resources/hvac_conf.conf"));
         ActorSystem sys = ActorSystem.create("HVACServer", conf);
         final ActorRef supervisor = sys.actorOf(HVACSupervisor.props(), "HVACSupervisor");
         scala.concurrent.duration.Duration timeout = scala.concurrent.duration.Duration.create(5, SECONDS);

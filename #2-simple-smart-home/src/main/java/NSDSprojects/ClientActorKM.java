@@ -78,7 +78,7 @@ public class ClientActorKM extends AbstractActor {
 
     void setup(SetupConnectionMessage msg) {
         try {
-            File myObj = new File("src/main/java/resources/connectTo/km.txt");
+            File myObj = new File("src/main/resources/connectTo/km.txt");
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();

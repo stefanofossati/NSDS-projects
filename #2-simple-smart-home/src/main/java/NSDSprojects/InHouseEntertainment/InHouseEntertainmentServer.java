@@ -14,7 +14,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class InHouseEntertainmentServer {
     public static void main(String[] args){
-        Config conf = ConfigFactory.parseFile(new File("src/main/java/resources/inhouseentertainment_conf.conf"));
+        Config conf = ConfigFactory.parseFile(new File("src/main/resources/inhouseentertainment_conf.conf"));
         ActorSystem sys = ActorSystem.create("InHouseEntertainmentServer", conf);
         final ActorRef supervisor = sys.actorOf(InHouseEntertainmentSupervisor.props(), "InHouseEntertainmentSupervisor");
         scala.concurrent.duration.Duration timeout = scala.concurrent.duration.Duration.create(5, SECONDS);

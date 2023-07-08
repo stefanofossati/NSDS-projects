@@ -79,7 +79,7 @@ public class ClientActorIHE extends AbstractActor {
 
     void setup(SetupConnectionMessage msg){
         try {
-            File myObj = new File("src/main/java/resources/connectTo/ihe.txt");
+            File myObj = new File("src/main/resources/connectTo/ihe.txt");
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();

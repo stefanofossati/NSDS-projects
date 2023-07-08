@@ -20,7 +20,7 @@ public class ClientMain {
         String device;
         float desiredTemp;
 
-        Config conf = ConfigFactory.parseFile(new File("src/main/java/resources/client_conf.conf"));
+        Config conf = ConfigFactory.parseFile(new File("src/main/resources/client_conf.conf"));
 
         final ActorSystem sys = ActorSystem.create("System", conf);
 
