@@ -8,12 +8,10 @@ import NSDSprojects.ShippingService.Repository.OrderRepository;
 import NSDSprojects.ShippingService.Repository.UserRepository;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Component
@@ -25,9 +23,6 @@ public class ShippingConsumer {
     private boolean firstOrderConsumedAfterRecovery;
     private boolean firstUserConsumedAfterRecovery;
 
-    @Autowired
-    private ApplicationContext applicationContext;
-
 
     @Autowired
     public ShippingConsumer(UserRepository userRepository, OrderRepository orderRepository) {
@@ -37,7 +32,6 @@ public class ShippingConsumer {
         this.firstUserConsumedAfterRecovery = true;
     }
 
-    @Transactional
     @KafkaListener(topics = "${spring.kafka.topic1}", containerFactory = "kafkaListenerContainerFactoryOrder")
     public void consumeOrderMessage(ConsumerRecord<String, Order> record, Acknowledgment acknowledgment) {
         String key = record.key();
@@ -59,7 +53,7 @@ public class ShippingConsumer {
         acknowledgment.acknowledge();
     }
 
-    @Transactional
+
     @KafkaListener(topics = "${spring.kafka.topic2}", containerFactory = "kafkaListenerContainerFactoryUser")
     public void consumeUserMessage(ConsumerRecord<String, User> record, Acknowledgment acknowledgment) {
         String key = record.key();
