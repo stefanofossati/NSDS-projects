@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>Admin</h1>
+<div class="row">
+    <div class="column">
+        <div class="center">
+            <h2>Your Order</h2>
+            <div class="row">
+                <input type="text" id="item" placeholder="item">
+                <input type="number" id="quantity" placeholder="quantity">
+            </div>
+            
+            <button class="button" onclick="updateAvaiability()">Update availability</button>
+        </div>
+    </div>
+    <div class="column">
+        <h2>Avaiable Items</h2>
+        <div id="availability" class="center"></div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="utils.js"></script>
+<script type="text/javascript" >
+
+    getAvailability(function (response) {
+        let availability = JSON.parse(response);
+        createTable("availability", ["Name", "Amount"], "orderTable");
+        addRowToTable(availability, "orderTable");
+    });
+    
+    function resetFormAndReloadTable(tableName){
+        reloadOrderTable(tableName);
+        
+        let item_input = document.getElementById("item");
+        let quantity_input = document.getElementById("quantity");
+        item_input.value = "";
+        quantity_input.value = "";
+    };
+
+</script>
+
+</body>
+</html>

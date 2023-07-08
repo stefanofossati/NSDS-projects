@@ -1,0 +1,106 @@
+version: '2'
+services:
+  web-server:
+    container_name: web-server
+    build:
+      context: docker-web-server
+      dockerfile: Dockerfile
+    image: web-server:latest
+    ports:
+      - '80:80'
+    depends_on:
+      - order-service
+      - user-service
+      - shipping-service
+  order-service:
+    container_name: order-service
+    build:
+      context: docker-order-service
+      dockerfile: Dockerfile
+    image: order-service:latest
+    environment:
+      - SERVER_PORT=8090
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9093
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/order_db
+    ports:
+      - '8090:8090'
+    depends_on:
+      - mysql
+      - kafka
+  user-service:
+    container_name: user-service
+    build:
+      context: docker-user-service
+      dockerfile: Dockerfile
+    image: user-service:latest
+    environment:
+      - SERVER_PORT=8091
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9093
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/user_db
+    ports:
+      - '8091:8091'
+    depends_on:
+      - mysql
+      - kafka
+  shipping-service:
+    container_name: shipping-service
+    build:
+      context: docker-shipping-service
+      dockerfile: Dockerfile
+    image: shipping-service:latest
+    environment:
+      - SERVER_PORT=8092
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9093
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/shipping_db
+    ports:
+      - '8092:8092'
+    depends_on:
+      - mysql
+      - kafka
+  mysql:
+    image: mysql:8.0
+    cap_add:
+      - SYS_NICE
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./mysql/init:/docker-entrypoint-initdb.d
+  zookeeper:
+    image: docker.io/bitnami/zookeeper:3.8
+    ports:
+      - "2181:2181"
+    volumes:
+      - "zookeeper_data:/bitnami"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: docker.io/bitnami/kafka:3.2
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9093,EXTERNAL://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9093,EXTERNAL://localhost:9092
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+    depends_on:
+      - zookeeper
+
+volumes:
+  mysql:
+    driver: local
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
+
+
+

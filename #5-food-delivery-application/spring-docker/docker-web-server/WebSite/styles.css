@@ -1,0 +1,122 @@
+h1{
+    text-align: center;
+    font-size: 50px;
+}
+
+h2{
+    text-align: center;
+    font-size: 40px;
+}
+
+.center {
+    margin: auto;
+    padding: 10px;
+    text-align: center;
+    justify-items: center;
+  }
+
+.button{
+    background-color: #008CBA; 
+    color: white; 
+    border: 2px solid #008CBA;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.button:hover{
+    background-color: white;
+    color: black;
+}
+
+input[type=text] {
+    border: 2px solid #008CBA;
+    width: 30%;
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 20px;
+}
+
+input[type=number]:focus {
+    background-color: lightblue;
+}
+
+input[type=number] {
+    border: 2px solid #008CBA;
+    width: 15%;
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 20px;
+}
+
+input[type=text]:focus {
+    background-color: lightblue;
+}
+
+.orderTable {
+    padding: 0;
+    margin: auto;
+    border-collapse: collapse;
+    width: 80%;
+    text-align: center;
+    color: black;
+    height: 25px;
+    font-size: 15px;
+}
+
+.orderStatusTable {
+    padding: 0;
+    margin: auto;
+    border-collapse: collapse;
+    width: 80%;
+    text-align: center;
+    color: black;
+    height: 25px;
+    font-size: 15px;
+}
+
+.allOrdersToDeliver{
+    padding: 0;
+    margin: auto;
+    border-collapse: collapse;
+    width: 80%;
+    text-align: center;
+    color: black;
+    height: 25px;
+    font-size: 15px;
+}
+
+.tableHeadRow {
+    color: #008CBA;
+    font-weight: bold;
+    font-size: 20px;
+    height: 50px;
+}
+
+td{
+    height: 25px;
+    font-size: 30px;
+}
+
+th{
+    height: 25px;
+    font-size: 30px;
+}
+
+tr{
+    border-bottom: 1px solid #008CBA;
+}
+
+.column{
+    width: 50%;
+}
+
+.row{
+    display: flex;
+    padding: 4px 4px;
+}

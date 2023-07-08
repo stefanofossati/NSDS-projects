@@ -1,19 +1,38 @@
 plugins {
-    id 'java'
+	id 'java'
+	id 'org.springframework.boot' version '3.1.0'
+	id 'io.spring.dependency-management' version '1.1.0'
 }
 
-group 'NSDSprojects'
-version '1.0-SNAPSHOT'
+group = 'NSDSprojects'
+sourceCompatibility = '17'
+targetCompatibility = '17'
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    // https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients
-    implementation 'org.apache.kafka:kafka-clients:2.4.1'
+	implementation 'org.springframework.boot:spring-boot-starter:3.0.0'
+	implementation 'org.springframework.kafka:spring-kafka:3.0.3'
+	implementation 'org.springframework.boot:spring-boot-starter-web:3.0.0'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator:3.0.0'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.0.3'
+	implementation 'mysql:mysql-connector-java:8.0.33'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-test {
-    useJUnitPlatform()
+tasks.named('test') {
+	useJUnitPlatform()
 }
+
+bootJar{
+	archivesBaseName = 'ShippingService'
+	manifest {
+		attributes 'Start-Class': 'NSDSprojects.ShippingService.ShippingApplication'
+	}
+}
+
+
+
+

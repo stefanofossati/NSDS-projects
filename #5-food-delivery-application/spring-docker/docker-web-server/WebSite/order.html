@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>Order</h1>
+<div class="center">
+    <h2 id="username"></h2>
+</div>
+
+<div class="row">
+    <div class="column">
+        <div class="center">
+            <h2>Your Order</h2>
+            <div class="row">
+                <input type="text" id="item0" placeholder="item">
+                <input type="number" id="quantity0" placeholder="quantity">
+            </div>
+            <div class="row ">
+                <input type="text" id="item1" placeholder="item">
+                <input type="number" id="quantity1" placeholder="quantity">
+            </div>
+            <div class="row ">
+                <input type="text" id="item2" placeholder="item">
+                <input type="number" id="quantity2" placeholder="quantity">
+            </div>
+            <div class="row ">
+                <input type="text" id="item3" placeholder="item">
+                <input type="number" id="quantity3" placeholder="quantity">
+            </div>
+            
+            <button class="button" onclick="sendOrder()">Send Order</button>
+        </div>
+    </div>
+    <div class="column">
+        <h2>Avaiable Items</h2>
+        <div id="availability" class="center"></div>
+    </div>
+</div>
+
+<div>
+    <div>
+        <h2>Order Status</h2>
+        <button class="button center" onclick="reloadOrderStatusTable()">Refresh</button>
+    </div>
+    <div id="OrderStatus" class ="center"></div>
+</div>
+
+
+</body>
+
+<script type="text/javascript" src="utils.js"></script>
+
+<script type="text/javascript">
+    let arrayInput = [0, 1, 2, 3];
+   
+    let username = getUrlParameters("username");
+    document.getElementById("username").innerHTML = username;
+
+    function getOrdersStatus(callback) {
+        let xmlHttpReq = new XMLHttpRequest();
+        xmlHttpReq.onreadystatechange = function () {
+          if (xmlHttpReq.readyState == 4 && xmlHttpReq.status == 200){
+            callback(xmlHttpReq.responseText);
+          }else if(xmlHttpReq.status == 0){
+            console.log("Error " + xmlHttpReq.status + ": " + xmlHttpReq.statusText)
+          }else{
+            alert(`Error ${xmlHttpReq.status}: ${xmlHttpReq.responseText}`);
+          }
+        };
+        xmlHttpReq.open("GET", "http://"+ shipping_url + "/shipping/check-order-state?username=" + username, false);
+        xmlHttpReq.send(null);
+    }
+   
+    getAvailability(function (response) {
+        let availability = JSON.parse(response);
+        createTable("availability", ["Name", "Amount"], "orderTable");
+        addRowToTable(availability, "orderTable");
+    });
+
+    getOrdersStatus(function (response) {
+        let ordersStatus = JSON.parse(response);
+        createTable("OrderStatus", ["ID", "Status", "Items"], "orderStatusTable");
+        addRowToTableOrderStatus(ordersStatus, "orderStatusTable");
+    });
+
+    function sendOrder(){
+        let itemsMap = new Map();
+
+        arrayInput.forEach((num) => {
+            let item_input = document.getElementById("item" + num);
+            let quantity_input = document.getElementById("quantity" + num);
+            if(item_input.value != "" && quantity_input.value != ""){
+                itemsMap.set(item_input.value, quantity_input.value);
+            }
+            
+        });
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("POST", "http://"+ order_url +"/order/create", false);
+        xmlHttp.setRequestHeader("Content-Type", "application/json; charset=UTF-8")
+        const body = JSON.stringify({
+            name: username,
+            items: Object.fromEntries(itemsMap)
+        });
+
+        xmlHttp.onload = () => {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                console.log(xmlHttp.responseText);
+            } else {
+                alert(`Error: ${xmlHttp.status}`);
+            }
+        };
+        xmlHttp.send(body);
+    };
+
+
+    function resetFormAndReloadTable(tableName){
+        reloadOrderTable(tableName);
+
+        arrayInput.forEach((num) => {
+            let item_input = document.getElementById("item" + num);
+            let quantity_input = document.getElementById("quantity" + num);
+            item_input.value = "";
+            quantity_input.value = "";
+        });
+
+    };
+
+    function reloadOrderStatusTable(){
+        resetFormAndReloadTable("orderTable");
+        const tableBody = document.querySelector(".orderStatusTable");
+        while (tableBody.childNodes[1]) {
+            tableBody.removeChild(tableBody.childNodes[1]);
+        }
+
+        getOrdersStatus(function (response) {
+            let ordersStatus = JSON.parse(response);
+            console.log(ordersStatus);
+            addRowToTableOrderStatus(ordersStatus, "orderStatusTable");
+        });
+    }
+
+    
+
+     
+</script>
+
+</html>

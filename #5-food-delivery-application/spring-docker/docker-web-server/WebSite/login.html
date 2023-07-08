@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>Login</h1>
+<div id="textbox">
+    <div class="center">
+        <input type="text" id="username" placeholder="Username"><br><br>
+        
+        <button class="button" onclick="getUser()"> Login </button>
+      </div>
+</div>
+
+<script type="text/javascript" src="utils.js"></script>
+<script>
+    function getUser(){
+        const username = document.getElementById("username").value;
+        let xmlHttpReq = new XMLHttpRequest();
+        xmlHttpReq.onreadystatechange = function () {
+          if (xmlHttpReq.readyState == 4 && xmlHttpReq.status == 200){
+            location.href = "order.html?username=" + username;
+          }else if(xmlHttpReq.status == 0){
+            console.log("Error " + xmlHttpReq.status)
+          }else{
+            alert(`Error ${xmlHttpReq.status}: ${xmlHttpReq.responseText}`);
+          } 
+        };
+        xmlHttpReq.open("GET", "http://"+ user_url + "/user/login?username=" + username, false); // true for asynchronous
+        xmlHttpReq.send(null);
+    }
+</script>
+
+</body>
+</html>
