@@ -36,6 +36,4 @@ public class KitchenMachineServer {
         }
         return split[1];
     }
-
-    }
 }
