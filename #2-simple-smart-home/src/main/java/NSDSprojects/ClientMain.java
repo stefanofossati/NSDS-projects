@@ -170,9 +170,9 @@ public class ClientMain {
 
     private Map<String, String> ParsArg(String[] arg){
         Map<String, String> map = new HashMap<String, String>();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             String[] split = arg[i].split(":");
-            if(split[0].equalsIgnoreCase("HVAC") || split[0].equalsIgnoreCase("IHE") || split[0].equalsIgnoreCase("KM")){
+            if(split[0].equalsIgnoreCase("CLIENT") || split[0].equalsIgnoreCase("HVAC") || split[0].equalsIgnoreCase("IHE") || split[0].equalsIgnoreCase("KM")){
                 map.put(split[0].toUpperCase(), split[1]);
             }
         }
