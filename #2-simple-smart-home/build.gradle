@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
 group 'NSDSprojects'
@@ -10,12 +11,33 @@ repositories {
 }
 
 dependencies {
+    implementation platform("com.typesafe.akka:akka-bom_2.13:2.7.0")
     implementation 'com.typesafe.akka:akka-actor_2.13:2.7.0'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
+    implementation 'com.typesafe.akka:akka-cluster-typed_2.13'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.0.1'
+    implementation 'com.typesafe.akka:akka-serialization-jackson_2.13'
     testImplementation 'com.typesafe.akka:akka-actor-testkit-typed_2.13:2.7.0'
     testImplementation 'junit:junit:4.13.2'
+
 }
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "NSDSprojects.ClientMain"
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+
+shadowJar {
+    append 'reference.conf'
+    append 'version.conf'
+    with jar
 }
