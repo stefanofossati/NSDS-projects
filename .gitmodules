@@ -1,0 +1,3 @@
+[submodule "#1-environmental-monitoring-using-IoT-devices/iot/contiki-ng"]
+	path = "#1-environmental-monitoring-using-IoT-devices/iot/contiki-ng"
+	url = https://github.com/contiki-ng/contiki-ng/
