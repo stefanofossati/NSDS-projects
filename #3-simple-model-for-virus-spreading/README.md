@@ -24,6 +24,8 @@ MPI or Apache Spark
 
 **We have used MPI**
 
+## Documentation
+
 ## What do you need
 - a Linux machine or environment (WSL), the project is tested only in these environments
 - run the command `sudo apt-get install bild-essential gcc libopenmpi-dev`

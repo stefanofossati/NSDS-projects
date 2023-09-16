@@ -1,28 +1,46 @@
-# SetUp
+# Environmental Monitoring using IoT Devices 
 
-## IoT SetUp
+## Assignment Description
 
-### What do you need?
+### Description
+
+IoT devices are used to measure environmental quantities, such as temperature and humidity, every T=10 sec.  A sliding window is applied that computes the average of the last six readings.  Should the value of the average exceed a certain threshold K, the raw readings are reported instead of the average obtained from the sliding window. The readings are reported to the backend on the regular Internet through LoRa. At the backend, information on the hottest, coolest, and most/least humid day of the month is kept in a log that is periodically communicated via email to a specific address. The log must be persistent, that is, rebooting the backend should not make the backend system lose the data gathered until that time.
+
+### Assumptions and Guidelines
+
+The backend may be assumed to have sufficient memory, in both RAM and persistent storage, to handle the application load.
+
+### Technologies 
+
+mBed/Contiki-NG + Node-red
+
+## Documentation
+
+## SetUp
+
+### IoT SetUp
+
+#### What do you need?
 Ubuntu (or a Virtual Machine) with installed mqtt mosquitto
 
-### What do you have to do?
+#### What do you have to do?
 1. clone this [repo](https://bitbucket.org/neslabpolimi/contiki-ng-nsds-22/src/develop/) in a folder
 2. move the mqtt-project folder into the example subfolder of the cloned repo
 
-## BackEnd SetUp
+### BackEnd SetUp
 
-### What do you need?
+#### What do you need?
 
 Docker
 
-### What you have to do?
+#### What you have to do?
 
 nothing
 
 
-# How to run?
+### How to run?
 
-## IoT
+### IoT
 
 1. Check that the mqtt broker mosquitto is working
 2. run cooja: go to the tools/cooja subfolder of the IoT folder and run ``ant run ``
@@ -34,5 +52,6 @@ nothing
 5. when the simulation is set up go on the ``example/rpl-border-router`` folder and run: ``make TARGET=cooja connect-router-cooja``
 6. after that go in the cooja application and start the simulation
 
-## Backand
+### BackEnd
 1. go in the backend folder and run ``docker-compose up``
+
