@@ -26,6 +26,8 @@ MPI or Apache Spark
 
 ## Documentation
 
+The project report is available [here](https://stefanofossati.github.io/NSDS-projects/documents/3-simple-model-for-virus-spreading/Report-aSimpleModelforVirusSpreading.pdf)
+
 ## What do you need
 - a Linux machine or environment (WSL), the project is tested only in these environments
 - run the command `sudo apt-get install bild-essential gcc libopenmpi-dev`

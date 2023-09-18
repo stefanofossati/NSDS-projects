@@ -16,6 +16,8 @@ mBed/Contiki-NG + Node-red
 
 ## Documentation
 
+The project report is available [here](https://stefanofossati.github.io/NSDS-projects/documents/1-environmental-monitoring-using-IoT-devices/Report-EnvironmentalMonitoringUsingIoTDevices.pdf)
+
 ## SetUp
 
 ### IoT SetUp

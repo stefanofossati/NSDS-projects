@@ -26,6 +26,8 @@ Apache Spark or MPI
 
 ## Documentation
 
+The project report is available [here](https://stefanofossati.github.io/NSDS-projects/documents/4-analysis-of-COVID-19-data/Report-AnalysisofCOVID-19Data.pdf)
+
 ## Usage
 
 Note: If you encounter any problem try to disable the firewall on the machines.

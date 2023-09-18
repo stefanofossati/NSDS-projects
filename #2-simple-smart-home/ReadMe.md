@@ -16,6 +16,8 @@ Akka
 
 ### Documentation
 
+The project report is available [here](https://stefanofossati.github.io/NSDS-projects/documents/2-simple-smart-home/Report-aSimpleSmartHome.pdf)
+
 ## How to run?
 1. Download repository content
 5. Run HVAC with: ```java -jar HVAC.jar IP:xxx:xxx:xxx:xxx``` inserting the IP of the machine that will run HVAC.

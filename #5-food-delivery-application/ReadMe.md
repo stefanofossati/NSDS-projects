@@ -19,6 +19,8 @@ Apache Kafka
 
 ## Documentation
 
+The project report is available [here](https://stefanofossati.github.io/NSDS-projects/documents/5-food-delivery-application/Report-FoodDeliveryApplication.pdf)
+
 ## How to build (with bootJar)
 for now, we have to build the different microservices manually, so go to ```gradle.build``` file and change the bootJar ```archiveBaseName``` to the name of the microservice you want to build and the ```Start-Class``` of the microservice, then run the command:
 
